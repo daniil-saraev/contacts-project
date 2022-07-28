@@ -10,7 +10,7 @@ namespace IdentityAPI
         public static IEnumerable<ApiScope> ApiScopes =>
             new List<ApiScope>
             {
-                new ApiScope(ApiResourcesNames.ContactsWebApi)      
+                new ApiScope(Core.Constants.ApiResources.ContactsDatabaseAPI)      
             };
 
         public static IEnumerable<IdentityResource> IdentityResources =>
@@ -23,7 +23,7 @@ namespace IdentityAPI
         public static IEnumerable<ApiResource> ApiResources =>
             new List<ApiResource>
             {
-                new ApiResource(ApiResourcesNames.ContactsWebApi)
+                new ApiResource(Core.Constants.ApiResources.ContactsDatabaseAPI)
             };
 
         public static IEnumerable<Client> Clients =>
@@ -42,7 +42,7 @@ namespace IdentityAPI
                         IdentityServerConstants.StandardScopes.OfflineAccess,
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        ApiResourcesNames.ContactsWebApi                 
+                        Core.Constants.ApiResources.ContactsDatabaseAPI                 
                     },
                     RedirectUris = { $"{BaseUrls.WebClientUrl}/Account/Token" },
                     PostLogoutRedirectUris = { $"{BaseUrls.WebClientUrl}/Home/Index" },

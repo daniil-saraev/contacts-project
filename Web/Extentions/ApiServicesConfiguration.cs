@@ -8,7 +8,7 @@ namespace Web.Extentions
 	{
 		public static IServiceCollection AddApiServices(this IServiceCollection services)
 		{
-			services.AddSingleton(typeof(IRepository<Contact>), new ContactsDbApiService(BaseUrls.ContactsWebApiUrl, new HttpClient()));
+			services.AddSingleton(typeof(IRepository<Contact>), new ContactsDbApiService(BaseUrls.ContactsDatabaseAPIUrl, new HttpClient()));
 			return services;
 		}
 	}

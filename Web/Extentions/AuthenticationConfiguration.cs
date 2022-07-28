@@ -20,7 +20,7 @@ namespace Web.Extentions
             }).AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, config =>
             {
-                config.Authority = BaseUrls.IdentityApiUrl;
+                config.Authority = BaseUrls.IdentityServerUrl;
                 config.ClientId = Clients.ContactsWebClient.WebClientName;
                 config.ClientSecret = Clients.ContactsWebClient.WebClientSecret;
                 config.SaveTokens = true;
@@ -29,7 +29,7 @@ namespace Web.Extentions
                 config.ResponseType = OpenIdConnectResponseType.Code;
                 config.GetClaimsFromUserInfoEndpoint = true;
                 config.ClaimActions.MapJsonKey(ClaimTypes.Role, ClaimTypes.Role);     
-                config.Scope.Add(ApiResourcesNames.ContactsWebApi);
+                config.Scope.Add(ApiResources.ContactsDatabaseAPI);
                 config.Scope.Add(IdentityServerConstants.StandardScopes.OfflineAccess);
                 config.Scope.Add(IdentityServerConstants.StandardScopes.OpenId);
                 config.Scope.Add(IdentityServerConstants.StandardScopes.Profile);

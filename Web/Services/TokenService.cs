@@ -13,7 +13,7 @@ namespace Web.Services
         public AuthorizationCodeTokenService()
         {
             _httpClient = new HttpClient();
-            _discoveryDocument = _httpClient.GetDiscoveryDocumentAsync(BaseUrls.IdentityApiUrl).Result;
+            _discoveryDocument = _httpClient.GetDiscoveryDocumentAsync(BaseUrls.IdentityServerUrl).Result;
             if (_discoveryDocument.IsError)
             {
                 throw new Exception("Error getting DiscoveryDocument", _discoveryDocument.Exception);

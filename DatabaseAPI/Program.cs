@@ -25,8 +25,8 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
-    options.Authority = BaseUrls.IdentityApiUrl;
-    options.Audience = ApiResourcesNames.ContactsWebApi;
+    options.Authority = BaseUrls.IdentityServerUrl;
+    options.Audience = ApiResources.ContactsDatabaseAPI;
     options.RequireHttpsMetadata = false;
     options.SaveToken = true;
 });

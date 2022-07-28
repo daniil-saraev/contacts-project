@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Core.Constants
 {
-    public static class ApiResourcesNames
+    public static class ApiResources
     {
-        public const string ContactsWebApi = "ContactsWebApi";
+        public const string ContactsDatabaseAPI = "ContactsDatabaseApi";
 
-        public const string IdentityApi = "IdentityApi";
+        public const string IdentityServer = "IdentityServer";
     }
 }

@@ -7,15 +7,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web", "Web\Web.csproj", "{5
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{C49C30A7-FD81-4683-95E6-6FC2325394AE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContactsWebAPI", "DatabaseAPI\ContactsWebAPI.csproj", "{EB080839-3783-447B-B77E-382F80995B5D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContactsDatabaseAPI", "DatabaseAPI\ContactsDatabaseAPI.csproj", "{EB080839-3783-447B-B77E-382F80995B5D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityAPI", "IdentityAPI\IdentityAPI.csproj", "{D1D80D52-B99C-4D87-988F-EB66FD9EE8AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer", "IdentityAPI\IdentityServer.csproj", "{D1D80D52-B99C-4D87-988F-EB66FD9EE8AB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Backend", "Backend", "{39AF1CDE-3036-4682-A5EB-876DEA7C7F53}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Frontend", "Frontend", "{FD219EEF-0827-41A3-A6E3-50DFEF156A8A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desktop", "Desktop\Desktop.csproj", "{03E7DD59-6E97-4507-9F9F-8A9E2CAC2B95}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desktop", "Desktop\Desktop.csproj", "{03E7DD59-6E97-4507-9F9F-8A9E2CAC2B95}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

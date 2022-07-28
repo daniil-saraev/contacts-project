@@ -24,7 +24,7 @@ namespace Web.Services
         public static ContactsDbApiService CreateApiClient()
         {
             if (_isInitialized)
-                return new ContactsDbApiService(BaseUrls.ContactsWebApiUrl, _httpClient);
+                return new ContactsDbApiService(BaseUrls.ContactsDatabaseAPIUrl, _httpClient);
             else
                 throw new Exception("Api not initialized!");
         }
