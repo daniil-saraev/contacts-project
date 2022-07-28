@@ -1,0 +1,50 @@
+﻿@model List<ApplicationUser>
+@inject UserManager<ApplicationUser> UserManager
+
+<div class="container p-3">
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2 class="text-primary">Users</h2>
+		</div>
+	</div>
+    <br /><br />
+
+
+<table class="table table-bordered table-striped" align="center" style="width:70%">
+    <thead>
+        <tr>
+            <th align = "center">
+                Name
+			</th>
+            <th align = "center">
+                Email
+			</th>
+		</tr>
+	</thead>
+    <tbody>
+        @foreach(var obj in Model)
+        {
+            @if(obj.Id != UserManager.GetUserId(User))
+            {
+                <tr>
+                <td width="10%" align = "center">
+                    @obj.UserName
+				</td>
+                <td width="60%" align = "center">
+                    @obj.Email
+				</td>
+                <td>
+                    <div class="w-75 btn-group" role="group">
+                        <a asp-controller="Roles" asp-action="Index" asp-route-id="@obj.Id"
+                        class="btn btn-primary mx-2">Roles</a>
+                        <form asp-action="Delete" asp-route-id="@obj.Id" method="post">
+                        <button type="submit" class="btn btn-danger mx-2">Delete</button>
+                        </form>
+					</div>
+				</td>
+                </tr>
+            }              
+        }
+    </tbody>
+</table>
+</div>

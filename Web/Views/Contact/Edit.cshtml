@@ -1,0 +1,53 @@
+﻿@model Contact
+
+<div class="mrg">
+	<form method="post" asp-action="Edit">
+	<div class="border p-3 mt-4">
+		<div class="row pb-2">
+			<h3 class="text-primary">Edit Contact</h3>
+			<hr />
+		</div>
+		<div class="form-group">
+			<label>First name</label>
+			<input asp-for="FirstName" value="@Model.FirstName" type="text" class="form-control">
+			<span asp-validation-for="FirstName" class="text-danger"></span>
+		</div>
+		<div class="form-group">
+			<label>Middle name</label>
+			<input asp-for="MiddleName" value="@Model.MiddleName" type="text" class="form-control">
+		</div>
+		<div class="form-group">
+			<label>Last name</label>
+			<input asp-for="LastName" value="@Model.LastName" type="text" class="form-control">
+		</div>
+		<div class="form-group">
+			<label>Phone number</label>
+			<input asp-for="PhoneNumber" value="@Model.PhoneNumber" type="text" class="form-control">
+			<span asp-validation-for="PhoneNumber" class="text-danger"></span>
+		</div>
+		<div class="form-group">
+			<label>Address</label>
+			<input asp-for="Address" value="@Model.Address" type="text" class="form-control">
+		</div>
+		<div class="form-group">
+			<label>Description</label>
+			<input asp-for="Description" value="@Model.Description" type="text" class="form-control" >
+		</div>
+		<p></p>
+		<div align="center">
+			<button type="submit" class="btn btn-primary" style="width:150px">Save</button>
+		<a asp-controller="Contact" asp-action="Index" class="btn btn-dark" style="width:150px">
+			Back to List
+		</a>
+		</div>		
+	</div>
+	</form>
+</div>
+
+
+@section Scripts
+{
+	@{
+		<partial name="_ValidationScriptsPartial"/>
+	} 
+}
