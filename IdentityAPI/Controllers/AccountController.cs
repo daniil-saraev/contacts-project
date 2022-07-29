@@ -1,109 +1,91 @@
 ﻿using Core.Constants;
 using Core.Models.Identity;
-using IdentityAPI.ViewModels;
+using IdentityServer.Models;
+using IdentityServer.Services;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace IdentityAPI.Controllers
+namespace IdentityServer.Controllers
 {
     [AllowAnonymous]
+    [ApiController]
+    [Route("[controller]")]
     public class AccountController : Controller
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IIdentityServerInteractionService _interactionService;
+        private readonly TokenService _tokenService;
 
-        public AccountController(SignInManager<ApplicationUser> signInManager, 
-                                 UserManager<ApplicationUser> userManager, 
-                                 IIdentityServerInteractionService interactionService)
+        public AccountController(SignInManager<ApplicationUser> signInManager,
+                                 UserManager<ApplicationUser> userManager,
+                                 TokenService tokenService)
         {
             _signInManager = signInManager;
             _userManager = userManager;
-            _interactionService = interactionService;
+            _tokenService = tokenService;
         }
 
-        [HttpGet]
-        public IActionResult Login(string returnUrl)
+        [ValidateAntiForgeryToken]
+        [HttpPost("[action]")]
+        public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
-            var loginModel = new LoginViewModel
-            {
-                ReturnUrl = returnUrl
-            };
-            return View(loginModel);
-        }
+            if (!ModelState.IsValid)
+                return BadRequestModelState();
 
-        //[ValidateAntiForgeryToken]
-        [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel model)
-        {
-            if (ModelState.IsValid)
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
             {
-                var user = await _userManager.FindByEmailAsync(model.Email);
-                if (user == null)
-                {
-                    ModelState.AddModelError(string.Empty, "User not found");
-                    return View();
-                }
+                ModelState.AddModelError(string.Empty, "User not found");
+                return BadRequestModelState();
+            }
 
-                var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, true);
-                if (result.Succeeded)
-                {
-                    model.ReturnUrl ??= $"{BaseUrls.WebClientUrl}/Account/Token";
-                    return Redirect(model.ReturnUrl);
-                }
+            var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, true);
+            if (result.Succeeded)
+            {
                 ModelState.AddModelError(string.Empty, "Login error");
-                return BadRequest();
+                return BadRequestModelState();
             }
-            ModelState.AddModelError(string.Empty, "ModelState is invalid");
-            return View(model);
+
+            var tokenResponse = _tokenService.CreateToken(user);
+
+            return Ok(tokenResponse);
         }
 
-        [HttpGet]
-        public IActionResult Register(string returnUrl)
+        [ValidateAntiForgeryToken]
+        [HttpPost("[action]")]
+        public async Task<IActionResult> Register([FromBody] RegisterModel model) 
         {
-            var registerModel = new RegisterViewModel
-            {
-                ReturnUrl = returnUrl
-            };
-            return View(registerModel);
+            if (!ModelState.IsValid)
+                return BadRequestModelState();
+
+            var user = new ApplicationUser { UserName = model.Username, Email = model.Email };
+            var result = await _userManager.CreateAsync(user, model.Password);
+
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            await _signInManager.SignInAsync(user, false);
+
+            var tokenResponse = _tokenService.CreateToken(user);
+
+            return Ok(tokenResponse);
         }
 
-        //[ValidateAntiForgeryToken]
-        [HttpPost]
-        public async Task<IActionResult> Register(RegisterViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var user = new ApplicationUser { UserName = model.Name, Email = model.Email };
-                var result = await _userManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
-                {
-                    await _signInManager.SignInAsync(user, false);
-                    model.ReturnUrl ??= $"{BaseUrls.WebClientUrl}/Account/Token";
-                    Redirect(model.ReturnUrl);
-                }
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
-                return BadRequest();
-            }
-            ModelState.AddModelError(string.Empty, "ModelState is invalid");
-            return View(model);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Logout(string logoutId)
+        [Authorize]
+        [HttpPost("[action]")]
+        public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            var result = await _interactionService.GetLogoutContextAsync(logoutId);
-            if (string.IsNullOrEmpty(result.PostLogoutRedirectUri))
-            {
-                return RedirectToAction("Login");
-            }
-            return Redirect(result.PostLogoutRedirectUri);
+            return NoContent();
+        }
+
+        private IActionResult BadRequestModelState()
+        {
+            IEnumerable<string> errorMessages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
+
+            return BadRequest(errorMessages);
         }
     }
 }

@@ -4,6 +4,6 @@ namespace Web.Services
 {
     public interface ITokenService
     {
-        Task<TokenResponse> GetTokenAsync(params string[] args);
+        Task<string> GetTokenAsync(HttpContext context);
     }
 }

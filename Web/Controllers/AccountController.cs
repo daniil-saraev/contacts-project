@@ -29,22 +29,22 @@ namespace Web.Controllers
             returnUrl ??= BaseUrls.WebClientUrl;
 
             if (User.Identity.IsAuthenticated)
-                return Redirect(returnUrl);
+                return Redirect(returnUrl); 
 
             return Challenge(new AuthenticationProperties
             {
                 RedirectUri = returnUrl
             },
-            OpenIdConnectDefaults.AuthenticationScheme);
+            OpenIdConnectDefaults.AuthenticationScheme);;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetToken()
+        public async Task<IActionResult> Token() 
         {
             string code = Request.Query["code"];
             code ??= Request.Form["code"];
-            var tokenResponse = await _tokenService.GetTokenAsync(code);
-            _contactsDb.HttpClient.SetBearerToken(tokenResponse.AccessToken);
+            var token = await _tokenService.GetTokenAsync(HttpContext);
+            _contactsDb.HttpClient.SetBearerToken(token);
             return RedirectToAction("Index", "Home");
         }
 
@@ -61,6 +61,6 @@ namespace Web.Controllers
                 OpenIdConnectDefaults.AuthenticationScheme);
             }
             return RedirectToAction("Index", "Home");
-        }
+        }       
     }
 }

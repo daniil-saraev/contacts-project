@@ -25,7 +25,7 @@ namespace Web.Extentions
                 config.ClientSecret = Clients.ContactsWebClient.WebClientSecret;
                 config.SaveTokens = true;
                 config.SignedOutCallbackPath = "/Home/Index";
-                config.CallbackPath = new PathString("/Account/Token");
+                config.CallbackPath = "/Account/Token";
                 config.ResponseType = OpenIdConnectResponseType.Code;
                 config.GetClaimsFromUserInfoEndpoint = true;
                 config.ClaimActions.MapJsonKey(ClaimTypes.Role, ClaimTypes.Role);     

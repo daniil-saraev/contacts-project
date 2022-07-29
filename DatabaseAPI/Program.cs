@@ -7,7 +7,8 @@ using Swashbuckle.AspNetCore.Filters;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 using Core.Constants;
-using ContactsWebAPI.Data;
+using ContactsDatabaseAPI.Data;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,19 +18,23 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ApplicationDbConnection"));
 });
 
-builder.Services.AddAuthorization();
-
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 })
 .AddJwtBearer(options =>
 {
-    options.Authority = BaseUrls.IdentityServerUrl;
-    options.Audience = ApiResources.ContactsDatabaseAPI;
-    options.RequireHttpsMetadata = false;
-    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Secret"])),
+        ValidIssuer = BaseUrls.IdentityServerUrl,
+        ValidAudience = BaseUrls.ContactsDatabaseAPIUrl,
+        ValidateIssuerSigningKey = true,
+        ValidateIssuer = true,
+        ValidateAudience = true
+    };
 });
+builder.Services.AddAuthorization();
 
 builder.Services.AddControllers();
 

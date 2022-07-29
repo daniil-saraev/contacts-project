@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace IdentityAPI.Data
+namespace IdentityServer.Data
 {
     public class UserDbContext : IdentityDbContext<ApplicationUser, IdentityRole, string>
     {
@@ -28,7 +28,7 @@ namespace IdentityAPI.Data
         internal class ApplicationUserEntityConfiguration : IEntityTypeConfiguration<ApplicationUser>
         {
             public void Configure(EntityTypeBuilder<ApplicationUser> builder)
-            {             
+            {
             }
         }
     }

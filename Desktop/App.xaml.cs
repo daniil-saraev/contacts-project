@@ -8,6 +8,8 @@ using ApiServices;
 using Desktop.Services;
 using Desktop.ViewModels.Contacts;
 using Microsoft.EntityFrameworkCore;
+using Core.Constants;
+using System.Net.Http;
 
 namespace Desktop
 {
@@ -23,7 +25,7 @@ namespace Desktop
             _host = Host.CreateDefaultBuilder()
                 .ConfigureServices((context, services) =>
                 {
-                    //services.AddSingleton(typeof(IRepository<Contact>),new ContactsDbApiService(BaseUrls.ContactsWebApiUrl, new HttpClient()));              
+                    //services.AddSingleton(typeof(IRepository<Contact>),new ContactsDbApiService(BaseUrls.ContactsDatabaseAPIUrl, new HttpClient()));              
                     services.AddSingleton<TestDbContext>();
                     services.AddSingleton<IRepository<Contact>, TestRepository>();
                     services.AddSingleton<MainViewModel>();

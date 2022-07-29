@@ -1,11 +1,11 @@
-﻿using ContactsWebAPI.Data;
+﻿using ContactsDatabaseAPI.Data;
 using Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
-namespace ContactsWebAPI.Controllers
+namespace ContactsDatabaseAPI.Controllers
 {
     [Authorize]
     [Route("[controller]")]
@@ -15,7 +15,7 @@ namespace ContactsWebAPI.Controllers
     [ValidateAntiForgeryToken]
     public class DataController : ControllerBase
     {
-		private readonly ApplicationDbContext _dbContext;
+        private readonly ApplicationDbContext _dbContext;
         private string UserId => !User.Identity.IsAuthenticated
             ? string.Empty
             : User.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -121,7 +121,7 @@ namespace ContactsWebAPI.Controllers
                 return BadRequest();
             try
             {
-                _dbContext.Contacts.RemoveRange(contacts);               
+                _dbContext.Contacts.RemoveRange(contacts);
                 return Ok(await SaveChangesAsync());
             }
             catch (Exception ex)
@@ -149,7 +149,7 @@ namespace ContactsWebAPI.Controllers
                 return BadRequest();
             try
             {
-                _dbContext.Contacts.Update(contact);               
+                _dbContext.Contacts.Update(contact);
                 return Ok(await SaveChangesAsync());
             }
             catch (Exception ex)
@@ -167,7 +167,7 @@ namespace ContactsWebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateRangeAsync([FromBody] IEnumerable<Contact> contacts)
         {
-            if(!contacts.All(c => c.UserId == UserId))
+            if (!contacts.All(c => c.UserId == UserId))
                 return BadRequest();
             try
             {
@@ -177,7 +177,7 @@ namespace ContactsWebAPI.Controllers
             catch (Exception ex)
             {
                 return Problem(ex.Message, null, StatusCodes.Status500InternalServerError);
-            }           
+            }
         }
     }
 }

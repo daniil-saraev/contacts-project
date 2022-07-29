@@ -1,12 +1,12 @@
 ﻿using Core.Models.Identity;
-using IdentityAPI.Data;
-using IdentityAPI.ViewModels;
+using IdentityServer.Data;
+using IdentityServer.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
-namespace IdentityAPI.Controllers
+namespace IdentityServer.Controllers
 {
     [Authorize(Policy = Policies.RequireAdmin)]
     public partial class RolesController : Controller

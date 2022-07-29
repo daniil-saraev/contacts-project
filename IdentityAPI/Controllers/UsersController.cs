@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using IdentityAPI.Data;
 using Core.Models.Identity;
+using IdentityServer.Data;
 
-namespace IdentityAPI.Controllers
+namespace IdentityServer.Controllers
 {
     [Authorize(Policy = Policies.RequireAdmin)]
     public class UsersController : Controller

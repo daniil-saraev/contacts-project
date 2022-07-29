@@ -1,9 +1,9 @@
 ﻿using Core.Models.Identity;
-using IdentityAPI.Data;
-using IdentityAPI.Services;
+using IdentityServer.Data;
+using IdentityServer.Services;
 using Microsoft.AspNetCore.Identity;
 
-namespace IdentityAPI.Extensions
+namespace IdentityServer.Extensions
 {
     public static class IdentityServicesConfiguration
     {
@@ -20,27 +20,7 @@ namespace IdentityAPI.Extensions
             }).AddEntityFrameworkStores<UserDbContext>()
               .AddDefaultTokenProviders();
 
-            //var migrationsAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
-
-            services.AddIdentityServer()
-              //  .AddConfigurationStore(options =>
-              //{
-              //    options.ConfigureDbContext = b =>
-              //        b.UseSqlServer(builder.Configuration.GetConnectionString("UserDbConnection"),
-              //            sql => sql.MigrationsAssembly(migrationsAssembly));
-              //}).AddOperationalStore(options =>
-              //{
-              //    options.ConfigureDbContext = b =>
-              //        b.UseSqlServer(builder.Configuration.GetConnectionString("UserDbConnection"),
-              //            sql => sql.MigrationsAssembly(migrationsAssembly));
-              //})
-              .AddAspNetIdentity<ApplicationUser>()
-              .AddInMemoryApiResources(Configuration.ApiResources)
-              .AddInMemoryIdentityResources(Configuration.IdentityResources)
-              .AddInMemoryApiScopes(Configuration.ApiScopes)
-              .AddInMemoryClients(Configuration.Clients)
-              .AddProfileService<ProfileService>()
-              .AddDeveloperSigningCredential();
+            services.AddSingleton<AuthConfiguration>();
 
             return services;
         }

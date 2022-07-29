@@ -1,8 +1,14 @@
-using IdentityAPI.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using IdentityAPI.Extensions;
 using Core.Models.Identity;
+using IdentityServer.Extensions;
+using IdentityServer.Data;
+using IdentityServer.Services;
+using IdentityServer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Core.Constants;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,19 +19,36 @@ builder.Services.AddDbContext<UserDbContext>(options =>
 
 builder.Services.AddIdentityServices();
 
-//builder.Services.ConfigureApplicationCookie(config =>
-//{
-//    config.LoginPath = "/Account/Login";
-//    config.LogoutPath = "/Account/Logout";
-//});
+builder.Services.AddSingleton<TokenService>();
+
+builder.Configuration.Bind("Auth", new AuthConfiguration());
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(new AuthConfiguration().Secret)),
+        ValidIssuer = BaseUrls.IdentityServerUrl,
+        ValidAudience = BaseUrls.ContactsDatabaseAPIUrl,
+        ValidateIssuerSigningKey = true,
+        ValidateIssuer = true,
+        ValidateAudience = true
+    };
+});
 
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy(Policies.RequireAdmin, policy => policy.RequireClaim(ClaimStore.AdminClaim.Type, ClaimStore.AdminClaim.Value));
 });
+
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -47,6 +70,7 @@ using (var scope = app.Services.CreateScope())
 
 if (app.Environment.IsDevelopment())
 {
+    app.UseSwagger();
     app.UseDeveloperExceptionPage();
 }
 else
@@ -60,7 +84,6 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseIdentityServer();
 app.MapDefaultControllerRoute();
 
 app.Run();

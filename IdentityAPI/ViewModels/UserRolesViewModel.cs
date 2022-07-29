@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
-namespace IdentityAPI.ViewModels
+namespace IdentityServer.ViewModels
 {
     public class UserRolesViewModel
     {

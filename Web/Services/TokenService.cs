@@ -1,6 +1,7 @@
 ﻿using IdentityModel.Client;
 using Core.Constants;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Web.Services
 {
@@ -20,23 +21,28 @@ namespace Web.Services
             }
         }
 
-        public async Task<TokenResponse> GetTokenAsync(params string[] args) 
+        public async Task<string> GetTokenAsync(HttpContext context) 
         {
-            var tokenResponse = await _httpClient.RequestAuthorizationCodeTokenAsync(new AuthorizationCodeTokenRequest
-            {
-                Address = _discoveryDocument.TokenEndpoint,
-                ClientId = Clients.ContactsWebClient.WebClientName,
-                ClientSecret = Clients.ContactsWebClient.WebClientSecret,
-                Code = args[0],
-                RedirectUri = BaseUrls.WebClientUrl
-            });
+            //var tokenResponse = await _httpClient.RequestAuthorizationCodeTokenAsync(new AuthorizationCodeTokenRequest
+            //{
+            //    Address = _discoveryDocument.TokenEndpoint,
+            //    ClientId = Clients.ContactsWebClient.WebClientName,
+            //    ClientSecret = Clients.ContactsWebClient.WebClientSecret,
+            //    Code = args[0],
+            //    RedirectUri = BaseUrls.WebClientUrl
+            //});          
 
-            if(tokenResponse.IsError)
-            {
-                throw new Exception("Error getting token", tokenResponse.Exception);
-            }    
-            _currentTokenResponse = tokenResponse;
-            return tokenResponse;
+            //if (tokenResponse.IsError)
+            //{
+            //    throw new Exception("Error getting token", tokenResponse.Exception);
+            //}    
+            //_currentTokenResponse = tokenResponse;
+            //return tokenResponse;
+
+            var idTokenJson = await context.GetTokenAsync("id_token");
+            var accessTokenJson = await context.GetTokenAsync("access_token");
+            var refreshTokenJson = await context.GetTokenAsync("refresh_token");
+            return accessTokenJson;
         }
 
         public async Task<TokenResponse> RefreshToken()

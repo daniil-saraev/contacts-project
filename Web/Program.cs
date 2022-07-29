@@ -37,7 +37,7 @@ app.UseAuthorization();
 app.MapDefaultControllerRoute();
 //app.MapControllerRoute(
 //    name: "default",
-//    pattern: "{controller=Account}/{action=Login}");
+//    pattern: "{controller=Account}/{action=Token}");
 
 app.Logger.LogInformation("LAUNCHING");
 app.Run();

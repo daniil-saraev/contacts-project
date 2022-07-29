@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using IdentityAPI.ViewModels;
 
-namespace IdentityAPI.Controllers
+namespace IdentityServer.Controllers
 {
     public class HomeController : Controller
     {

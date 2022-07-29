@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
-namespace IdentityAPI.Data
+namespace IdentityServer.Data
 {
     public static class DbInitializer
     {
@@ -12,7 +12,7 @@ namespace IdentityAPI.Data
         private const string adminPasswod = "Admin123";
 
         public static async Task InitializeAsync(UserManager<ApplicationUser> userManager, UserDbContext context)
-        {          
+        {
             await context.Database.EnsureDeletedAsync();
             await context.Database.EnsureCreatedAsync();
 

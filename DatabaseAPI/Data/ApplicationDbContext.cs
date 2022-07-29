@@ -2,7 +2,7 @@
 using Core.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace ContactsWebAPI.Data
+namespace ContactsDatabaseAPI.Data
 {
     public class ApplicationDbContext : DbContext
     {
