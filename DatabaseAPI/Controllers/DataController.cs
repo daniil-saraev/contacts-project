@@ -1,24 +1,24 @@
 ﻿using ContactsDatabaseAPI.Data;
 using Core.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace ContactsDatabaseAPI.Controllers
 {
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("[controller]")]
     [Produces("application/json")]
     [Consumes("application/json")]
     [ApiController]
-    [ValidateAntiForgeryToken]
     public class DataController : ControllerBase
     {
         private readonly ApplicationDbContext _dbContext;
-        private string UserId => !User.Identity.IsAuthenticated
+        private string _userId => !User.Identity.IsAuthenticated
             ? string.Empty
-            : User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            : User.FindFirst(c => c.Type == "id").Value;
 
         public DataController(ApplicationDbContext dbContext)
         {
@@ -32,7 +32,7 @@ namespace ContactsDatabaseAPI.Controllers
         public async Task<IEnumerable<Contact>?> GetAll()
         {
             if (_dbContext.Contacts != null)
-                return await _dbContext.Contacts.Where(c => c.UserId == UserId).ToListAsync();
+                return await _dbContext.Contacts.Where(c => c.UserId == _userId).ToListAsync();
             else return null;
         }
 
@@ -43,7 +43,7 @@ namespace ContactsDatabaseAPI.Controllers
         public async Task<Contact?> GetAsync(int contactId)
         {
             var contact = await _dbContext.Contacts.FindAsync(contactId);
-            if (contact != null && contact.UserId == UserId)
+            if (contact != null && contact.UserId == _userId)
                 return contact;
             else return null;
         }
@@ -53,9 +53,12 @@ namespace ContactsDatabaseAPI.Controllers
         /// </summary>
         [HttpPost("/add/")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddAsync([FromBody] Contact contact)
         {
+            if (!ModelState.IsValid)
+                return BadRequest();
             try
             {
                 await _dbContext.Contacts.AddAsync(contact);
@@ -72,9 +75,12 @@ namespace ContactsDatabaseAPI.Controllers
         /// </summary>
         [HttpPost("/addrange")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddRangeAsync([FromBody] IEnumerable<Contact> contacts)
         {
+            if (!ModelState.IsValid)
+                return BadRequest();
             try
             {
                 await _dbContext.Contacts.AddRangeAsync(contacts);
@@ -95,7 +101,7 @@ namespace ContactsDatabaseAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteAsync([FromBody] Contact contact)
         {
-            if (contact.UserId != UserId)
+            if (contact.UserId != _userId)
                 return BadRequest();
             try
             {
@@ -117,7 +123,7 @@ namespace ContactsDatabaseAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteRangeAsync([FromBody] IEnumerable<Contact> contacts)
         {
-            if (!contacts.All(c => c.UserId == UserId))
+            if (!contacts.All(c => c.UserId == _userId))
                 return BadRequest();
             try
             {
@@ -145,7 +151,10 @@ namespace ContactsDatabaseAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateAsync([FromBody] Contact contact)
         {
-            if (contact.UserId != UserId)
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            if (contact.UserId != _userId)
                 return BadRequest();
             try
             {
@@ -167,7 +176,10 @@ namespace ContactsDatabaseAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateRangeAsync([FromBody] IEnumerable<Contact> contacts)
         {
-            if (!contacts.All(c => c.UserId == UserId))
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            if (!contacts.All(c => c.UserId == _userId))
                 return BadRequest();
             try
             {

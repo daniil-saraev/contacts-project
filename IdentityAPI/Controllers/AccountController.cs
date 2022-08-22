@@ -1,13 +1,15 @@
-﻿using Core.Constants;
-using Core.Models.Identity;
-using IdentityServer.Models;
-using IdentityServer.Services;
-using IdentityServer4.Services;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
+using Core.Models.Identity;
+using IdentityAPI.Responses;
+using IdentityAPI.ViewModels;
+using IdentityAPI.Services;
+using System.Security.Claims;
+using IdentityAPI.Requests;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
-namespace IdentityServer.Controllers
+namespace IdentityAPI.Controllers
 {
     [AllowAnonymous]
     [ApiController]
@@ -27,65 +29,130 @@ namespace IdentityServer.Controllers
             _tokenService = tokenService;
         }
 
-        [ValidateAntiForgeryToken]
         [HttpPost("[action]")]
-        public async Task<IActionResult> Login([FromBody] LoginModel model)
+        public async Task<ActionResult<TokenResponse>> Login([FromBody]LoginViewModel model)
         {
             if (!ModelState.IsValid)
-                return BadRequestModelState();
+                return Error("Bad request");
 
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
-                ModelState.AddModelError(string.Empty, "User not found");
-                return BadRequestModelState();
+                return Error("User not found");
             }
 
-            var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, true);
-            if (result.Succeeded)
+            var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, true);
+            if (!result.Succeeded)
             {
-                ModelState.AddModelError(string.Empty, "Login error");
-                return BadRequestModelState();
+                return Error("Wrong password");
             }
 
-            var tokenResponse = _tokenService.CreateToken(user);
-
-            return Ok(tokenResponse);
+            return await Authenticate(user);
         }
 
-        [ValidateAntiForgeryToken]
         [HttpPost("[action]")]
-        public async Task<IActionResult> Register([FromBody] RegisterModel model) 
+        public async Task<ActionResult<TokenResponse>> Register([FromBody]RegisterViewModel model)
         {
             if (!ModelState.IsValid)
-                return BadRequestModelState();
+                return Error("Bad request");
 
             var user = new ApplicationUser { UserName = model.Username, Email = model.Email };
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (!result.Succeeded)
-                return BadRequest(result.Errors);
+            {
+                return Error(result.Errors.First().Description);
+            }
 
-            await _signInManager.SignInAsync(user, false);
-
-            var tokenResponse = _tokenService.CreateToken(user);
-
-            return Ok(tokenResponse);
+            return await Authenticate(user);
         }
 
-        [Authorize]
         [HttpPost("[action]")]
-        public async Task<IActionResult> Logout()
+        public async Task<ActionResult<TokenResponse>> Refresh([FromBody]TokenRequest request)
         {
-            await _signInManager.SignOutAsync();
-            return NoContent();
+            if (!ModelState.IsValid)
+            {
+                return Error("Bad request");
+            }
+
+            var result = _tokenService.ValidateRefreshToken(request.RefreshToken);
+            if (result == false)
+            {
+                return Error("Invalid refresh token");
+            }
+
+            var user = await _userManager.FindByIdAsync(request.UserId);
+            if (user == null)
+            {
+                return Error("User not found");
+            }
+            var refreshTokenClaim = (await _userManager.GetClaimsAsync(user)).First(c => c.Type == "refresh_token");
+            if(refreshTokenClaim == null)
+            {
+                return Error("Invalid refresh token");
+            }
+            if(refreshTokenClaim.Value != request.RefreshToken)
+            {
+                await Revoke(user.Id);
+            }
+
+            return await Authenticate(user);
         }
 
-        private IActionResult BadRequestModelState()
+        [HttpPost("[action]")]
+        public async Task<ActionResult> Revoke(string userId)
         {
-            IEnumerable<string> errorMessages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return BadRequest();
 
-            return BadRequest(errorMessages);
+            var refreshTokenClaim = (await _userManager.GetClaimsAsync(user)).First(c => c.Type == "refresh_token");
+            if (refreshTokenClaim == null)
+                return BadRequest();
+
+            await _userManager.RemoveClaimAsync(user, refreshTokenClaim);
+            return Ok();
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPost("[action]")]
+        public async Task<ActionResult> Logout()
+        {
+            string userId = User.FindFirstValue("id");
+            if (userId == null)
+                return Unauthorized();
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return BadRequest();
+
+            var userClaims = await _userManager.GetClaimsAsync(user);
+            await _userManager.RemoveClaimsAsync(user, userClaims.Where(c => c.Type == "refresh_token"));
+            return Ok();
+        }
+
+        private ActionResult<TokenResponse> Error(string error)
+        {
+            TokenResponse response = new TokenResponse();
+            response.ErrorMessages = new List<string> { error };
+            response.IsSuccessful = false;
+            return BadRequest(response);
+        }
+
+        private async Task<ActionResult<TokenResponse>> Authenticate(ApplicationUser user)
+        {
+            var userClaims = await _userManager.GetClaimsAsync(user);
+            if(userClaims.Any(c => c.Type == "refresh_token"))
+                await _userManager.RemoveClaimsAsync(user, userClaims.Where(c => c.Type == "refresh_token"));
+     
+            var response = await _tokenService.CreateTokenAsync(user);
+
+            List<Claim> tokenClaims = new List<Claim>
+            {
+                new Claim("refresh_token", response.RefreshToken)
+            };
+            await _userManager.AddClaimsAsync(user, tokenClaims);
+            return Ok(response);
         }
     }
 }

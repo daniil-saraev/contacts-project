@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <OpenApiReference Include="OpenAPIs\swagger.json" CodeGenerator="NSwagCSharp" Namespace="Database" ClassName="ContactsDbService">
+      <SourceUri>https://localhost:7256/swagger/v1/swagger.json</SourceUri>
+    </OpenApiReference>
+    <OpenApiReference Include="OpenAPIs\swagger1.json" CodeGenerator="NSwagCSharp" Namespace="Identity" ClassName="IdentityService">
+      <SourceUri>https://localhost:7172/swagger/v1/swagger.json</SourceUri>
+    </OpenApiReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="IdentityModel" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.ApiDescription.Client" Version="6.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="NSwag.ApiDescription.Client" Version="13.16.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj" />
+  </ItemGroup>
+
+</Project>

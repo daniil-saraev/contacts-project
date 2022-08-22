@@ -1,14 +1,12 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Core.Models.Identity;
-using IdentityServer.Extensions;
-using IdentityServer.Data;
-using IdentityServer.Services;
-using IdentityServer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Core.Constants;
+using IdentityAPI.Data;
+using IdentityAPI.Configuration;
+using IdentityAPI.Extensions;
+using IdentityAPI.Services;
+using IdentityAPI.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,9 +17,11 @@ builder.Services.AddDbContext<UserDbContext>(options =>
 
 builder.Services.AddIdentityServices();
 
-builder.Services.AddSingleton<TokenService>();
+builder.Services.AddScoped<TokenService>();
 
-builder.Configuration.Bind("Auth", new AuthConfiguration());
+AuthConfiguration configuration = new AuthConfiguration();
+builder.Configuration.Bind("JWT", configuration);
+builder.Services.AddSingleton(configuration);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
@@ -34,9 +34,9 @@ builder.Services.AddAuthentication(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters()
     {
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(new AuthConfiguration().Secret)),
-        ValidIssuer = BaseUrls.IdentityServerUrl,
-        ValidAudience = BaseUrls.ContactsDatabaseAPIUrl,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.AccessTokenSecret)),
+        ValidIssuer = configuration.Issuer,
+        ValidAudience = configuration.Audience,
         ValidateIssuerSigningKey = true,
         ValidateIssuer = true,
         ValidateAudience = true
@@ -52,25 +52,10 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var scopedProvider = scope.ServiceProvider;
-    try
-    {
-        var userManager = scopedProvider.GetRequiredService<UserManager<ApplicationUser>>();
-        var dbContext = scopedProvider.GetRequiredService<UserDbContext>();
-        await DbInitializer.InitializeAsync(userManager, dbContext);
-        app.Logger.LogInformation("DATABASE INITIALIZED");
-    }
-    catch (Exception ex)
-    {
-        app.Logger.LogError(ex, "An error occurred initializing the DB.");
-    }
-}
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
+    app.UseSwaggerUI();
     app.UseDeveloperExceptionPage();
 }
 else
@@ -82,6 +67,9 @@ else
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+
+await app.UseIdentityInitializationAsync();
+app.UseMiddleware<TokenMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapDefaultControllerRoute();

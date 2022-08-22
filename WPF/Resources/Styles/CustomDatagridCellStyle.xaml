@@ -1,0 +1,16 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style x:Key="MaterialDesignDataGridCell" BasedOn="{StaticResource MaterialDesignDataGridCell}" TargetType="{x:Type DataGridCell}">
+
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+
+        <Style.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="BorderThickness" Value="0"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+</ResourceDictionary>

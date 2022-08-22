@@ -1,4 +1,4 @@
-namespace IdentityServer.ViewModels
+namespace IdentityAPI.ViewModels
 {
     public class ErrorViewModel
     {

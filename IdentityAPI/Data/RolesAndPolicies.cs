@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace IdentityServer.Data
+namespace IdentityAPI.Data
 {
     public static class ClaimStore
     {

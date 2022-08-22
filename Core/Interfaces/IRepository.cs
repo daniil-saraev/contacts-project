@@ -3,12 +3,7 @@
 namespace Core.Interfaces
 {
     public interface IRepository<T> where T : class 
-    {
-        /// <summary>
-        /// To configure API calls.
-        /// </summary>
-        public HttpClient HttpClient { get; }
-
+    {    
         /// <summary>
         /// Returns a collection of <typeparamref name="T"/>.
         /// </summary>

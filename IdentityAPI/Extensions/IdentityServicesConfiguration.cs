@@ -1,9 +1,9 @@
 ﻿using Core.Models.Identity;
-using IdentityServer.Data;
-using IdentityServer.Services;
+using IdentityAPI.Data;
+using IdentityAPI.Services;
 using Microsoft.AspNetCore.Identity;
 
-namespace IdentityServer.Extensions
+namespace IdentityAPI.Extensions
 {
     public static class IdentityServicesConfiguration
     {
@@ -19,8 +19,6 @@ namespace IdentityServer.Extensions
 
             }).AddEntityFrameworkStores<UserDbContext>()
               .AddDefaultTokenProviders();
-
-            services.AddSingleton<AuthConfiguration>();
 
             return services;
         }

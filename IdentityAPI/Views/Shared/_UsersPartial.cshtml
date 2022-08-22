@@ -1,10 +1,6 @@
-﻿@    using Core.Constants
-@    using System.Security.Claims
-@    using IdentityAPI.Data
-
-@if (User.HasClaim(c => c == ClaimStore.AdminClaim))
+﻿@if (User.HasClaim(c => c == ClaimStore.AdminClaim))
 {
     <li class="nav-item">
-        <a class="nav-link" asp-host="@BaseUrls.IdentityServerUrl" asp-controller="Users" asp-action="Index">Users</a>
+        <a class="nav-link" asp-controller="Users" asp-action="Index">Users</a>
     </li>
 }

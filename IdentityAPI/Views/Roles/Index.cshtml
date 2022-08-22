@@ -1,5 +1,4 @@
-﻿@    using System.Security.Claims
-@model UserRolesViewModel
+﻿@model UserRolesViewModel
 
 <form asp-action="Edit" method="post">
     <fieldset class="form-group">
@@ -9,19 +8,18 @@
       {
           @if(Model.UserRoles.Contains(role))
           {
-                <input class="form-check-input" name="roles" type="checkbox" value="@role.Value" id="flexCheckChecked" checked="">
+                <input class="form-check-input" name="chosenRoles" type="checkbox" value="@role.Value" id="flexCheckChecked" checked="">
                 <label class="form-check-label" for="flexCheckChecked">
                 @role.Value
                 </label>
           }
           else
           {
-                <input class="form-check-input" name="roles" type="checkbox" value="@role.Value" id="flexCheckDefault">
+                <input class="form-check-input" name="chosenRoles" type="checkbox" value="@role.Value" id="flexCheckDefault">
                 <label class="form-check-label" for="flexCheckDefault">
                  @role.Value
                 </label>
-          }
-                
+          }              
       }          
       </div>
     </fieldset>  

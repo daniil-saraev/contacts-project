@@ -5,13 +5,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Web</RootNamespace>
+    <UserSecretsId>d1ed82f4-0c04-4b02-974c-3d138ca254c5</UserSecretsId>
   </PropertyGroup>
-
-  <ItemGroup>
-    <OpenApiReference Include="OpenAPIs\swagger.json" CodeGenerator="NSwagCSharp" Namespace="ApiServices" ClassName="ContactsDbApiService">
-      <SourceUri>https://localhost:7256/swagger/v1/swagger.json</SourceUri>
-    </OpenApiReference>
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="IdentityModel" Version="6.0.0" />
@@ -40,6 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ApiServices\ApiServices.csproj" />
     <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>
 

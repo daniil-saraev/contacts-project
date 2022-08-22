@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace IdentityServer.Data
+namespace IdentityAPI.Data
 {
     public class UserDbContext : IdentityDbContext<ApplicationUser, IdentityRole, string>
     {

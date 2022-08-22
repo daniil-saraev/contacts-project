@@ -1,9 +1,7 @@
 ﻿using Core.Models.Identity;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
-namespace IdentityServer.Data
+namespace IdentityAPI.Data
 {
     public static class DbInitializer
     {

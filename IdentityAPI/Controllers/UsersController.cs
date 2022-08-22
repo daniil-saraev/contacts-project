@@ -2,11 +2,12 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Core.Models.Identity;
-using IdentityServer.Data;
+using IdentityAPI.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
-namespace IdentityServer.Controllers
+namespace IdentityAPI.Controllers
 {
-    [Authorize(Policy = Policies.RequireAdmin)]
+    [Authorize(Policy = Policies.RequireAdmin, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UsersController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;

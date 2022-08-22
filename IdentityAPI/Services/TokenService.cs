@@ -1,41 +1,85 @@
-﻿using Core.Constants;
-using Core.Models.Identity;
-using IdentityServer.Models;
+﻿using Core.Models.Identity;
+using IdentityAPI.Configuration;
+using IdentityAPI.Responses;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 
-namespace IdentityServer.Services
+namespace IdentityAPI.Services
 {
     public class TokenService
     {
-        private readonly UserManager<ApplicationUser> _userManager;
         private readonly AuthConfiguration _configuration;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public TokenService(UserManager<ApplicationUser> userManager, AuthConfiguration configuration)
+        public TokenService(AuthConfiguration configuration, UserManager<ApplicationUser> userManager)
         {
-            _userManager = userManager;
             _configuration = configuration;
-        }   
-        
-        public async Task<TokenResponseModel> CreateToken(ApplicationUser user)
-        {
-            SecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.Secret));
-            SigningCredentials credentials = new SigningCredentials(key, SecurityAlgorithms.Sha256);
+            _userManager = userManager;
+        }
 
-            var claims = await _userManager.GetClaimsAsync(user);
+        public async Task<TokenResponse> CreateTokenAsync(ApplicationUser user)
+        {
+            List<Claim> claims = new List<Claim>()
+            {
+                new Claim("id", user.Id.ToString()),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Name, user.UserName),
+            };
+
+            claims.AddRange(await _userManager.GetClaimsAsync(user));
+
+            var accessToken = GenerateToken(_configuration.AccessTokenSecret, _configuration.AccessTokenExpirationMinutes, claims);
+            var refreshToken = GenerateToken(_configuration.RefreshTokenSecret, _configuration.RefreshTokenExpirationMinutes, null);
+            return new TokenResponse 
+            { 
+                AccessToken = accessToken,
+                RefreshToken = refreshToken,
+                IsSuccessful = true 
+            };
+        }
+
+        public bool ValidateRefreshToken(string token)
+        {
+            try
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.ASCII.GetBytes(_configuration.RefreshTokenSecret);
+                tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidIssuer = _configuration.Issuer,
+                    ValidAudience = _configuration.Audience,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                }, out SecurityToken validatedToken);
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        private string GenerateToken(string secret, int expirationMinutes,IEnumerable<Claim>? claims)
+        {
+            SecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
+            SigningCredentials credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             JwtSecurityToken token = new JwtSecurityToken(
-                BaseUrls.IdentityServerUrl,
-                BaseUrls.ContactsDatabaseAPIUrl,
+                _configuration.Issuer,
+                _configuration.Audience,
                 claims,
                 DateTime.UtcNow,
-                DateTime.UtcNow.AddMinutes(_configuration.TokenExpirationMinutes),
+                DateTime.UtcNow.AddMinutes(expirationMinutes),
                 credentials);
 
-            var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
-            return new TokenResponseModel { AccessToken = accessToken };
+            var stringToken = new JwtSecurityTokenHandler().WriteToken(token);
+            return stringToken;
         }
     }
 }

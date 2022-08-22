@@ -1,26 +1,27 @@
 ﻿using Core.Models.Identity;
-using IdentityServer.Data;
-using IdentityServer.ViewModels;
+using IdentityAPI.Data;
+using IdentityAPI.ViewModels;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
-namespace IdentityServer.Controllers
+namespace IdentityAPI.Controllers
 {
-    [Authorize(Policy = Policies.RequireAdmin)]
+    [Authorize(Policy = Policies.RequireAdmin, AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public partial class RolesController : Controller
     {
         private readonly UserDbContext _dbContext;
         private readonly UserManager<ApplicationUser> _userManager;
-
-        public UserRolesViewModel RolesViewModel { get; set; }
 
         public RolesController(UserManager<ApplicationUser> userManager, UserDbContext dbContext)
         {
             _userManager = userManager;
             _dbContext = dbContext;
         }
+
+        public UserRolesViewModel rolesViewModel { get; set; }
 
         [HttpGet]
         public async Task<IActionResult> Index(string id)
@@ -30,28 +31,28 @@ namespace IdentityServer.Controllers
             {
                 var claims = await _userManager.GetClaimsAsync(user);
                 claims = claims.Where(c => c.Type == ClaimTypes.Role).ToList();
-
-                var RolesViewModel = new UserRolesViewModel
+                
+                rolesViewModel = new UserRolesViewModel
                 {
                     User = user,
                     AllRoles = _dbContext.UserClaims.Select(c => c.ToClaim()).ToList(),
-                    UserRoles = (List<Claim>)claims,
+                    UserRoles = (List<Claim>)claims
                 };
-                return View(RolesViewModel);
+                return View(rolesViewModel);
             }
             return NotFound();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(List<Claim> roles)
+        public async Task<IActionResult> Edit(List<Claim> chosenRoles)
         {
-            var userRoles = RolesViewModel.UserRoles;
-            List<Claim> allRoles = RolesViewModel.AllRoles;
-            var addedRoles = roles.Except(userRoles);
-            var removedRoles = allRoles.Except(roles);
+            var userRoles = rolesViewModel.UserRoles;
+            List<Claim> allRoles = rolesViewModel.AllRoles;
+            var addedRoles = chosenRoles.Except(userRoles);
+            var removedRoles = allRoles.Except(chosenRoles);
 
-            await _userManager.AddClaimsAsync(RolesViewModel.User, addedRoles);
-            await _userManager.RemoveClaimsAsync(RolesViewModel.User, removedRoles);
+            await _userManager.AddClaimsAsync(rolesViewModel.User, addedRoles);
+            await _userManager.RemoveClaimsAsync(rolesViewModel.User, removedRoles);
 
             return RedirectToAction("Index", "Users");
         }

@@ -1,14 +1,16 @@
-using Core.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
-using Core.Constants;
 using ContactsDatabaseAPI.Data;
 using System.Text;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Authentication;
+using ContactsDatabaseAPI.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,16 +24,17 @@ builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-.AddJwtBearer(options =>
+.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
 {
+    options.SaveToken = true;
     options.TokenValidationParameters = new TokenValidationParameters()
     {
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Secret"])),
-        ValidIssuer = BaseUrls.IdentityServerUrl,
-        ValidAudience = BaseUrls.ContactsDatabaseAPIUrl,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"])),
+        ValidIssuer = builder.Configuration["JWT:Issuer"],
+        ValidAudience = builder.Configuration["JWT:Audience"],
         ValidateIssuerSigningKey = true,
         ValidateIssuer = true,
-        ValidateAudience = true
+        ValidateAudience = true,        
     };
 });
 builder.Services.AddAuthorization();
@@ -39,17 +42,26 @@ builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
+builder.Services.AddSwaggerGen(options =>
 {
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var path = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    c.IncludeXmlComments(path);
+    options.IncludeXmlComments(path);
 
-    c.CustomOperationIds(info =>
+    options.CustomOperationIds(info =>
     {
         return info.TryGetMethodInfo(out MethodInfo methodInfo) ? methodInfo.Name : null;
     });
-    c.OperationFilter<SecurityRequirementsOperationFilter>();
+    options.OperationFilter<SecurityRequirementsOperationFilter>();
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 1safsfsdfdfd\"",
+    });
 });
 
 var app = builder.Build();
@@ -60,12 +72,13 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var dbContext = scopedProvider.GetRequiredService<ApplicationDbContext>();
+        //await dbContext.Database.EnsureDeletedAsync();
         await dbContext.Database.EnsureCreatedAsync();
         app.Logger.LogInformation("DATABASE INITIALIZED");
     }
     catch (Exception ex)
     {
-        app.Logger.LogError(ex, "An error occurred initializing the DB.");
+        app.Logger.LogError(ex, ex.Message);
     }
 }
 
@@ -78,8 +91,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
-
 app.UseAuthorization();
+//app.UseMiddleware<UserIdMiddleware>();
 
 app.MapControllers();
 

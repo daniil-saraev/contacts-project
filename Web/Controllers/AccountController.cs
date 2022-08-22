@@ -1,66 +1,146 @@
 ﻿using Core.Constants;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using IdentityModel.Client;
-using Core.Interfaces;
-using Web.Services;
-using ApiServices;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using IdentityApi;
 
 namespace Web.Controllers
-{ 
+{
     [AllowAnonymous]
     public class AccountController : Controller
     {
-        private readonly ITokenService _tokenService;
-        private readonly IRepository<Contact> _contactsDb;
+        private readonly IdentityApiService _identityApiService;
+        private readonly ILogger<AccountController> _logger;
 
-        public AccountController(ITokenService tokenService, IRepository<Contact> contactsDb)
+        public AccountController(IdentityApiService identityApiService, ILogger<AccountController> logger)
         {
-            _tokenService = tokenService;
-            _contactsDb = contactsDb;
+            _identityApiService = identityApiService;
+            _logger = logger;
         }
 
         [HttpGet]
         public IActionResult Login(string returnUrl)
-        {        
+        {
             returnUrl ??= BaseUrls.WebClientUrl;
 
             if (User.Identity.IsAuthenticated)
-                return Redirect(returnUrl); 
+                return Redirect(returnUrl);
 
-            return Challenge(new AuthenticationProperties
+            LoginViewModel model = new LoginViewModel
             {
-                RedirectUri = returnUrl
-            },
-            OpenIdConnectDefaults.AuthenticationScheme);;
+                ReturnUrl = returnUrl
+            };
+            return View(model);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Token() 
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
-            string code = Request.Query["code"];
-            code ??= Request.Form["code"];
-            var token = await _tokenService.GetTokenAsync(HttpContext);
-            _contactsDb.HttpClient.SetBearerToken(token);
-            return RedirectToAction("Index", "Home");
-        }
+            if(!ModelState.IsValid)
+                return View(model);
 
-        [HttpGet]
-        public IActionResult Logout()
-        {
-            if (User.Identity.IsAuthenticated)
+            TokenResponse response = new TokenResponse();
+            try
             {
-                return SignOut(new AuthenticationProperties
-                {
-                    RedirectUri = BaseUrls.WebClientUrl
-                },
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                OpenIdConnectDefaults.AuthenticationScheme);
+                response = await _identityApiService.LoginAsync(model);
             }
-            return RedirectToAction("Index", "Home");
-        }       
+            catch(Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
+            if(!response.IsSuccessful)
+            {
+                foreach (string error in response.ErrorMessages)
+                    ModelState.AddModelError(string.Empty, error);
+                return View(model);
+            }
+
+            Authenticate(model.RememberMe, response);
+
+            return Redirect(model.ReturnUrl);
+        }
+
+        [HttpGet]
+        public IActionResult Register(string returnUrl)
+        {
+            returnUrl ??= BaseUrls.WebClientUrl;
+
+            if (User.Identity.IsAuthenticated)
+                return Redirect(returnUrl);
+
+            RegisterViewModel model = new RegisterViewModel
+            {
+                ReturnUrl = returnUrl
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register(RegisterViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            TokenResponse response = new TokenResponse();
+            try
+            {
+                response = await _identityApiService.RegisterAsync(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
+            if (!response.IsSuccessful)
+            {
+                foreach (string error in response.ErrorMessages)
+                    ModelState.AddModelError(string.Empty, error);
+                return View(model);
+            }
+
+            Authenticate(true, response);
+
+            return Redirect(model.ReturnUrl);
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            HttpContext.Response.Cookies.Delete("access_token");
+            HttpContext.Response.Cookies.Delete("refresh_token");
+            HttpContext.Session.Remove("access_token");
+
+            try
+            {
+                await _identityApiService.LogoutAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+            }
+
+            return SignOut(new AuthenticationProperties
+            {
+                RedirectUri = Url.Action("Index", "Home")
+            }, CookieAuthenticationDefaults.AuthenticationScheme);
+        }
+
+        private void Authenticate(bool isPersistent, TokenResponse response)
+        {
+            if (isPersistent)
+            {
+                HttpContext.Response.Cookies.Append("access_token", response.AccessToken);
+                HttpContext.Response.Cookies.Append("refresh_token", response.RefreshToken);
+            }
+            else
+            {
+                HttpContext.Session.SetString("access_token", response.AccessToken);
+            }
+        }
     }
 }

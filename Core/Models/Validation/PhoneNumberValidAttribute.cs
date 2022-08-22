@@ -8,9 +8,7 @@ namespace Core.Models.Validation
         {
             if (number == null)
                 return false;
-            if (((string)number).Length != 12)
-                return false;
-            if (((string)number)[0] != '+')
+            if (((string)number).Length > 12)
                 return false;
             if (!((string)number).Substring(1).All(c => char.IsDigit(c)))
                 return false;

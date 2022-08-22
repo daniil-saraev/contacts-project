@@ -12,7 +12,6 @@ namespace Core.Models
         [Required]
         public string UserId { get; set; }
 
-        [DisplayName("first name")]
         [Required]
         public string FirstName { get; set; }
 
@@ -20,7 +19,6 @@ namespace Core.Models
 
         public string? LastName { get; set; }
 
-        [DisplayName("phone number")]
         [Required]
         [PhoneNumberValid]
         public string PhoneNumber { get; set; }

@@ -1,0 +1,88 @@
+﻿<UserControl x:Class="Desktop.Views.Contacts.HomeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Desktop.Views.Contacts"
+             xmlns:materialDesign = "http://materialdesigninxaml.net/winfx/xaml/themes" 
+             xmlns:contacts="clr-namespace:Desktop.ViewModels.Contacts" 
+             d:DataContext="{d:DesignInstance Type=contacts:HomeViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="500"
+             TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+             Background="{x:Null}"
+             TextElement.FontWeight="Medium"
+             TextElement.FontSize="14"
+             FontFamily="{materialDesign:MaterialDesignFont}">
+
+    <Border Background="{DynamicResource MaterialDesignPaper}">
+        <Grid>
+            <StackPanel>
+                
+                <Button Width="25"
+                        Height="25"        
+                        Background="Transparent"
+                        BorderThickness="0"
+                        FontWeight="Bold"
+                        Style="{DynamicResource MaterialDesignToolForegroundButton}" 
+                        HorizontalAlignment="Left" 
+                        VerticalAlignment="Top"
+                        Command="{Binding NavigateToAddView}">
+
+                    <Image Source="/Resources/Icons/plus.png" Width="20" Height="20"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Button>
+
+                <DataGrid Style="{DynamicResource MaterialDesignDataGrid}"
+                          CellStyle="{DynamicResource MaterialDesignDataGridCell}"
+                          ItemsSource="{Binding Contacts}"
+                          HorizontalContentAlignment="Stretch"
+                          HorizontalAlignment="Center"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                          ColumnHeaderStyle="{DynamicResource MaterialDesignDataGridColumnHeader}" 
+                          CanUserResizeRows="False" 
+                          CanUserResizeColumns="False" 
+                          CanUserReorderColumns="False" 
+                          CanUserDeleteRows="False" 
+                          CanUserAddRows="False" 
+                          MinColumnWidth="200" 
+                          AutoGenerateColumns="False"
+                          SelectedItem="{Binding SelectedContact}"
+                          IsReadOnly="True"
+                          SelectionUnit="FullRow">
+
+                    <DataGrid.Columns>
+                        <materialDesign:DataGridTextColumn Binding="{Binding FullName}"
+                                            Header="Name" IsReadOnly="True"/>
+
+
+                        <materialDesign:DataGridTextColumn Binding="{Binding PhoneNumber}"
+                                            Header="Phone number" IsReadOnly="True"/>
+
+
+                        <DataGridTemplateColumn>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <materialDesign:PopupBox>
+                                        <StackPanel DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:HomeView}}}">
+                                            <Button Style="{DynamicResource MaterialDesignFlatDarkButton}"
+                                                    Content="Info"
+                                                    Command="{Binding NavigateToInfoView}"/>
+                                            <Button Style="{DynamicResource MaterialDesignFlatDarkButton}"
+                                                    Content="Edit"
+                                                    Command="{Binding NavigateToEditView}"/>
+                                            <Button Style="{DynamicResource MaterialDesignFlatDarkButton}"
+                                                    Content="Delete"
+                                                    Command="{Binding DeleteContact}"/>
+                                        </StackPanel>
+                                    </materialDesign:PopupBox>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+                
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>
