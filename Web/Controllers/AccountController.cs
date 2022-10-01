@@ -1,20 +1,21 @@
-﻿using Core.Constants;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using IdentityApi;
+using Core.Constants;
+using ApiServices.Interfaces;
 
 namespace Web.Controllers
 {
     [AllowAnonymous]
     public class AccountController : Controller
     {
-        private readonly IdentityApiService _identityApiService;
+        private readonly IIdentityService _identityApiService;
         private readonly ILogger<AccountController> _logger;
 
-        public AccountController(IdentityApiService identityApiService, ILogger<AccountController> logger)
+        public AccountController(IIdentityService identityApiService, ILogger<AccountController> logger)
         {
             _identityApiService = identityApiService;
             _logger = logger;
@@ -28,7 +29,7 @@ namespace Web.Controllers
             if (User.Identity.IsAuthenticated)
                 return Redirect(returnUrl);
 
-            LoginViewModel model = new LoginViewModel
+            LoginRequest model = new LoginRequest
             {
                 ReturnUrl = returnUrl
             };
@@ -36,7 +37,7 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> Login(LoginRequest model)
         {
             if(!ModelState.IsValid)
                 return View(model);
@@ -58,7 +59,10 @@ namespace Web.Controllers
                 return View(model);
             }
 
-            Authenticate(model.RememberMe, response);
+            if (model.RememberMe == true)
+                AuthenticatePersistent(response);
+            else
+                AuthenticateNonPersistent(response);
 
             return Redirect(model.ReturnUrl);
         }
@@ -71,7 +75,7 @@ namespace Web.Controllers
             if (User.Identity.IsAuthenticated)
                 return Redirect(returnUrl);
 
-            RegisterViewModel model = new RegisterViewModel
+            RegisterRequest model = new RegisterRequest
             {
                 ReturnUrl = returnUrl
             };
@@ -80,7 +84,7 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> Register(RegisterRequest model)
         {
             if (!ModelState.IsValid)
                 return View(model);
@@ -102,7 +106,7 @@ namespace Web.Controllers
                 return View(model);
             }
 
-            Authenticate(true, response);
+            AuthenticatePersistent(response);
 
             return Redirect(model.ReturnUrl);
         }
@@ -130,17 +134,15 @@ namespace Web.Controllers
             }, CookieAuthenticationDefaults.AuthenticationScheme);
         }
 
-        private void Authenticate(bool isPersistent, TokenResponse response)
+        private void AuthenticatePersistent(TokenResponse response)
         {
-            if (isPersistent)
-            {
-                HttpContext.Response.Cookies.Append("access_token", response.AccessToken);
-                HttpContext.Response.Cookies.Append("refresh_token", response.RefreshToken);
-            }
-            else
-            {
-                HttpContext.Session.SetString("access_token", response.AccessToken);
-            }
+            HttpContext.Response.Cookies.Append("access_token", response.AccessToken);
+            HttpContext.Response.Cookies.Append("refresh_token", response.RefreshToken);
+        }
+
+        private void AuthenticateNonPersistent(TokenResponse response)
+        {
+            HttpContext.Session.SetString("access_token", response.AccessToken);
         }
     }
 }

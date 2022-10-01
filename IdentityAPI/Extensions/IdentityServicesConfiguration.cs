@@ -1,5 +1,5 @@
-﻿using Core.Models.Identity;
-using IdentityAPI.Data;
+﻿using IdentityAPI.Data;
+using IdentityAPI.Identity;
 using IdentityAPI.Services;
 using Microsoft.AspNetCore.Identity;
 

@@ -1,19 +1,19 @@
 ﻿using DatabaseApi;
 using Core.Constants;
-using Core.Interfaces;
-using IdentityApi;
+using ApiServices.Interfaces;
+using ApiServices.Services;
 
 namespace Web.Extentions
 {
-	public static class ApiServicesConfiguration
+    public static class ApiServicesConfiguration
 	{
 		public static IServiceCollection AddApiServices(this IServiceCollection services)
 		{
-			IdentityApiService identityApiService = new IdentityApiService(BaseUrls.IdentityServerUrl, new HttpClient());
-			services.AddSingleton(identityApiService);
+			IdentityService identityApiService = new IdentityService(BaseUrls.IdentityApiUrl);
+			services.AddSingleton<IIdentityService>(identityApiService);
 			services.AddSingleton<IApiService>(identityApiService);
 
-			ContactsDbApiService contactsDbApiService = new ContactsDbApiService(BaseUrls.ContactsDatabaseAPIUrl, new HttpClient());
+			ContactsDatabaseService contactsDbApiService = new ContactsDatabaseService(BaseUrls.ContactsDatabaseApiUrl);
 			services.AddSingleton<IRepository<Contact>>(contactsDbApiService);
 			services.AddSingleton<IApiService>(contactsDbApiService);
 

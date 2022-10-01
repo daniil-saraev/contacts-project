@@ -1,36 +1,20 @@
-﻿using System;
-using Desktop.Services.ExceptionHandler;
-using Desktop.Data;
-using Desktop.Queries;
-using System.Collections.Generic;
-using Desktop.ViewModels.Contacts;
-using Desktop.Queries.Contacts;
-using NuGet.Packaging;
+﻿using Desktop.Stores;
+using System;
 
 namespace Desktop.Commands.Contacts
 {
     public class LoadContactsCommand : BaseCommand
     {
-        private ContactsStore _store;
-        private IQuery<IEnumerable<ContactViewModel>> _loadContacts;
+        private readonly ContactsStore _contactsStore;
 
-        public LoadContactsCommand(ContactsStore contacts, Func<object?, bool>? canExecuteCustom = null) : base(canExecuteCustom)
+        public LoadContactsCommand(Func<object?, bool>? canExecuteCustom = null) : base(canExecuteCustom)
         {
-            _store = contacts;
-            _loadContacts = new GetAllContactsQuery();
+            _contactsStore = ContactsStore.GetInstance();
         }
 
         public override async void Execute(object? parameter)
         {
-            try
-            {
-                var contacts = await _loadContacts.Execute();
-                _store.Contacts.AddRange(contacts);
-            }
-            catch (Exception ex)
-            {
-                exceptionHandler?.HandleException(new ExceptionContext(ex));
-            }
+            await _contactsStore.LoadContactsAsync();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using DatabaseApi;
+﻿using ApiServices.Interfaces;
+using DatabaseApi;
 using IdentityApi;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
@@ -11,10 +12,10 @@ namespace Web.Middleware
     public class RefreshTokenMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IdentityApiService _identityApi;
+        private readonly IIdentityService _identityApi;
         private readonly AuthConfiguration _configuration;
 
-        public RefreshTokenMiddleware(RequestDelegate next, IdentityApiService identityApi, AuthConfiguration configuration)
+        public RefreshTokenMiddleware(RequestDelegate next, IIdentityService identityApi, AuthConfiguration configuration)
         {
             _next = next;
             _identityApi = identityApi;
@@ -50,7 +51,7 @@ namespace Web.Middleware
             if (refreshToken == null || userId == null)
                 return null;
 
-            TokenRequest tokenRequest = new TokenRequest()
+            RefreshTokenRequest tokenRequest = new RefreshTokenRequest()
             {
                 UserId = userId,
                 RefreshToken = refreshToken

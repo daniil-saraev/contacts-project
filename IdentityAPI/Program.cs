@@ -23,7 +23,7 @@ AuthConfiguration configuration = new AuthConfiguration();
 builder.Configuration.Bind("JWT", configuration);
 builder.Services.AddSingleton(configuration);
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddAuthentication(options =>

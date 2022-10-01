@@ -29,7 +29,7 @@ namespace ContactsDatabaseAPI.Controllers
         /// Returns a collection of all contacts in DB.
         /// </summary>
         [HttpGet("/getall")]
-        public async Task<IEnumerable<Contact>?> GetAll()
+        public async Task<IEnumerable<Contact>?> GetAllAsync()
         {
             if (_dbContext.Contacts != null)
                 return await _dbContext.Contacts.Where(c => c.UserId == _userId).ToListAsync();
@@ -40,7 +40,7 @@ namespace ContactsDatabaseAPI.Controllers
         /// Returns a contact by id if not null.
         /// </summary>
         [HttpGet("/get/{contactId}")]
-        public async Task<Contact?> GetAsync(int contactId)
+        public async Task<Contact?> GetAsync(string contactId)
         {
             var contact = await _dbContext.Contacts.FindAsync(contactId);
             if (contact != null && contact.UserId == _userId)

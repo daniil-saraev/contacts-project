@@ -1,4 +1,4 @@
-﻿using Desktop.Services.ExceptionHandler;
+﻿using Desktop.Services.ExceptionHandlers;
 using System;
 using System.Windows.Input;
 
@@ -8,7 +8,6 @@ namespace Desktop.Commands
     {
         public event EventHandler? CanExecuteChanged;
         protected Func<object?, bool>? _canExecuteCustom;
-        protected static IExceptionHandler? exceptionHandler;
 
         protected BaseCommand(Func<object?, bool>? canExecuteCustom = null)
         {
@@ -22,14 +21,9 @@ namespace Desktop.Commands
 
         public abstract void Execute(object? parameter);
 
-        protected virtual void OnCanExecutedChanged()
+        protected virtual void OnCanExecuteChanged()
         {
             CanExecuteChanged?.Invoke(this, new EventArgs());
-        }
-
-        public static void SetExceptionHandler(IExceptionHandler exceptionHandler)
-        {
-            BaseCommand.exceptionHandler = exceptionHandler;
         }
     }
 }

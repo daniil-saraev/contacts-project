@@ -5,11 +5,11 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>Resources\Icons\app.ico</ApplicationIcon>
   </PropertyGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\ApiServices\ApiServices.csproj" />
-		<ProjectReference Include="..\Core\Core.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -24,12 +24,20 @@
 	</ItemGroup>
 
 	<ItemGroup>
+    <None Remove="Resources\Icons\app.png" />
+    <None Remove="Resources\Icons\back.png" />
     <None Remove="Resources\Icons\close.png" />
     <None Remove="Resources\Icons\plus.png" />
     <None Remove="Resources\Icons\user.png" />
   </ItemGroup>
 
+	<ItemGroup>
+	  <Content Include="Resources\Icons\app.ico" />
+	</ItemGroup>
+
   <ItemGroup>
+    <Resource Include="Resources\Icons\app.png" />
+    <Resource Include="Resources\Icons\back.png" />
     <Resource Include="Resources\Icons\close.png" />
     <Resource Include="Resources\Icons\plus.png" />
     <Resource Include="Resources\Icons\user.png" />
@@ -44,7 +52,7 @@
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Update="Views\Contacts\AddContactView.xaml">
+    <Page Update="Views\Contacts\ContactAddView.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -52,7 +60,7 @@
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Update="Views\Contacts\EditContactView.xaml">
+    <Page Update="Views\Contacts\ContactEditView.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -67,7 +75,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\Account\" />
+    <Folder Include="Exceptions\" />
   </ItemGroup>
 
 </Project>

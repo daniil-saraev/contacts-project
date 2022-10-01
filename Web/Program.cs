@@ -1,12 +1,11 @@
 using Web.Extentions;
-using Core.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Net;
 using Web.Configuration;
-using DatabaseApi;
 using IdentityApi;
+using ApiServices.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -72,7 +71,7 @@ app.UseSession();
 app.UseToken(app.Services.GetServices<IApiService>());
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseRefreshToken(app.Services.GetRequiredService<IdentityApiService>(), configuration);
+app.UseRefreshToken(app.Services.GetRequiredService<IIdentityService>(), configuration);
 
 app.MapDefaultControllerRoute();
 

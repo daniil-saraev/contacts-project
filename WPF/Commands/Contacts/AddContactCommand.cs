@@ -1,40 +1,43 @@
-﻿using Core.Interfaces;
-using System;
-using Desktop.Factories;
-using Desktop.Commands;
-using Desktop.Services;
+﻿using System;
 using Desktop.ViewModels.Contacts;
-using Desktop.Services.ExceptionHandler;
-using DatabaseApi;
+using Desktop.Services.ExceptionHandlers;
+using System.Windows.Input;
+using Desktop.Stores;
 
 namespace Desktop.Commands.Contacts
 {
     public class AddContactCommand : BaseCommand
     {
-        private readonly IRepository<Contact> _contactsDb;
-        private readonly ContactViewModel? _contactViewModel;
+        private readonly ContactsStore _contactStore;
+        private readonly ContactViewModel _newContactViewModel;
+        private readonly ICommand? _returnCommand;
 
-        public AddContactCommand(ContactViewModel contactViewModel, Func<object?, bool>? canExecuteCustom = null) : base(canExecuteCustom)
+        public AddContactCommand(ContactViewModel newContactViewModel, 
+                                 ICommand? returnCommand, Func<object?, bool>? canExecuteCustom = null) : base(canExecuteCustom)
         {
-            _contactsDb = RepositoryService.GetRepository();
-            _contactViewModel = contactViewModel;
+            _contactStore = ContactsStore.GetInstance();
+            _newContactViewModel = newContactViewModel;
+            _returnCommand = returnCommand;
+            _newContactViewModel.ErrorsChanged += NewContactViewModel_ErrorsChanged;
+        }
+
+        private void NewContactViewModel_ErrorsChanged(object? sender, System.ComponentModel.DataErrorsChangedEventArgs e)
+        {
+            OnCanExecuteChanged();
         }
 
         public override bool CanExecute(object? parameter)
         {
-            return base.CanExecute(parameter) && _contactViewModel != null;
+            return base.CanExecute(parameter) && _newContactViewModel.GetContact() != null && !_newContactViewModel.HasErrors;
         }
 
-        public async override void Execute(object? parameter)
+        public override async void Execute(object? parameter)
         {
-            try
-            {
-                await _contactsDb.AddAsync(ContactMVMFactory.GetContactModel(_contactViewModel));
-            }
-            catch (Exception ex)
-            {
-                exceptionHandler?.HandleException(new ExceptionContext(ex));
-            }
+            _newContactViewModel.ValidateModel();
+            if (_newContactViewModel.HasErrors)
+                return;
+            await _contactStore.AddContactAsync(_newContactViewModel.GetContact());
+            _returnCommand?.Execute(null);
         }
     }
 }

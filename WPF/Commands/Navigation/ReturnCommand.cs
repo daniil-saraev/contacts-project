@@ -1,27 +1,27 @@
 ﻿using Desktop.Commands;
-using Desktop.Services;
+using Desktop.Services.Navigation;
 using System;
 
 namespace Desktop.Commands.Navigation
 {
     public class ReturnCommand : BaseCommand
     {
-        private readonly NavigationService _navigation;
+        private readonly NavigationService _navigationService;
 
         public ReturnCommand(Func<object?, bool>? canExecuteCustom = null) : base(canExecuteCustom)
         {
-            _navigation = NavigationService.GetNavigationService();
+            _navigationService = NavigationService.GetNavigationService();
 
         }
 
         public override void Execute(object? parameter)
         {
-            _navigation.Return();
+            _navigationService.Return();
         }
 
         public override bool CanExecute(object? parameter)
         {
-            return base.CanExecute(parameter) && _navigation.CanReturn;
+            return base.CanExecute(parameter) && _navigationService.CanReturn;
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Core.Models.Validation;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Core.Models
@@ -7,7 +6,7 @@ namespace Core.Models
     public class Contact
     {
         [Key]
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         [Required]
         public string UserId { get; set; }
@@ -26,5 +25,7 @@ namespace Core.Models
         public string? Address { get; set; }
 
         public string? Description { get; set; }
+
+        public DateTimeOffset LastChanged { get; set; }
     }
 }

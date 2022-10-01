@@ -11,17 +11,17 @@
         xmlns:viewmodels="clr-namespace:Desktop.ViewModels" 
         d:DataContext="{d:DesignData Type=viewmodels:MainViewModel}"
         mc:Ignorable="d"
-        Height="600" Width="500"
+        Icon="/Resources/Icons/app.png"
+        Height="500" Width="400"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         ResizeMode="NoResize"
         AllowsTransparency="True"
-        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         Background="{x:Null}"
         TextElement.FontWeight="Medium"
         TextElement.FontSize="14"
-        FontFamily="{materialDesign:MaterialDesignFont}">
-
+        FontFamily="Segoe UI">
+    
     <Border Background="{DynamicResource MaterialDesignPaper}"
             CornerRadius="10">
 
@@ -46,7 +46,7 @@
                                 BorderThickness="0"
                                 FontWeight="Bold"
                                 Command="{Binding NavigateToAccountView}"
-                                Style="{DynamicResource MaterialDesignToolForegroundButton}">
+                                Style="{DynamicResource MaterialDesignIconButton}">
                             <Image Source="/Resources/Icons/user.png" Width="20" Height="20"
                                    HorizontalAlignment="Center" VerticalAlignment="Center" 
                                    Margin="-5,-5,-5,-5"/>
@@ -57,7 +57,7 @@
                                 Background="Transparent"
                                 BorderThickness="0"
                                 FontWeight="Bold"
-                                Style="{DynamicResource MaterialDesignToolForegroundButton}" 
+                                Style="{DynamicResource MaterialDesignIconButton}" 
                                 Click="CloseButtonClick">
 
                             <Image Source="/Resources/Icons/close.png" Width="20" Height="20" 
@@ -69,9 +69,8 @@
                                 HorizontalAlignment="Left"
                                 Grid.Column="0">
                         <Label Content="Contacts"
-                               Style="{DynamicResource MaterialDesignLabel}" FontSize="14">
-                            
-                        </Label>
+                               Style="{DynamicResource MaterialDesignLabel}" FontSize="15"
+                               Foreground="#56cc9d"/>
 
                     </StackPanel>
                 </Grid>
@@ -84,16 +83,22 @@
                             <contactviews:HomeView/>
                         </DataTemplate>
                         <DataTemplate DataType="{x:Type contactviewmodels:ContactAddViewModel}">
-                            <contactviews:AddContactView/>
+                            <contactviews:ContactAddView/>
                         </DataTemplate>
                         <DataTemplate DataType="{x:Type contactviewmodels:ContactEditViewModel}">
-                            <contactviews:EditContactView/>
+                            <contactviews:ContactEditView/>
                         </DataTemplate>
                         <DataTemplate DataType="{x:Type contactviewmodels:ContactInfoViewModel}">
                             <contactviews:ContactInfoView/>
                         </DataTemplate>
                         <DataTemplate DataType="{x:Type accountviewmodels:LoginViewModel}">
                             <accountviews:LoginView/> 
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type accountviewmodels:RegisterViewModel}">
+                            <accountviews:RegisterView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type accountviewmodels:AccountViewModel}">
+                            <accountviews:AccountView/>
                         </DataTemplate>
                     </ContentControl.Resources>
                 </ContentControl>

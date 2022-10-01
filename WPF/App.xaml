@@ -10,6 +10,9 @@
                 <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="DeepPurple" SecondaryColor="Lime" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
                 <ResourceDictionary Source="./Resources/Styles/CustomDatagridCellStyle.xaml"/>
+                <ResourceDictionary Source="./Resources/Styles/DatagridHeaderTextColor.xaml"/>
+                <ResourceDictionary Source="./Resources/Styles/CustomTextBox.xaml"/>
+                <ResourceDictionary Source="./Resources/Styles/CustomButtonStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

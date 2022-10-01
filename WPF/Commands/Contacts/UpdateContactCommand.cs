@@ -1,40 +1,45 @@
-﻿using DatabaseApi;
-using Core.Interfaces;
-using System;
-using Desktop.Factories;
-using Desktop.Commands;
-using Desktop.Services;
+﻿using System;
+using System.Windows.Input;
 using Desktop.ViewModels.Contacts;
-using Desktop.Services.ExceptionHandler;
+using Desktop.Stores;
 
 namespace Desktop.Commands.Contacts
 {
     public class UpdateContactCommand : BaseCommand
     {
-        private readonly IRepository<Contact> _contactsDb;
-        private readonly ContactViewModel? _contactViewModel;
+        private readonly ContactsStore _contactsStore;
+        private readonly SelectedContact _currentContactStore;
+        private readonly ICommand? _returnCommand;
+        private readonly ContactViewModel _editedContact;
 
-        public UpdateContactCommand(ContactViewModel? contactViewModel, Func<object?, bool>? canExecuteCustom = null) : base(canExecuteCustom)
+        public UpdateContactCommand(SelectedContact currentContactStore, ContactViewModel editedContact, 
+                                    ICommand? returnCommand, Func<object?, bool>? canExecuteCustom = null) : base(canExecuteCustom)
         {
-            _contactsDb = RepositoryService.GetRepository();
-            _contactViewModel = contactViewModel;
+            _contactsStore = ContactsStore.GetInstance();
+            _currentContactStore = currentContactStore;
+            _editedContact = editedContact;
+            _returnCommand = returnCommand;
+            _editedContact.ErrorsChanged += EditedContact_ErrorsChanged;
+        }
+
+        private void EditedContact_ErrorsChanged(object? sender, System.ComponentModel.DataErrorsChangedEventArgs e)
+        {
+            OnCanExecuteChanged();
         }
 
         public override bool CanExecute(object? parameter)
         {
-            return base.CanExecute(parameter) && _contactViewModel != null;
+            return base.CanExecute(parameter) && _editedContact.GetContact() != null && !_editedContact.HasErrors;
         }
 
-        public async override void Execute(object? parameter)
+        public override async void Execute(object? parameter)
         {
-            try
-            {
-                await _contactsDb.UpdateAsync(ContactMVMFactory.GetContactModel(_contactViewModel));
-            }
-            catch (Exception ex)
-            {
-                exceptionHandler?.HandleException(new ExceptionContext(ex));
-            }
+            _editedContact.ValidateModel();
+            if (_editedContact.HasErrors)
+                return;
+            await _contactsStore.UpdateContactAsync(_currentContactStore.Contact, _editedContact.GetContact());
+            _currentContactStore.Contact = _editedContact.GetContact();
+            _returnCommand?.Execute(null);
         }
     }
 }

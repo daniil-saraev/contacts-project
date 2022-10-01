@@ -1,4 +1,4 @@
-﻿using Core.Interfaces;
+﻿using ApiServices.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using System.Text;
 

@@ -1,5 +1,4 @@
-﻿using Core.Interfaces;
-using Core.Models;
+﻿using Core.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ContactsDatabaseAPI.Data

@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
-using Core.Models.Identity;
-using IdentityAPI.Responses;
-using IdentityAPI.ViewModels;
 using IdentityAPI.Services;
 using System.Security.Claims;
-using IdentityAPI.Requests;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using IdentityAPI.Identity;
+using IdentityAPI.Requests;
+using IdentityAPI.Responses;
 
 namespace IdentityAPI.Controllers
 {
@@ -30,11 +29,8 @@ namespace IdentityAPI.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<ActionResult<TokenResponse>> Login([FromBody]LoginViewModel model)
+        public async Task<ActionResult<TokenResponse>> Login([FromBody]LoginRequest model)
         {
-            if (!ModelState.IsValid)
-                return Error("Bad request");
-
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
@@ -51,11 +47,8 @@ namespace IdentityAPI.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<ActionResult<TokenResponse>> Register([FromBody]RegisterViewModel model)
+        public async Task<ActionResult<TokenResponse>> Register([FromBody]RegisterRequest model)
         {
-            if (!ModelState.IsValid)
-                return Error("Bad request");
-
             var user = new ApplicationUser { UserName = model.Username, Email = model.Email };
             var result = await _userManager.CreateAsync(user, model.Password);
 
@@ -68,13 +61,8 @@ namespace IdentityAPI.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<ActionResult<TokenResponse>> Refresh([FromBody]TokenRequest request)
+        public async Task<ActionResult<TokenResponse>> Refresh([FromBody]RefreshTokenRequest request)
         {
-            if (!ModelState.IsValid)
-            {
-                return Error("Bad request");
-            }
-
             var result = _tokenService.ValidateRefreshToken(request.RefreshToken);
             if (result == false)
             {

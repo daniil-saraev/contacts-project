@@ -1,31 +1,33 @@
-﻿using Desktop.ViewModels;
+﻿using Desktop.Stores;
+using Desktop.ViewModels;
+using Desktop.ViewModels.Account;
 using Desktop.ViewModels.Contacts;
 
 namespace Desktop.Factories
 {
-    public static class ViewModelsFactory
+    public class ViewModelsFactory
     {
-        public static BaseViewModel GetNewViewModel(BaseViewModel initialViewModel)
-        {
-            if (initialViewModel is HomeViewModel)
-            {
-                return new HomeViewModel();
-            }
-            if (initialViewModel is ContactInfoViewModel)
-            {
-                return new ContactInfoViewModel(((ContactInfoViewModel)initialViewModel).Contact);
-            }
-            if (initialViewModel is ContactEditViewModel)
-            {
-                return new ContactInfoViewModel(((ContactEditViewModel)initialViewModel).Contact);
-            }
-            if (initialViewModel is ContactAddViewModel)
-            {
-                return new ContactAddViewModel();
-            }
+        private readonly IContactsStore _contactsStore;
+        private readonly SelectedContact _selectedContact;
 
-            return new HomeViewModel();
+        public ViewModelsFactory(IContactsStore contactsStore, SelectedContact selectedContact)
+        {
+            _contactsStore = contactsStore;
+            _selectedContact = selectedContact;
         }
 
+        public BaseViewModel GetNewViewModel(BaseViewModel initialViewModel)
+        {
+            if (initialViewModel is ContactInfoViewModel)
+            {
+                return new ContactInfoViewModel(_selectedContact);
+            }
+            if (initialViewModel is LoginViewModel)
+            {
+                return initialViewModel;
+            }
+
+            return new HomeViewModel(_contactsStore, _selectedContact);
+        }
     }
 }

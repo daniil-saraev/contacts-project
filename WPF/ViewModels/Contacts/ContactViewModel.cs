@@ -1,51 +1,54 @@
 ﻿using DatabaseApi;
 using Core.Models.Validation;
 using System.ComponentModel.DataAnnotations;
+using System;
 
 namespace Desktop.ViewModels.Contacts
 {
     public class ContactViewModel : BaseViewModel
     {
         private Contact _contact;
-
+        
         public ContactViewModel(Contact contact)
         {
             _contact = contact;
         }
 
-        [Key]
-        public int Id
+        public void SetContact(Contact contact)
+        {
+            _contact = contact;
+        }
+
+        public Contact GetContact()
+        {
+            return _contact;
+        }
+
+        #region Properties
+
+        public string Id
         {
             get { return _contact.Id; }
-            set
-            {
-                _contact.Id = value;
-                OnPropertyChanged();
-            }
         }
 
         [Required]
         public string UserId
         {
             get { return _contact.UserId; }
-            set
-            {
-                _contact.UserId = value;
-                OnPropertyChanged();
-            }
         }
 
         public string FullName
         {
-            get { return $"{_contact.LastName} {_contact.FirstName} {_contact.MiddleName}"; }
+            get { return $"{_contact.LastName} {_contact.FirstName}"; }
         }
 
-        [Required]
+        [Required(ErrorMessage = "First name is required")]
         public string FirstName
         {
             get { return _contact.FirstName; }
             set
             {
+                ValidateProperty(value);
                 _contact.FirstName = value;
                 OnPropertyChanged();
             }
@@ -71,14 +74,15 @@ namespace Desktop.ViewModels.Contacts
             }
         }
 
-        [Required]
-        [PhoneNumberValid]
+        [Required(ErrorMessage = "Phone number is required")]
+        [PhoneNumberValid(ErrorMessage = "Invalid phone number")]
         public string PhoneNumber
         {
             get { return _contact.PhoneNumber; }
             set
             {
-                _contact.PhoneNumber = value;
+                ValidateProperty(value);
+                _contact.PhoneNumber = value;               
                 OnPropertyChanged();
             }
         }
@@ -102,5 +106,7 @@ namespace Desktop.ViewModels.Contacts
                 OnPropertyChanged();
             }
         }
+
+        #endregion
     }
 }

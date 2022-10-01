@@ -6,11 +6,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 using ContactsDatabaseAPI.Data;
 using System.Text;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.Authentication;
-using ContactsDatabaseAPI.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -72,7 +68,7 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var dbContext = scopedProvider.GetRequiredService<ApplicationDbContext>();
-        //await dbContext.Database.EnsureDeletedAsync();
+        await dbContext.Database.EnsureDeletedAsync();
         await dbContext.Database.EnsureCreatedAsync();
         app.Logger.LogInformation("DATABASE INITIALIZED");
     }

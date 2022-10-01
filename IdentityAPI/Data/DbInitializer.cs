@@ -1,4 +1,4 @@
-﻿using Core.Models.Identity;
+﻿using IdentityAPI.Identity;
 using Microsoft.AspNetCore.Identity;
 
 namespace IdentityAPI.Data

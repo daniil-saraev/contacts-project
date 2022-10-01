@@ -1,58 +1,69 @@
-﻿using DatabaseApi;
-using Desktop.Commands.Contacts;
+﻿using Desktop.Commands.Contacts;
 using Desktop.Commands.Navigation;
-using Desktop.Data;
-using Desktop.Queries;
-using Desktop.Queries.Contacts;
-using System.Collections.Generic;
+using Desktop.Stores;
+using NuGet.Packaging;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 
 namespace Desktop.ViewModels.Contacts
 {
     public class HomeViewModel : BaseViewModel
     {
-        private readonly ContactsStore _store;
-        private ContactViewModel? _selectedContact;
+        private readonly IContactsStore _contactsStore;
+        private readonly ObservableCollection<ContactViewModel> _contacts;
+        private readonly SelectedContact _selectedContact;
+        private ContactViewModel? _selectedContactViewModel;
 
-        public ObservableCollection<ContactViewModel> Contacts => _store.Contacts;
+        public ReadOnlyObservableCollection<ContactViewModel> Contacts { get; }
 
-        public ContactViewModel? SelectedContact 
+        public ContactViewModel? SelectedContactViewModel
         {
             get
             {
-                return _selectedContact;
-            }
+                return _selectedContactViewModel;
+            } 
             set
             {
-                _selectedContact = value;
+                _selectedContact.Contact = value?.GetContact();
                 OnPropertyChanged();
             }
         }
 
-        private ICommand LoadContacts { get; }
         public ICommand DeleteContact { get; }
         public ICommand NavigateToInfoView { get; }
         public ICommand NavigateToEditView { get; }
         public ICommand NavigateToAddView { get; }
 
-        public HomeViewModel()
+        public HomeViewModel(IContactsStore contactsStore, SelectedContact selectedContact)  
         {
-            _store = new ContactsStore();
-            LoadContacts = new LoadContactsCommand(_store);
-            DeleteContact = new DeleteContactCommand(SelectedContact);
-            NavigateToInfoView = new NavigateCommand(new ContactInfoViewModel(SelectedContact), (o) => SelectedContact != null);
-            NavigateToEditView = new NavigateCommand(new ContactEditViewModel(SelectedContact), (o) => SelectedContact != null);
-            NavigateToAddView = new NavigateCommand(new ContactAddViewModel());
+            _contactsStore = contactsStore;
+            _selectedContact = selectedContact;                     
 
-            LoadContacts.Execute(null);
-            Contacts.Add(new ContactViewModel(new Contact
-            {
-                FirstName = "Ivan",
-                LastName = "Levko",
-                MiddleName = "Ivanovich",
-                PhoneNumber = "+79998887766"
-            }));
+            DeleteContact = new DeleteContactCommand(_selectedContact);
+            NavigateToInfoView = new NavigateCommand(new ContactInfoViewModel(_selectedContact), (o) => _selectedContact.Contact != null);
+            NavigateToEditView = new NavigateCommand(new ContactEditViewModel(_selectedContact), (o) => _selectedContact.Contact != null);
+            NavigateToAddView = new NavigateCommand(new ContactAddViewModel(_selectedContact));
+
+            _contacts = new ObservableCollection<ContactViewModel>(_contactsStore.Contacts.Select(c => new ContactViewModel(c)));
+            Contacts = new ReadOnlyObservableCollection<ContactViewModel>(_contacts);
+
+            _selectedContact.ContactChanged += SelectedContact_ContactChanged;
+            _contactsStore.CollectionChanged += ContactsStore_CollectionChanged;
+        }
+
+        private void SelectedContact_ContactChanged()
+        {
+            if (_selectedContact.Contact != null)
+                _selectedContactViewModel = new ContactViewModel(_selectedContact.Contact);
+            else
+                _selectedContactViewModel = null;
+        }
+
+        private void ContactsStore_CollectionChanged()
+        {
+            _contacts.Clear();
+            _contacts.AddRange(_contactsStore.Contacts.Select(c => new ContactViewModel(c)));
         }
     }
 }

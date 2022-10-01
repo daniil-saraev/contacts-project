@@ -1,10 +1,10 @@
-﻿using Core.Interfaces;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using DatabaseApi;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Logging;
+using ApiServices.Interfaces;
 
 namespace Web.Controllers
 {
@@ -14,9 +14,7 @@ namespace Web.Controllers
         private readonly IRepository<Contact> _contactsDbApi;
         private readonly ILogger<ContactController> _logger;
 
-        private string _userId => !User.Identity.IsAuthenticated
-            ? string.Empty
-            : User.FindFirst(c => c.Type == "id").Value;
+        private string _userId => User.FindFirst(c => c.Type == "id").Value;
 
         public ContactController(IRepository<Contact> contactsDbApi, ILogger<ContactController> logger)
         {
@@ -41,7 +39,7 @@ namespace Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Info(int id)
+        public async Task<IActionResult> Info(string id)
         {
             Contact? contactModel = await _contactsDbApi.GetAsync(id);
             if (contactModel == null) return NotFound();
@@ -49,7 +47,7 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(string id)
         {
             Contact? contactModel = await _contactsDbApi.GetAsync(id);
             if (contactModel == null) return NotFound();
@@ -68,10 +66,7 @@ namespace Web.Controllers
         [HttpGet]
         public IActionResult Add()
         {
-            Contact contactModel = new Contact
-            {
-                UserId = _userId
-            };       
+            Contact contactModel = new Contact(_userId);
             return View(contactModel);
         }
 
@@ -96,7 +91,7 @@ namespace Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(string id)
         {
             Contact? contactModel = await _contactsDbApi.GetAsync(id);
             if (contactModel == null) return NotFound();
