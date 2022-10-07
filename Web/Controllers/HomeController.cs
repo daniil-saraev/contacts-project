@@ -26,7 +26,7 @@ namespace Web.Controllers
         [Authorize]
         public IActionResult Users()
         {
-            return Redirect($"{BaseUrls.IdentityApiUrl}/Users/Index");
+            return Redirect($"{BaseUrls.IDENTITY_API_URL}/Users/Index");
         }
     }
 }

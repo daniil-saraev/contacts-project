@@ -1,6 +1,7 @@
 ﻿using Desktop.Commands.Account;
 using Desktop.Commands.Navigation;
 using Desktop.Services.Authentication;
+using Desktop.Services.Factories;
 using System.ComponentModel.DataAnnotations;
 using System.Windows.Input;
 
@@ -47,11 +48,11 @@ namespace Desktop.ViewModels.Account
         public ICommand Login { get; }
         public ICommand NavigateToRegisterView { get; }
 
-        public LoginViewModel(AuthenticationService authenticationService)
+        public LoginViewModel(AccountCommandsFactory commandsFactory)
         {
             Return = new ReturnCommand();
-            Login = new LoginCommand(this, authenticationService);
-            NavigateToRegisterView = new NavigateCommand(new RegisterViewModel(authenticationService));
+            Login = commandsFactory.NewLoginCommand(this);
+            NavigateToRegisterView = new NavigateCommand(new RegisterViewModel(commandsFactory));
         }
     }
 }

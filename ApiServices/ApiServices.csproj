@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -10,7 +10,7 @@
     <OpenApiReference Include="OpenAPIs\swagger.json" CodeGenerator="NSwagCSharp" Namespace="Database" ClassName="ContactsDbService">
       <SourceUri>https://localhost:7256/swagger/v1/swagger.json</SourceUri>
     </OpenApiReference>
-    <OpenApiReference Include="OpenAPIs\swagger1.json" CodeGenerator="NSwagCSharp" Namespace="Identity" ClassName="IdentityService">
+    <OpenApiReference Include="OpenAPIs\swagger3.json" CodeGenerator="NSwagCSharp" Namespace="OpenApi" ClassName="IdentityApi">
       <SourceUri>https://localhost:7172/swagger/v1/swagger.json</SourceUri>
     </OpenApiReference>
   </ItemGroup>
@@ -30,6 +30,14 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="OpenAPIs\index.html" ClassName="IdentityApi" />
+    <None Update="OpenAPIs\index1.html" ClassName="IdentityApi" />
+    <None Update="OpenAPIs\index2.html" ClassName="IdentityApi" />
+    <None Update="OpenAPIs\swagger1.json" ClassName="IdentityService" />
+    <None Update="OpenAPIs\swagger2.json" ClassName="IdentityService" />
   </ItemGroup>
 
 </Project>

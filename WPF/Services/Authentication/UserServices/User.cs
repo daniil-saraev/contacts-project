@@ -8,8 +8,6 @@ namespace Desktop.Services.Authentication.UserServices
 {
     public class User
     {
-        private static User _userInstance;
-
         private static IdentityUser? _identityUser;
 
         public static event Action? AuthenticationStateChanged;   
@@ -18,12 +16,6 @@ namespace Desktop.Services.Authentication.UserServices
         public static string? Id => _identityUser?.Id;
         public static string? UserName => _identityUser?.UserName;
         public static string? Email => _identityUser?.Email;
-
-        public static User GetUser()
-        {
-            _userInstance ??= new User();
-            return _userInstance;
-        }
 
         public void Logout()
         {
@@ -42,7 +34,7 @@ namespace Desktop.Services.Authentication.UserServices
             AuthenticationStateChanged?.Invoke();
         }
 
-        private User()
+        public User()
         {
         }
     }

@@ -1,8 +1,9 @@
-﻿using DatabaseApi;
+﻿using OpenApi;
 using Desktop.Commands.Contacts;
 using Desktop.Commands.Navigation;
-using Desktop.Stores;
 using System.Windows.Input;
+using Desktop.Services.Factories;
+using Desktop.Containers;
 
 namespace Desktop.ViewModels.Contacts
 {
@@ -10,6 +11,7 @@ namespace Desktop.ViewModels.Contacts
     {
         private readonly SelectedContact _selectedContact;
         private readonly ContactViewModel _editedContactViewModel;
+        private readonly ContactCommandsFactory _commandsFactory;
 
         public ContactViewModel Contact
         {
@@ -19,13 +21,14 @@ namespace Desktop.ViewModels.Contacts
         public ICommand UpdateContact { get; }
         public ICommand Return { get; }
 
-        public ContactEditViewModel(SelectedContact selectedContact)
+        public ContactEditViewModel(SelectedContact selectedContact, ContactCommandsFactory commandsFactory)
         {
             _selectedContact = selectedContact;
             _selectedContact.ContactChanged += CurrentContactStore_CurrentContactChanged;
             _editedContactViewModel = new ContactViewModel(CreateContactCopy(_selectedContact));
+            _commandsFactory = commandsFactory;
             Return = new ReturnCommand();
-            UpdateContact = new UpdateContactCommand(_selectedContact, _editedContactViewModel, Return);
+            UpdateContact = _commandsFactory.NewUpdateContactCommand(_editedContactViewModel, Return);
         }
 
         private void CurrentContactStore_CurrentContactChanged()

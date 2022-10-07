@@ -14,7 +14,7 @@ namespace Desktop.Commands.Contacts
 
         public override async void Execute(object? parameter)
         {
-            await _contactsStore.SaveContactsAsync();
+            await _contactsStore.SaveContacts();
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Desktop.Services.Authentication;
 using Desktop.ViewModels.Account;
-using IdentityApi;
+using OpenApi;
 using System;
 
 namespace Desktop.Commands.Account
@@ -33,22 +33,15 @@ namespace Desktop.Commands.Account
             if (_registerViewModel.HasErrors)
                 return;
 
-            RegisterRequest registerRequest = new RegisterRequest
-            {
-                Username = _registerViewModel.Username,
-                Email = _registerViewModel.Email,
-                Password = _registerViewModel.Password,
-                ConfirmPassword = _registerViewModel.ConfirmPassword
-            };
-
             try
             {
-                await _authenticationService.RegisterAsync(registerRequest);
+                await _authenticationService.RegisterAsync(_registerViewModel.Username, _registerViewModel.Email, _registerViewModel.Password);
                 _registerViewModel.Return.Execute(null);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                _registerViewModel.AddModelError(nameof(_registerViewModel.Username), ex.Message);
+                return;
             }          
         }
     }

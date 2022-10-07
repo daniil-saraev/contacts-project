@@ -1,9 +1,10 @@
-﻿using DatabaseApi;
+﻿using OpenApi;
 using Desktop.Commands.Contacts;
 using Desktop.Commands.Navigation;
 using Desktop.Services.Authentication.UserServices;
-using Desktop.Stores;
 using System.Windows.Input;
+using Desktop.Services.Factories;
+using Desktop.Containers;
 
 namespace Desktop.ViewModels.Contacts
 {
@@ -11,6 +12,7 @@ namespace Desktop.ViewModels.Contacts
     {
         private readonly SelectedContact _selectedContact;
         private readonly ContactViewModel _newContactViewModel;
+        private readonly ContactCommandsFactory _commandsFactory;
 
         public ContactViewModel Contact
         {
@@ -21,13 +23,14 @@ namespace Desktop.ViewModels.Contacts
 
         public ICommand Return { get; }
 
-        public ContactAddViewModel(SelectedContact currentContact)
+        public ContactAddViewModel(SelectedContact currentContact, ContactCommandsFactory commandsFactory)
         {
             _selectedContact = currentContact;
             _selectedContact.Contact = User.IsAuthenticated ? new Contact(User.Id) : new Contact();
             _newContactViewModel = new ContactViewModel(_selectedContact.Contact);
+            _commandsFactory = commandsFactory;
             Return = new ReturnCommand();
-            AddContact = new AddContactCommand(_newContactViewModel, Return);
+            AddContact = _commandsFactory.NewAddContactCommand(_newContactViewModel, Return);
         }
     }
 }

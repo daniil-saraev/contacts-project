@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -29,7 +30,7 @@ namespace Desktop.ViewModels
         public IEnumerable GetErrors(string? propertyName)
         {
             if (string.IsNullOrEmpty(propertyName) || !_validationErrors.ContainsKey(propertyName))
-                return null;
+                return new List<string>();
 
             return _validationErrors[propertyName];
         }
@@ -84,6 +85,19 @@ namespace Desktop.ViewModels
                     RaiseErrorsChanged(property);
                 }
             }
+        }
+
+        public void AddModelError(string property, string errorMessage)
+        {
+            if (_validationErrors.ContainsKey(property))
+            {
+                _validationErrors[property].Add(errorMessage);
+            }
+            else
+            {
+                _validationErrors.Add(property, new List<string> { errorMessage });
+            }
+            RaiseErrorsChanged(property);
         }
 
         #endregion

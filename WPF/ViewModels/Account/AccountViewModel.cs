@@ -2,6 +2,7 @@
 using Desktop.Commands.Navigation;
 using Desktop.Services.Authentication;
 using Desktop.Services.Authentication.UserServices;
+using Desktop.Services.Factories;
 using System.Windows.Input;
 
 namespace Desktop.ViewModels.Account
@@ -14,10 +15,10 @@ namespace Desktop.ViewModels.Account
         public ICommand Return { get; }
         public ICommand Logout { get; }
 
-        public AccountViewModel(AuthenticationService authenticationService)
+        public AccountViewModel(AccountCommandsFactory commandsFactory)
         {
             Return = new ReturnCommand();
-            Logout = new LogoutCommand(authenticationService, Return);
+            Logout = commandsFactory.NewLogoutCommand(Return);
         }
     }
 }

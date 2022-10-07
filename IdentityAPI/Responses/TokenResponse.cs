@@ -6,7 +6,7 @@
 
         public string? RefreshToken { get; set; }
 
-        public IEnumerable<string>? ErrorMessages { get; set; }
+        public string? ErrorMessage { get; set; }
 
         public bool IsSuccessful { get; set; }
     }

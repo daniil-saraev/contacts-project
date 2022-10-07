@@ -13,7 +13,7 @@ namespace Desktop.Commands.Account
 
         public override async void Execute(object? parameter)
         {
-            await _authenticationService.RefreshSessionAsync();
+            await _authenticationService.RestoreSessionAsync();
         }
     }
 }

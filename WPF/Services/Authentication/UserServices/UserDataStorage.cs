@@ -1,6 +1,6 @@
-﻿using Desktop.Services.DataServices.FileServices;
-using Desktop.Services.ExceptionHandlers;
+﻿using Desktop.Services.Data.FileServices;
 using System;
+using System.Threading.Tasks;
 
 namespace Desktop.Services.Authentication.UserServices
 {
@@ -14,49 +14,58 @@ namespace Desktop.Services.Authentication.UserServices
             _fileService = fileService;
         }
 
-        public UserData? GetUserData()
+        public async Task<UserData?> GetUserDataAsync()
         {
+            if(_userData == null)
+                await LoadDataFormDisk();
+
             return _userData;
         }
 
-        public void SetUserData(UserData userData)
+        public async Task SaveUserDataAsync(UserData userData)
         {
             _userData = userData;
-            SaveData();
+            await SaveDataFromDisk();
         }
         
-        public void RemoveUserData()
+        public async Task ClearUserDataAsync()
         {
             _userData = null;
-            SaveData();
+            await SaveDataFromDisk();
         }
 
-        public void LoadData()
+        private Task LoadDataFormDisk()
         {
-            try
+            return Task.Run(() =>
             {
-                var data = _fileService.Read();
-                if (data == null)
+                try
+                {
+                    var data = _fileService.Read();
+                    if (data == null)
+                        return;
+                    _userData = data;
+                }
+                catch (Exception)
+                {
                     return;
-                _userData = data;
-            }
-            catch (Exception ex)
-            {
-
-            }
+                }
+            });          
         }
 
-        private void SaveData()
+        private Task SaveDataFromDisk()
         {
-            try
+            return Task.Run(() =>
             {
-                if(_userData != null)
-                    _fileService.Write(_userData);
-            }
-            catch (Exception ex)
-            {
-
-            }
+                try
+                {
+                    if (_userData != null)
+                        _fileService.Write(_userData);
+                }
+                catch (Exception)
+                {
+                    return;
+                }
+            });            
         }     
     }
 }

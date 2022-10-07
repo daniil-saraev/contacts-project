@@ -4,7 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Net;
 using Web.Configuration;
-using IdentityApi;
+using OpenApi;
 using ApiServices.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -71,7 +71,7 @@ app.UseSession();
 app.UseToken(app.Services.GetServices<IApiService>());
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseRefreshToken(app.Services.GetRequiredService<IIdentityService>(), configuration);
+app.UseRefreshToken(app.Services.GetRequiredService<IIdentityApi>(), configuration);
 
 app.MapDefaultControllerRoute();
 

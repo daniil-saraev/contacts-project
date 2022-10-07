@@ -29,23 +29,23 @@ namespace ContactsDatabaseAPI.Controllers
         /// Returns a collection of all contacts in DB.
         /// </summary>
         [HttpGet("/getall")]
-        public async Task<IEnumerable<Contact>?> GetAllAsync()
+        public async Task<ActionResult<IEnumerable<Contact>?>> GetAllAsync()
         {
             if (_dbContext.Contacts != null)
-                return await _dbContext.Contacts.Where(c => c.UserId == _userId).ToListAsync();
-            else return null;
+                return Ok(await _dbContext.Contacts.Where(c => c.UserId == _userId).ToListAsync());
+            else return Ok(null);
         }
 
         /// <summary>
         /// Returns a contact by id if not null.
         /// </summary>
         [HttpGet("/get/{contactId}")]
-        public async Task<Contact?> GetAsync(string contactId)
+        public async Task<ActionResult<Contact?>> GetAsync(string contactId)
         {
             var contact = await _dbContext.Contacts.FindAsync(contactId);
             if (contact != null && contact.UserId == _userId)
                 return contact;
-            else return null;
+            else return NotFound(null);
         }
 
         /// <summary>

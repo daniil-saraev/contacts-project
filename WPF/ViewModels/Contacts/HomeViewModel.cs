@@ -1,6 +1,7 @@
 ﻿using Desktop.Commands.Contacts;
 using Desktop.Commands.Navigation;
-using Desktop.Stores;
+using Desktop.Containers;
+using Desktop.Services.Factories;
 using NuGet.Packaging;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -35,15 +36,14 @@ namespace Desktop.ViewModels.Contacts
         public ICommand NavigateToEditView { get; }
         public ICommand NavigateToAddView { get; }
 
-        public HomeViewModel(IContactsStore contactsStore, SelectedContact selectedContact)  
+        public HomeViewModel(IContactsStore contactsStore, SelectedContact selectedContact, ContactCommandsFactory contactCommandsFactory)  
         {
             _contactsStore = contactsStore;
-            _selectedContact = selectedContact;                     
-
-            DeleteContact = new DeleteContactCommand(_selectedContact);
-            NavigateToInfoView = new NavigateCommand(new ContactInfoViewModel(_selectedContact), (o) => _selectedContact.Contact != null);
-            NavigateToEditView = new NavigateCommand(new ContactEditViewModel(_selectedContact), (o) => _selectedContact.Contact != null);
-            NavigateToAddView = new NavigateCommand(new ContactAddViewModel(_selectedContact));
+            _selectedContact = selectedContact;
+            DeleteContact = contactCommandsFactory.NewDeleteContactCommand(null);
+            NavigateToInfoView = new NavigateCommand(new ContactInfoViewModel(_selectedContact, contactCommandsFactory), (o) => _selectedContact.Contact != null);
+            NavigateToEditView = new NavigateCommand(new ContactEditViewModel(_selectedContact, contactCommandsFactory), (o) => _selectedContact.Contact != null);
+            NavigateToAddView = new NavigateCommand(new ContactAddViewModel(_selectedContact, contactCommandsFactory));
 
             _contacts = new ObservableCollection<ContactViewModel>(_contactsStore.Contacts.Select(c => new ContactViewModel(c)));
             Contacts = new ReadOnlyObservableCollection<ContactViewModel>(_contacts);

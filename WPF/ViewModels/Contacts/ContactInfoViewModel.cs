@@ -1,5 +1,6 @@
 ﻿using Desktop.Commands.Navigation;
-using Desktop.Stores;
+using Desktop.Containers;
+using Desktop.Services.Factories;
 using System.Windows.Input;
 
 namespace Desktop.ViewModels.Contacts
@@ -8,20 +9,22 @@ namespace Desktop.ViewModels.Contacts
     {
         private readonly SelectedContact _selectedContact;
         private readonly ContactViewModel _contactViewModel;
+        private readonly ContactCommandsFactory _commandsFactory;
 
         public ContactViewModel Contact { get { return _contactViewModel; } }
 
         public ICommand Return { get; }
         public ICommand NavigateToEditView { get; }
 
-        public ContactInfoViewModel(SelectedContact selectedContact)
+        public ContactInfoViewModel(SelectedContact selectedContact, ContactCommandsFactory commandsFactory)
         {
             _selectedContact = selectedContact;
             _selectedContact.ContactChanged += CurrentContactStore_CurrentContactChanged;
             _contactViewModel = new ContactViewModel(_selectedContact.Contact);
+            _commandsFactory = commandsFactory;
             Return = new ReturnCommand();
             NavigateToEditView = new NavigateCommand(
-                new ContactEditViewModel(_selectedContact), 
+                new ContactEditViewModel(_selectedContact, _commandsFactory), 
                 (o) => _selectedContact.Contact != null);
         }
 

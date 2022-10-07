@@ -2,7 +2,7 @@
 using Desktop.ViewModels.Contacts;
 using Desktop.Services.ExceptionHandlers;
 using System.Windows.Input;
-using Desktop.Stores;
+using Desktop.Services.Data;
 
 namespace Desktop.Commands.Contacts
 {
@@ -12,10 +12,10 @@ namespace Desktop.Commands.Contacts
         private readonly ContactViewModel _newContactViewModel;
         private readonly ICommand? _returnCommand;
 
-        public AddContactCommand(ContactViewModel newContactViewModel, 
+        public AddContactCommand(ContactViewModel newContactViewModel, ContactsStore contactsStore,
                                  ICommand? returnCommand, Func<object?, bool>? canExecuteCustom = null) : base(canExecuteCustom)
         {
-            _contactStore = ContactsStore.GetInstance();
+            _contactStore = contactsStore;
             _newContactViewModel = newContactViewModel;
             _returnCommand = returnCommand;
             _newContactViewModel.ErrorsChanged += NewContactViewModel_ErrorsChanged;
@@ -36,7 +36,7 @@ namespace Desktop.Commands.Contacts
             _newContactViewModel.ValidateModel();
             if (_newContactViewModel.HasErrors)
                 return;
-            await _contactStore.AddContactAsync(_newContactViewModel.GetContact());
+            await _contactStore.AddContact(_newContactViewModel.GetContact());
             _returnCommand?.Execute(null);
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System;
-using Desktop.Services.ExceptionHandlers;
-using Desktop.Stores;
+using System.Windows.Input;
+using Desktop.Containers;
+using Desktop.Services.Data;
 
 namespace Desktop.Commands.Contacts
 {
@@ -8,11 +9,14 @@ namespace Desktop.Commands.Contacts
     {
         private readonly SelectedContact _currentContactStore;
         private readonly ContactsStore _contactsStore;
+        private readonly ICommand? _returnCommand;
 
-        public DeleteContactCommand(SelectedContact currentContactStore, Func<object?, bool>? canExecuteCustom = null) : base(canExecuteCustom)
+        public DeleteContactCommand(SelectedContact selectedContact, ContactsStore contactsStore, 
+                                    ICommand? returnCommand,Func<object?, bool>? canExecuteCustom = null) : base(canExecuteCustom)
         {
-            _contactsStore = ContactsStore.GetInstance();
-            _currentContactStore = currentContactStore;
+            _contactsStore = contactsStore;
+            _currentContactStore = selectedContact;
+            _returnCommand = returnCommand;
             _currentContactStore.ContactChanged += CurrentContactStore_SelectedContactChanged;
         }
 
@@ -28,7 +32,8 @@ namespace Desktop.Commands.Contacts
 
         public async override void Execute(object? parameter)
         {
-            await _contactsStore.RemoveContactAsync(_currentContactStore.Contact);
+            await _contactsStore.RemoveContact(_currentContactStore.Contact);
+            _returnCommand?.Execute(null);
         }
     }
 }

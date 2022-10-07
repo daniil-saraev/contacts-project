@@ -1,4 +1,4 @@
-﻿using DatabaseApi;
+﻿using OpenApi;
 using Core.Models.Validation;
 using System.ComponentModel.DataAnnotations;
 using System;

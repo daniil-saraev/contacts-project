@@ -1,4 +1,4 @@
-﻿using Desktop.Factories;
+﻿using Desktop.Services.Factories;
 using Desktop.ViewModels;
 using System;
 using System.Collections.Generic;

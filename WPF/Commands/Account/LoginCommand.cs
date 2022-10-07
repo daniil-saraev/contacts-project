@@ -1,6 +1,7 @@
-﻿using Desktop.Services.Authentication;
+﻿using Core.Exceptions.Identity;
+using Desktop.Services.Authentication;
 using Desktop.ViewModels.Account;
-using IdentityApi;
+using OpenApi;
 using System;
 
 namespace Desktop.Commands.Account
@@ -33,21 +34,21 @@ namespace Desktop.Commands.Account
             if (_loginViewModel.HasErrors)
                 return;
 
-            LoginRequest loginRequest = new LoginRequest
-            {
-                Email = _loginViewModel.Email,
-                Password = _loginViewModel.Password
-            };
-
             try
             {
-                await _authenticationService.LoginAsync(loginRequest);
+                await _authenticationService.LoginAsync(_loginViewModel.Email, _loginViewModel.Password);
                 _loginViewModel.Return.Execute(null);
             }
-            catch (Exception)
+            catch (WrongPasswordException ex)
             {
-                //to do
+                _loginViewModel.AddModelError(nameof(_loginViewModel.Password), ex.Message);
+                return;
             }          
+            catch (UserNotFoundException ex)
+            {
+                _loginViewModel.AddModelError(nameof(_loginViewModel.Email), ex.Message);
+                return;
+            }
         }
     }
 }

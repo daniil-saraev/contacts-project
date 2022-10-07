@@ -3,19 +3,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using IdentityApi;
+using OpenApi;
 using Core.Constants;
 using ApiServices.Interfaces;
+using Web.ViewModels;
 
 namespace Web.Controllers
 {
     [AllowAnonymous]
     public class AccountController : Controller
     {
-        private readonly IIdentityService _identityApiService;
+        private readonly IIdentityApi _identityApiService;
         private readonly ILogger<AccountController> _logger;
 
-        public AccountController(IIdentityService identityApiService, ILogger<AccountController> logger)
+        public AccountController(IIdentityApi identityApiService, ILogger<AccountController> logger)
         {
             _identityApiService = identityApiService;
             _logger = logger;
@@ -24,12 +25,12 @@ namespace Web.Controllers
         [HttpGet]
         public IActionResult Login(string returnUrl)
         {
-            returnUrl ??= BaseUrls.WebClientUrl;
+            returnUrl ??= BaseUrls.WEB_CLIENT_URL;
 
             if (User.Identity.IsAuthenticated)
                 return Redirect(returnUrl);
 
-            LoginRequest model = new LoginRequest
+            LoginViewModel model = new LoginViewModel
             {
                 ReturnUrl = returnUrl
             };
@@ -37,45 +38,49 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginRequest model)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
             if(!ModelState.IsValid)
                 return View(model);
 
-            TokenResponse response = new TokenResponse();
+            LoginRequest loginRequest = new LoginRequest()
+            {
+                Email = model.Email,
+                Password = model.Password,
+                RememberMe = model.RememberMe
+            };
+
             try
             {
-                response = await _identityApiService.LoginAsync(model);
+                TokenResponse response = await _identityApiService.LoginAsync(loginRequest);
+                if (!response.IsSuccessful)
+                {                    
+                    ModelState.AddModelError(string.Empty, response.ErrorMessage);
+                    return View(model);
+                }
+
+                if (model.RememberMe == true)
+                    AuthenticatePersistent(response);
+                else
+                    AuthenticateNonPersistent(response);
             }
             catch(Exception ex)
             {
                 _logger.LogError(ex.Message);
-                ModelState.AddModelError(string.Empty, ex.Message);
             }
-            if(!response.IsSuccessful)
-            {
-                foreach (string error in response.ErrorMessages)
-                    ModelState.AddModelError(string.Empty, error);
-                return View(model);
-            }
-
-            if (model.RememberMe == true)
-                AuthenticatePersistent(response);
-            else
-                AuthenticateNonPersistent(response);
-
+            
             return Redirect(model.ReturnUrl);
         }
 
         [HttpGet]
         public IActionResult Register(string returnUrl)
         {
-            returnUrl ??= BaseUrls.WebClientUrl;
+            returnUrl ??= BaseUrls.WEB_CLIENT_URL;
 
             if (User.Identity.IsAuthenticated)
                 return Redirect(returnUrl);
 
-            RegisterRequest model = new RegisterRequest
+            RegisterViewModel model = new RegisterViewModel()
             {
                 ReturnUrl = returnUrl
             };
@@ -84,29 +89,33 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterRequest model)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);
 
-            TokenResponse response = new TokenResponse();
+            RegisterRequest registerRequest = new RegisterRequest()
+            {
+                Username = model.Username,
+                Email = model.Email,
+                Password = model.Password
+            };
+
             try
             {
-                response = await _identityApiService.RegisterAsync(model);
+                TokenResponse response = await _identityApiService.RegisterAsync(registerRequest);
+                if (!response.IsSuccessful)
+                {
+                    ModelState.AddModelError(string.Empty, response.ErrorMessage);
+                    return View(model);
+                }
+
+                AuthenticatePersistent(response);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                ModelState.AddModelError(string.Empty, ex.Message);
             }
-            if (!response.IsSuccessful)
-            {
-                foreach (string error in response.ErrorMessages)
-                    ModelState.AddModelError(string.Empty, error);
-                return View(model);
-            }
-
-            AuthenticatePersistent(response);
 
             return Redirect(model.ReturnUrl);
         }

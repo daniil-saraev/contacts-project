@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using IdentityAPI.Identity;
 using IdentityAPI.Requests;
 using IdentityAPI.Responses;
+using Core.Exceptions.Identity;
 
 namespace IdentityAPI.Controllers
 {
@@ -34,13 +35,13 @@ namespace IdentityAPI.Controllers
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
-                return Error("User not found");
+                return Error(new UserNotFoundException());
             }
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, true);
             if (!result.Succeeded)
             {
-                return Error("Wrong password");
+                return Error(new WrongPasswordException());
             }
 
             return await Authenticate(user);
@@ -54,7 +55,7 @@ namespace IdentityAPI.Controllers
 
             if (!result.Succeeded)
             {
-                return Error(result.Errors.First().Description);
+                return Error(new Exception(result.Errors.First().Description));
             }
 
             return await Authenticate(user);
@@ -66,18 +67,18 @@ namespace IdentityAPI.Controllers
             var result = _tokenService.ValidateRefreshToken(request.RefreshToken);
             if (result == false)
             {
-                return Error("Invalid refresh token");
+                return Error(new InvalidRefreshTokenException());
             }
 
             var user = await _userManager.FindByIdAsync(request.UserId);
             if (user == null)
             {
-                return Error("User not found");
+                return Error(new UserNotFoundException());
             }
             var refreshTokenClaim = (await _userManager.GetClaimsAsync(user)).First(c => c.Type == "refresh_token");
             if(refreshTokenClaim == null)
             {
-                return Error("Invalid refresh token");
+                return Error(new InvalidRefreshTokenException());
             }
             if(refreshTokenClaim.Value != request.RefreshToken)
             {
@@ -119,10 +120,10 @@ namespace IdentityAPI.Controllers
             return Ok();
         }
 
-        private ActionResult<TokenResponse> Error(string error)
+        private ActionResult<TokenResponse> Error(Exception exception)
         {
             TokenResponse response = new TokenResponse();
-            response.ErrorMessages = new List<string> { error };
+            response.ErrorMessage = exception.Message;
             response.IsSuccessful = false;
             return BadRequest(response);
         }
