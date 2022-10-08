@@ -6,25 +6,27 @@ using Desktop.Services.Data.UnitOfWork;
 
 namespace Desktop.Services.Factories
 {
-    public class PersistenceProviderFactory
+    public class PersistenceProvidersFactory
     {
         private readonly IRepository<Contact> _contactRepository;
         private readonly IFileService<UnitOfWorkState<Contact>> _fileService;
         private readonly UnitOfWork<Contact> _unitOfWork;
 
-        public PersistenceProviderFactory(IRepository<Contact> contactRepository, IFileService<UnitOfWorkState<Contact>> fileService, UnitOfWork<Contact> unitOfWork)
+        public PersistenceProvidersFactory(IRepository<Contact> contactRepository, IFileService<UnitOfWorkState<Contact>> fileService, UnitOfWork<Contact> unitOfWork)
         {
             _contactRepository = contactRepository;
             _fileService = fileService;
             _unitOfWork = unitOfWork;
         }
 
-        public IPersistenceProvider GetPersistenceProvider()
+        public IPersistenceProvider GetNotAuthenticatedPersistenceProvider()
         {
-            if (User.IsAuthenticated)
-                return new AuthenticatedPersistenceProvider(_unitOfWork, _fileService, _contactRepository);
-            else
-                return new NotAuthenticatedPersistenceProvider(_unitOfWork, _fileService, _contactRepository);
+            return new NotAuthenticatedPersistenceProvider(_unitOfWork, _fileService);
+        }
+
+        public IPersistenceProvider GetAuthenticatedPersistenceProvider()
+        {
+            return new AuthenticatedPersistenceProvider(_unitOfWork, _fileService, _contactRepository);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Desktop.Services.Data.Persistence
         private readonly UnitOfWork<Contact> _contactsUnitOfWork;
         private readonly DiskProvider _diskProvider;
 
-        public NotAuthenticatedPersistenceProvider(UnitOfWork<Contact> unitOfWork, IFileService<UnitOfWorkState<Contact>> fileService, IRepository<Contact> contactRepository)
+        public NotAuthenticatedPersistenceProvider(UnitOfWork<Contact> unitOfWork, IFileService<UnitOfWorkState<Contact>> fileService)
         {
             _contactsUnitOfWork = unitOfWork;
             _diskProvider = new DiskProvider(fileService);

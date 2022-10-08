@@ -54,6 +54,13 @@
                 </StackPanel>
                 
                 <StackPanel Margin="0,5,0,5">
+                    
+                    <Button Style="{DynamicResource MaterialDesignFlatButton}"
+                            Content="Sync"
+                            Foreground="#FF56CC9D"                          
+                            HorizontalAlignment="Center"
+                            Command="{Binding RefreshSession}"/>
+                    
                     <Button Style="{DynamicResource MaterialDesignFlatButton}"
                             Content="Sign out"
                             Foreground="#FFF3969A"                          

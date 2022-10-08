@@ -58,7 +58,7 @@ namespace Desktop.Services.Authentication.Identity
             return await InitializeNewSessionAsync(tokenResponse);
         }
 
-        public async Task<IEnumerable<Claim>> RefreshAsync()
+        public async Task<IEnumerable<Claim>> RefreshUserDataAsync()
         {
             UserData? userData = await _userDataStorage.GetUserDataAsync();
             if (userData == null)
@@ -76,7 +76,7 @@ namespace Desktop.Services.Authentication.Identity
             return await InitializeNewSessionAsync(tokenResponse);
         }
 
-        public async Task<IEnumerable<Claim>?> RestoreUserAsync()
+        public async Task<IEnumerable<Claim>?> RestoreUserDataAsync()
         {
             UserData? userData = await _userDataStorage.GetUserDataAsync();
             if (userData == null)

@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Desktop.Services.ExceptionHandlers
+namespace Desktop.Commands.Contacts.LoadCommand
 {
-    public interface IExceptionHandler
+    public interface ILoadCommand
     {
-        void HandleException(Exception exception);
+        Task Execute();
     }
 }

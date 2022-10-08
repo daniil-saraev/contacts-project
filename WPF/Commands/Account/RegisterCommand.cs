@@ -2,6 +2,7 @@
 using Desktop.ViewModels.Account;
 using OpenApi;
 using System;
+using System.Windows.Input;
 
 namespace Desktop.Commands.Account
 {
@@ -9,11 +10,13 @@ namespace Desktop.Commands.Account
     {
         private readonly RegisterViewModel _registerViewModel;
         private readonly AuthenticationService _authenticationService;
+        private readonly ICommand? _returnCommand;
 
-        public RegisterCommand(RegisterViewModel registerViewModel, AuthenticationService authenticationService)
+        public RegisterCommand(RegisterViewModel registerViewModel, AuthenticationService authenticationService, ICommand? returnCommand)
         {
             _registerViewModel = registerViewModel;
             _authenticationService = authenticationService;
+            _returnCommand = returnCommand;
             _registerViewModel.ErrorsChanged += RegisterViewModel_ErrorsChanged;
         }
 
@@ -36,7 +39,7 @@ namespace Desktop.Commands.Account
             try
             {
                 await _authenticationService.RegisterAsync(_registerViewModel.Username, _registerViewModel.Email, _registerViewModel.Password);
-                _registerViewModel.Return.Execute(null);
+                _returnCommand?.Execute(null);
             }
             catch (Exception ex)
             {

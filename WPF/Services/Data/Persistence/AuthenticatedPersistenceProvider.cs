@@ -7,44 +7,27 @@ using System.Threading.Tasks;
 
 namespace Desktop.Services.Data.Persistence
 {
-    public class AuthenticatedPersistenceProvider : IPersistenceProvider
+    public class AuthenticatedPersistenceProvider : NotAuthenticatedPersistenceProvider
     {
         private readonly UnitOfWork<Contact> _contactsUnitOfWork;
         private readonly DiskProvider _diskProvider;
         private readonly RemoteRepositoryProvider _remoteRepositoryProvider;
 
         public AuthenticatedPersistenceProvider(UnitOfWork<Contact> unitOfWork, IFileService<UnitOfWorkState<Contact>> fileService, IRepository<Contact> contactRepository)
+            : base(unitOfWork, fileService)
         {
             _contactsUnitOfWork = unitOfWork;
             _diskProvider = new DiskProvider(fileService);
             _remoteRepositoryProvider = new RemoteRepositoryProvider(contactRepository);
         }
 
-        public Task AddContact(Contact contact)
-        {
-            _contactsUnitOfWork.RegisterNewEntity(contact);
-            return _remoteRepositoryProvider.TrySyncWithRemoteRepository(_contactsUnitOfWork.UnitOfWorkState);
-        }
-
-        public Task UpdateContact(Contact initialContact, Contact updatedContact)
-        {
-            _contactsUnitOfWork.RegisterUpdatedEntity(initialContact, updatedContact);
-            return _remoteRepositoryProvider.TrySyncWithRemoteRepository(_contactsUnitOfWork.UnitOfWorkState);
-        }
-
-        public Task RemoveContact(Contact contact)
-        {
-            _contactsUnitOfWork.RegisterRemovedEntity(contact);
-            return _remoteRepositoryProvider.TrySyncWithRemoteRepository(_contactsUnitOfWork.UnitOfWorkState);
-        }
-
-        public async Task<IEnumerable<Contact>> LoadContactsAsync()
+        new public async Task<IEnumerable<Contact>> LoadContactsAsync()
         {
             await LoadUnitOfWorkStateAsync();
             return _contactsUnitOfWork.CreateRelevantEntitiesList();
         }
 
-        public async Task SaveContactsAsync()
+        new public async Task SaveContactsAsync()
         {
             await Task.WhenAll(
             _diskProvider.TrySaveToDisk(_contactsUnitOfWork.UnitOfWorkState),

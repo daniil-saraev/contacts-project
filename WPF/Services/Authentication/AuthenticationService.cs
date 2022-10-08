@@ -1,6 +1,6 @@
-﻿using Desktop.Services.Authentication.Identity;
+﻿using Core.Exceptions.Identity;
+using Desktop.Services.Authentication.Identity;
 using Desktop.Services.Authentication.UserServices;
-using Desktop.Services.ExceptionHandlers;
 using System;
 using System.Threading.Tasks;
 
@@ -21,13 +21,13 @@ namespace Desktop.Services.Authentication
         {
             var claims = await _identityProvider.LoginAsync(login, password);
             _user.Authenticate(claims);
-        } 
+        }
 
         public async Task RegisterAsync(string username, string email, string password)
         {
             var claims = await _identityProvider.RegisterAsync(username, email, password);
             _user.Authenticate(claims);
-        }     
+        }
 
         public async Task LogoutAsync()
         {
@@ -37,24 +37,25 @@ namespace Desktop.Services.Authentication
             await _identityProvider.LogoutAsync();
         }
 
-        public async Task RestoreSessionAsync()
+        public async Task RefreshSessionAsync()
         {
-            var claims = await _identityProvider.RefreshAsync();
-            if(claims != null)
+            var claims = await _identityProvider.RestoreUserDataAsync();
+            if (claims == null)
+                return;
+
+            try
             {
-                try
-                {
-                    _user.Authenticate(await _identityProvider.RefreshAsync());
-                }
-                catch (Exception)
-                {                  
-                    throw;
-                }
-                finally
-                {
-                    _user.Authenticate(claims);
-                }
-            }             
+                _user.Authenticate(await _identityProvider.RefreshUserDataAsync());
+            }
+            catch (InvalidRefreshTokenException)
+            {
+                _user.Authenticate(claims);
+                throw new InvalidRefreshTokenException();
+            }
+            catch (Exception)
+            {
+                return;
+            }
         }
     }
 }

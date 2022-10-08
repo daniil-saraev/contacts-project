@@ -1,9 +1,7 @@
-﻿using OpenApi;
-using Desktop.Services.Authentication.UserServices;
+﻿using Desktop.Services.Authentication.UserServices;
 using Desktop.Services.Data.Persistence;
-using Desktop.Services.Data.UnitOfWork;
 using Desktop.Services.Factories;
-using System;
+using System;                   
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Desktop.Containers;
@@ -16,18 +14,19 @@ namespace Desktop.Services.Data
     public class ContactsStore : IContactsStore
     {
         private readonly List<Contact> _contacts;
-        private readonly PersistenceProviderFactory _persistenceProviderFactory;
+        private readonly PersistenceProvidersFactory _persistenceProviderFactory;
         private IPersistenceProvider _persistenceProvider;
-
-        public event Action? CollectionChanged;
 
         public IEnumerable<Contact> Contacts => _contacts;
 
-        public ContactsStore(PersistenceProviderFactory persistenceProviderFactory)
+        public event Action? CollectionChanged;
+
+        public ContactsStore(PersistenceProvidersFactory persistenceProviderFactory)
         {
             _contacts = new List<Contact>();
             _persistenceProviderFactory = persistenceProviderFactory;
-            _persistenceProvider = _persistenceProviderFactory.GetPersistenceProvider();
+            _persistenceProvider = User.IsAuthenticated ? _persistenceProviderFactory.GetAuthenticatedPersistenceProvider() 
+                                                        : _persistenceProviderFactory.GetNotAuthenticatedPersistenceProvider();
             User.AuthenticationStateChanged += User_AuthenticationStateChanged;
         }
 
@@ -59,27 +58,29 @@ namespace Desktop.Services.Data
             CollectionChanged?.Invoke();
         }
 
-        public Task SaveContacts()
+        public Task SaveContactsAsync()
         {
             return _persistenceProvider.SaveContactsAsync();
         }
 
         private async void User_AuthenticationStateChanged()
         {
-            _persistenceProvider = _persistenceProviderFactory.GetPersistenceProvider();
-            await SyncIfUserSignedInAsync();
-        }
-
-        private async Task SyncIfUserSignedInAsync()
-        {
             if (User.IsAuthenticated)
             {
-                foreach (Contact contact in _contacts)
-                    contact.SetUserId(User.Id);
-                await _persistenceProvider.SaveContactsAsync();
-                await _persistenceProvider.LoadContactsAsync();
-                CollectionChanged?.Invoke();
+                _persistenceProvider = _persistenceProviderFactory.GetAuthenticatedPersistenceProvider();
+                await SyncContactsAsync();
             }
+            else
+                _persistenceProvider = _persistenceProviderFactory.GetNotAuthenticatedPersistenceProvider();
+        }
+
+        private async Task SyncContactsAsync()
+        {
+            foreach (Contact contact in _contacts)
+                contact.SetUserId(User.Id);
+            await _persistenceProvider.SaveContactsAsync();
+            await _persistenceProvider.LoadContactsAsync();
+            CollectionChanged?.Invoke();
         }
     }
 }

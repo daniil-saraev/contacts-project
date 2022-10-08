@@ -13,9 +13,9 @@ namespace Desktop.Services.Authentication.Identity
 
         Task<IEnumerable<Claim>> RegisterAsync(string username, string email, string password);
 
-        Task<IEnumerable<Claim>> RefreshAsync();
+        Task<IEnumerable<Claim>> RefreshUserDataAsync();
 
-        Task<IEnumerable<Claim>?> RestoreUserAsync();
+        Task<IEnumerable<Claim>?> RestoreUserDataAsync();
 
         Task LogoutAsync();
     }

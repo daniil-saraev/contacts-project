@@ -7,6 +7,9 @@ using Desktop.Services.Navigation;
 using Desktop.Containers;
 using Desktop.ViewModels.Account;
 using System.Windows.Input;
+using Desktop.Commands.Contacts.LoadCommand;
+using Desktop.Commands.Contacts.SaveCommand;
+using System.Threading.Tasks;
 
 namespace Desktop.ViewModels
 {
@@ -15,16 +18,35 @@ namespace Desktop.ViewModels
         private readonly NavigationService _navigation;
         private readonly AccountCommandsFactory _commandsFactory;
 
-        public BaseViewModel CurrentViewModel => _navigation.CurrentViewModel;    
-        public ICommand NavigateToAccountView { get; private set; }
+        private readonly ILoadCommand _loadContactsCommand;
+        private readonly ISaveCommand _saveContactsCommand;
+        private readonly ICommand _refreshUserSession;
 
-        public MainViewModel(AccountCommandsFactory commandsFactory)
+        public ICommand NavigateToAccountView { get; private set; }
+        public BaseViewModel CurrentViewModel => _navigation.CurrentViewModel;    
+       
+        public MainViewModel(AccountCommandsFactory commandsFactory, ILoadCommand loadContactsCommand, ISaveCommand saveContactsCommand)
         {
             _navigation = NavigationService.GetNavigationService();
+            _commandsFactory = commandsFactory;
+            _loadContactsCommand = loadContactsCommand;
+            _saveContactsCommand = saveContactsCommand;
+            _refreshUserSession = commandsFactory.NewRefreshSessionCommand(null);
+            NavigateToAccountView = new NavigateCommand(new LoginViewModel(commandsFactory));
             _navigation.CurrentViewModelChanged += OnCurrentViewModelChanged;
-            _commandsFactory = commandsFactory;                     
-            NavigateToAccountView = new NavigateCommand(new LoginViewModel(_commandsFactory));
             User.AuthenticationStateChanged += SetAccountView;
+        }
+
+        public async Task InitializeAsync()
+        {
+            _refreshUserSession.Execute(null);
+            await _loadContactsCommand.Execute();
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            _saveContactsCommand.Execute();
         }
 
         private void SetAccountView()

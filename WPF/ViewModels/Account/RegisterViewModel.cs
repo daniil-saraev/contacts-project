@@ -87,7 +87,7 @@ namespace Desktop.ViewModels.Account
         public RegisterViewModel(AccountCommandsFactory commandsFactory)
         {
             Return = new ReturnCommand();
-            Register = commandsFactory.NewRegisterCommand(this);
+            Register = commandsFactory.NewRegisterCommand(this, Return);
         }
     }
 }

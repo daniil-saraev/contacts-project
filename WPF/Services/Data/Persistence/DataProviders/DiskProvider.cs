@@ -1,9 +1,7 @@
-﻿using Desktop.Services.Data.FileServices;
+﻿using Desktop.Exceptions;
+using Desktop.Services.Data.FileServices;
 using Desktop.Services.Data.UnitOfWork;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Desktop.Services.Data.Persistence.DataProviders
@@ -28,7 +26,7 @@ namespace Desktop.Services.Data.Persistence.DataProviders
                 }
                 catch (Exception)
                 {
-                    return null;
+                    throw new ReadingDataException();
                 }
             });
         }
@@ -43,7 +41,7 @@ namespace Desktop.Services.Data.Persistence.DataProviders
                 }
                 catch (Exception)
                 {
-                    return;
+                    throw new WritingDataException();
                 }
             });
         }

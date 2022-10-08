@@ -14,11 +14,13 @@ namespace Desktop.ViewModels.Account
 
         public ICommand Return { get; }
         public ICommand Logout { get; }
+        public ICommand RefreshSession { get; }
 
         public AccountViewModel(AccountCommandsFactory commandsFactory)
         {
             Return = new ReturnCommand();
             Logout = commandsFactory.NewLogoutCommand(Return);
+            RefreshSession = commandsFactory.NewRefreshSessionCommand(Return);
         }
     }
 }

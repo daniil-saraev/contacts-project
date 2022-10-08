@@ -1,6 +1,5 @@
 ﻿using System;
 using Desktop.ViewModels.Contacts;
-using Desktop.Services.ExceptionHandlers;
 using System.Windows.Input;
 using Desktop.Services.Data;
 

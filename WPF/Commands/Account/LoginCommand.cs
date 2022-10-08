@@ -3,6 +3,7 @@ using Desktop.Services.Authentication;
 using Desktop.ViewModels.Account;
 using OpenApi;
 using System;
+using System.Windows.Input;
 
 namespace Desktop.Commands.Account
 {
@@ -10,12 +11,14 @@ namespace Desktop.Commands.Account
     {
         private readonly LoginViewModel _loginViewModel;
         private readonly AuthenticationService _authenticationService;
+        private readonly ICommand? _returnCommand;
 
-        public LoginCommand(LoginViewModel loginViewModel, AuthenticationService authenticationService)
+        public LoginCommand(LoginViewModel loginViewModel, AuthenticationService authenticationService, ICommand? returnCommand)
         {
             _loginViewModel = loginViewModel;
             _authenticationService = authenticationService;
-            _loginViewModel.ErrorsChanged += LoginViewModel_ErrorsChanged;
+            _returnCommand = returnCommand;
+            _loginViewModel.ErrorsChanged += LoginViewModel_ErrorsChanged;      
         }
 
         private void LoginViewModel_ErrorsChanged(object? sender, System.ComponentModel.DataErrorsChangedEventArgs e)
@@ -37,7 +40,7 @@ namespace Desktop.Commands.Account
             try
             {
                 await _authenticationService.LoginAsync(_loginViewModel.Email, _loginViewModel.Password);
-                _loginViewModel.Return.Execute(null);
+                _returnCommand?.Execute(null);
             }
             catch (WrongPasswordException ex)
             {

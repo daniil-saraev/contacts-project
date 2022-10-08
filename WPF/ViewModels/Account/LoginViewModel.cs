@@ -51,7 +51,7 @@ namespace Desktop.ViewModels.Account
         public LoginViewModel(AccountCommandsFactory commandsFactory)
         {
             Return = new ReturnCommand();
-            Login = commandsFactory.NewLoginCommand(this);
+            Login = commandsFactory.NewLoginCommand(this, Return);
             NavigateToRegisterView = new NavigateCommand(new RegisterViewModel(commandsFactory));
         }
     }

@@ -102,6 +102,6 @@ namespace Desktop.ViewModels
 
         #endregion
 
-        protected virtual void Dispose() { }
+        public virtual void Dispose() { }
     }
 }
