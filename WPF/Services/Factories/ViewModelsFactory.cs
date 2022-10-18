@@ -1,36 +1,21 @@
-﻿using Desktop.Containers;
-using Desktop.ViewModels;
-using Desktop.ViewModels.Account;
-using Desktop.ViewModels.Contacts;
-using System.Runtime.CompilerServices;
+﻿using Desktop.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace Desktop.Services.Factories
 {
-    public class ViewModelsFactory
+    public class ViewModelsFactory : IViewModelsFactory
     {
-        private readonly IContactsStore _contactsStore;
-        private readonly SelectedContact _selectedContact;
-        private readonly ContactCommandsFactory _commandsFactory;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ViewModelsFactory(IContactsStore contactsStore, SelectedContact selectedContact, ContactCommandsFactory commandsFactory)
+        public ViewModelsFactory(IServiceProvider serviceProvider)
         {
-            _contactsStore = contactsStore;
-            _selectedContact = selectedContact;
-            _commandsFactory = commandsFactory;
+            _serviceProvider = serviceProvider;
         }
 
-        public BaseViewModel GetNewViewModel(BaseViewModel initialViewModel)
+        public BaseViewModel GetViewModel<T>() where T : BaseViewModel
         {
-            if (initialViewModel is ContactInfoViewModel)
-            {
-                return new ContactInfoViewModel(_selectedContact, _commandsFactory);
-            }
-            if (initialViewModel is LoginViewModel)
-            {
-                return initialViewModel;
-            }
-
-            return new HomeViewModel(_contactsStore, _selectedContact, _commandsFactory);
+            return _serviceProvider.GetRequiredService<T>();
         }
     }
 }

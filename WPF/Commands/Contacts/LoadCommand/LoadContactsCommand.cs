@@ -1,5 +1,4 @@
-﻿using Desktop.Services.Data;
-using Desktop.Services.ExceptionHandlers;
+﻿using Desktop.Services.Containers;
 using System;
 using System.Threading.Tasks;
 
@@ -7,13 +6,11 @@ namespace Desktop.Commands.Contacts.LoadCommand
 {
     public class LoadContactsCommand : ILoadCommand
     {
-        private readonly ContactsStore _contactsStore;
-        private readonly IExceptionHandler _exceptionHandler;
+        private readonly IContactsStore _contactsStore;
 
-        public LoadContactsCommand(ContactsStore contactsStore, IExceptionHandler exceptionHandler)
+        public LoadContactsCommand(IContactsStore contactsStore)
         {
             _contactsStore = contactsStore;
-            _exceptionHandler = exceptionHandler;
         }
 
         public async Task Execute()
@@ -24,7 +21,7 @@ namespace Desktop.Commands.Contacts.LoadCommand
             }
             catch (Exception ex)
             {
-                _exceptionHandler.HandleException(ex);
+                
             }
         }
     }

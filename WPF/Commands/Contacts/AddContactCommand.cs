@@ -1,17 +1,18 @@
 ﻿using System;
 using Desktop.ViewModels.Contacts;
 using System.Windows.Input;
-using Desktop.Services.Data;
+using Desktop.Services.Authentication.UserServices;
+using Desktop.Services.Containers;
 
 namespace Desktop.Commands.Contacts
 {
     public class AddContactCommand : BaseCommand
     {
-        private readonly ContactsStore _contactStore;
+        private readonly IContactsStore _contactStore;
         private readonly ContactViewModel _newContactViewModel;
         private readonly ICommand? _returnCommand;
 
-        public AddContactCommand(ContactViewModel newContactViewModel, ContactsStore contactsStore,
+        public AddContactCommand(ContactViewModel newContactViewModel, IContactsStore contactsStore,
                                  ICommand? returnCommand, Func<object?, bool>? canExecuteCustom = null) : base(canExecuteCustom)
         {
             _contactStore = contactsStore;
@@ -30,12 +31,15 @@ namespace Desktop.Commands.Contacts
             return base.CanExecute(parameter) && _newContactViewModel.GetContact() != null && !_newContactViewModel.HasErrors;
         }
 
-        public override async void Execute(object? parameter)
+        public override void Execute(object? parameter)
         {
             _newContactViewModel.ValidateModel();
             if (_newContactViewModel.HasErrors)
                 return;
-            await _contactStore.AddContact(_newContactViewModel.GetContact());
+            if(User.IsAuthenticated)
+                _newContactViewModel.GetContact().SetUserId(User.Id);
+            _contactStore.AddContact(_newContactViewModel.GetContact());
+            _newContactViewModel.Dispose();
             _returnCommand?.Execute(null);
         }
     }

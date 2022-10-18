@@ -9,7 +9,7 @@ using System.Text;
 
 namespace IdentityAPI.Services
 {
-    public class TokenService
+    public class TokenService : ITokenService
     {
         private readonly AuthConfiguration _configuration;
         private readonly UserManager<ApplicationUser> _userManager;

@@ -18,11 +18,11 @@ namespace IdentityAPI.Controllers
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly TokenService _tokenService;
+        private readonly ITokenService _tokenService;
 
         public AccountController(SignInManager<ApplicationUser> signInManager,
                                  UserManager<ApplicationUser> userManager,
-                                 TokenService tokenService)
+                                 ITokenService tokenService)
         {
             _signInManager = signInManager;
             _userManager = userManager;

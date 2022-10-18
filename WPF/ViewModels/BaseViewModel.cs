@@ -102,6 +102,27 @@ namespace Desktop.ViewModels
 
         #endregion
 
+        #region Navigation
+
+        public event Action<NavigationEventArgs>? NavigateCommandExecuted;
+
+        protected void OnNavigateCommandExecuted<T>() where T : BaseViewModel
+        {
+            NavigateCommandExecuted?.Invoke(new NavigationEventArgs(nameof(T)));
+        }
+
+        #endregion
+
         public virtual void Dispose() { }
+    }
+
+    public class NavigationEventArgs
+    {
+        public string ViewModelClassName { get; }
+
+        public NavigationEventArgs(string viewModelClassName)
+        {
+            ViewModelClassName = viewModelClassName;
+        }
     }
 }

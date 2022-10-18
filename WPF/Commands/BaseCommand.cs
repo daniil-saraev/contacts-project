@@ -1,5 +1,4 @@
-﻿using Desktop.Services.ExceptionHandlers;
-using System;
+﻿using System;
 using System.Windows.Input;
 
 namespace Desktop.Commands

@@ -76,7 +76,7 @@
                             Content="Log in"
                             Foreground="#FFF3969A"                          
                             HorizontalAlignment="Center"
-                            Command="{Binding Return}"/>
+                            Command="{Binding NavigateToLoginView}"/>
                 </StackPanel>
             </StackPanel>
         </Grid>

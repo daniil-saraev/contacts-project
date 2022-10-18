@@ -16,11 +16,11 @@ namespace Desktop.ViewModels.Account
         public ICommand Logout { get; }
         public ICommand RefreshSession { get; }
 
-        public AccountViewModel(AccountCommandsFactory commandsFactory)
+        public AccountViewModel(AuthenticationService authenticationService)
         {
             Return = new ReturnCommand();
-            Logout = commandsFactory.NewLogoutCommand(Return);
-            RefreshSession = commandsFactory.NewRefreshSessionCommand(Return);
+            Logout = new LogoutCommand(authenticationService, Return);
+            RefreshSession = new RefreshSessionCommand(authenticationService, Return);
         }
     }
 }

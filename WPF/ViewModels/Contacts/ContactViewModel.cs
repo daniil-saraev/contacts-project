@@ -7,7 +7,7 @@ namespace Desktop.ViewModels.Contacts
 {
     public class ContactViewModel : BaseViewModel
     {
-        private Contact _contact;
+        private Contact? _contact;
         
         public ContactViewModel(Contact contact)
         {
@@ -19,35 +19,43 @@ namespace Desktop.ViewModels.Contacts
             _contact = contact;
         }
 
-        public Contact GetContact()
+        public Contact? GetContact()
         {
             return _contact;
         }
 
+        public override void Dispose()
+        {
+            _contact = null;
+            OnPropertyChanged();
+        }
+
         #region Properties
 
-        public string Id
+        public string? Id
         {
-            get { return _contact.Id; }
+            get { return _contact?.Id; }
         }
 
         [Required]
-        public string UserId
+        public string? UserId
         {
-            get { return _contact.UserId; }
+            get { return _contact?.UserId; }
         }
 
-        public string FullName
+        public string? FullName
         {
-            get { return $"{_contact.LastName} {_contact.FirstName}"; }
+            get { return $"{_contact?.LastName} {_contact?.FirstName}"; }
         }
 
         [Required(ErrorMessage = "First name is required")]
-        public string FirstName
+        public string? FirstName
         {
-            get { return _contact.FirstName; }
+            get { return _contact?.FirstName; }
             set
             {
+                if (_contact == null)
+                    return;
                 ValidateProperty(value);
                 _contact.FirstName = value;
                 OnPropertyChanged();
@@ -56,9 +64,11 @@ namespace Desktop.ViewModels.Contacts
 
         public string? MiddleName
         {
-            get { return _contact.MiddleName; }
+            get { return _contact?.MiddleName; }
             set
             {
+                if (_contact == null)
+                    return;
                 _contact.MiddleName = value;
                 OnPropertyChanged();
             }
@@ -66,9 +76,11 @@ namespace Desktop.ViewModels.Contacts
 
         public string? LastName
         {
-            get { return _contact.LastName; }
+            get { return _contact?.LastName; }
             set
             {
+                if (_contact == null)
+                    return;
                 _contact.LastName = value;
                 OnPropertyChanged();
             }
@@ -76,11 +88,13 @@ namespace Desktop.ViewModels.Contacts
 
         [Required(ErrorMessage = "Phone number is required")]
         [PhoneNumberValid(ErrorMessage = "Invalid phone number")]
-        public string PhoneNumber
+        public string? PhoneNumber
         {
-            get { return _contact.PhoneNumber; }
+            get { return _contact?.PhoneNumber; }
             set
             {
+                if (_contact == null)
+                    return;
                 ValidateProperty(value);
                 _contact.PhoneNumber = value;               
                 OnPropertyChanged();
@@ -89,9 +103,11 @@ namespace Desktop.ViewModels.Contacts
 
         public string? Address
         {
-            get { return _contact.Address; }
+            get { return _contact?.Address; }
             set
             {
+                if (_contact == null)
+                    return;
                 _contact.Address = value;
                 OnPropertyChanged();
             }
@@ -99,9 +115,11 @@ namespace Desktop.ViewModels.Contacts
 
         public string? Description
         {
-            get { return _contact.Description; }
+            get { return _contact?.Description; }
             set
             {
+                if (_contact == null)
+                    return;
                 _contact.Description = value;
                 OnPropertyChanged();
             }

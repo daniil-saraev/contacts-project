@@ -17,7 +17,7 @@ builder.Services.AddDbContext<UserDbContext>(options =>
 
 builder.Services.AddIdentityServices();
 
-builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 AuthConfiguration configuration = new AuthConfiguration();
 builder.Configuration.Bind("JWT", configuration);

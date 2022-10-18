@@ -1,61 +1,42 @@
-﻿using Desktop.Services.Factories;
-using Desktop.ViewModels;
+﻿using Desktop.ViewModels;
 using System;
 using System.Collections.Generic;
+using Desktop.Services.Factories;
 
 namespace Desktop.Services.Navigation
 {
-    public class NavigationService
+    public class NavigationService : INavigationService
     {
-        private static NavigationService? _instance;
-        private readonly ViewModelsFactory _viewModelsFactory;
-
+        private readonly IViewModelsFactory _viewModelsFactory;
         private BaseViewModel? _currentViewModel;
-
         private Stack<BaseViewModel> _viewHistory;
 
+        public BaseViewModel? CurrentViewModel => _currentViewModel;
         public event Action? CurrentViewModelChanged;
-
         public bool CanReturn => _viewHistory.Count != 0;
 
-        public BaseViewModel CurrentViewModel
+        public NavigationService(IViewModelsFactory viewModelsFactory)
         {
-            get { return _currentViewModel; }
-            set
-            {
-                if (_currentViewModel != null)
+            _viewModelsFactory = viewModelsFactory;
+            _viewHistory = new Stack<BaseViewModel>();
+        }
+
+        public void NavigateTo<T>() where T : BaseViewModel
+        {
+            BaseViewModel viewModel = _viewModelsFactory.GetViewModel<T>();
+            if (_currentViewModel != null)
                     _viewHistory.Push(_currentViewModel);
-                _currentViewModel = value;
+                _currentViewModel = viewModel;
                 CurrentViewModelChanged?.Invoke();
-            }
         }
 
         public void Return()
         {
             if (CanReturn)
             {
-                _currentViewModel = _viewModelsFactory.GetNewViewModel(_viewHistory.Pop());
+                _currentViewModel = _viewHistory.Pop();
                 CurrentViewModelChanged?.Invoke();
             }
-        }
-
-        public static void InitializeNavigationService(ViewModelsFactory viewModelsFactory)
-        {
-            _instance ??= new NavigationService(viewModelsFactory);
-        }
-
-        public static NavigationService GetNavigationService()
-        {
-            if (_instance == null)
-                throw new Exception("Navigation service was not initialized!");
-            else
-                return _instance;
-        }
-
-        private NavigationService(ViewModelsFactory viewModelsFactory)
-        {
-            _viewModelsFactory = viewModelsFactory;
-            _viewHistory = new Stack<BaseViewModel>();
         }
     }
 }

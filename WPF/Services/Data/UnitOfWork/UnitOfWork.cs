@@ -1,28 +1,48 @@
 ﻿using NuGet.Packaging;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Desktop.Services.Data.UnitOfWork
 {
     public class UnitOfWork<T>
     {
-        private UnitOfWorkState<T> _unitOfWorkState;
-        private List<T> _syncedEntities => _unitOfWorkState.SyncedEntities;
-        private List<T> _newEntities => _unitOfWorkState.NewEntities;
-        private List<T> _dirtyEntities => _unitOfWorkState.DirtyEntities;
-        private List<T> _removedEntities => _unitOfWorkState.RemovedEntities;
+        private readonly List<T> _syncedEntities;
+        private readonly List<T> _newEntities;
+        private readonly List<T> _removedEntities;
 
-        public UnitOfWorkState<T> UnitOfWorkState { get => _unitOfWorkState; set => _unitOfWorkState = value; }
+        public IEnumerable<T> SyncedEntities => _syncedEntities;
+        public IEnumerable<T> NewEntities => _newEntities;
+        public IEnumerable<T> RemovedEntities => _removedEntities;
 
-        public IEnumerable<T> SyncedEntities => _unitOfWorkState.SyncedEntities;
-        public IEnumerable<T> NewEntities => _unitOfWorkState.NewEntities;
-        public IEnumerable<T> DirtyEntities => _unitOfWorkState.DirtyEntities;
-        public IEnumerable<T> RemovedEntities => _unitOfWorkState.RemovedEntities;
+        public bool IsSynced => _newEntities.Count == 0  && _removedEntities.Count == 0;
 
-        public bool IsSynced => _newEntities.Count == 0 && _dirtyEntities.Count == 0 && _removedEntities.Count == 0;
+        public UnitOfWorkState<T> UnitOfWorkState 
+        { 
+            get 
+            {
+                return new UnitOfWorkState<T>()
+                {
+                    SyncedEntities = _syncedEntities,
+                    NewEntities = _newEntities,
+                    RemovedEntities = _removedEntities
+                };
+            }
+            set
+            {
+                _syncedEntities.Clear();
+                _syncedEntities.AddRange(value.SyncedEntities);
+                _newEntities.Clear();
+                _newEntities.AddRange(value.NewEntities);
+                _removedEntities.Clear();
+                _removedEntities.AddRange(value.RemovedEntities);
+            }
+        }
 
         public UnitOfWork()
         {
-            _unitOfWorkState = new UnitOfWorkState<T>();
+            _syncedEntities = new List<T>();
+            _newEntities = new List<T>();
+            _removedEntities = new List<T>();
         }
 
         public IEnumerable<T> CreateRelevantEntitiesList()
@@ -30,7 +50,6 @@ namespace Desktop.Services.Data.UnitOfWork
             var relevantContacts = new List<T>();
             relevantContacts.AddRange(_syncedEntities);
             relevantContacts.AddRange(_newEntities);
-            relevantContacts.AddRange(_dirtyEntities);
             return relevantContacts;
         }
 
@@ -39,16 +58,10 @@ namespace Desktop.Services.Data.UnitOfWork
             if (_syncedEntities.Contains(entity))
                 return;
 
-            if (_dirtyEntities.Contains(entity))
-            {
-                _dirtyEntities.Remove(entity);
-                _syncedEntities.Add(entity);
-            }
-
             if (_newEntities.Contains(entity))
             {
-                _newEntities.Remove(entity);
                 _syncedEntities.Add(entity);
+                _newEntities.Remove(entity);              
             }
 
             if (_removedEntities.Contains(entity))
@@ -57,9 +70,13 @@ namespace Desktop.Services.Data.UnitOfWork
 
         public void RegisterNewEntity(T entity)
         {
-            if (!_newEntities.Contains(entity))
+            if (!_newEntities.Contains(entity) && !_syncedEntities.Contains(entity))
             {
                 _newEntities.Add(entity);
+            }
+            if(_removedEntities.Contains(entity))
+            {
+                _removedEntities.Remove(entity);
             }
         }
 
@@ -70,23 +87,33 @@ namespace Desktop.Services.Data.UnitOfWork
                 _syncedEntities.Remove(entity);
                 _removedEntities.Add(entity);
             }
-            if (_dirtyEntities.Contains(entity))
-            {
-                _dirtyEntities.Remove(entity);
-            }
             if (_newEntities.Contains(entity))
             {
                 _newEntities.Remove(entity);
             }
         }
 
-        public void RegisterUpdatedEntity(T previousEntity, T updatedEntity)
+        public void RegisterUpdatedEntity(T initialEntity, T updatedEntity)
         {
-            if (_syncedEntities.Contains(previousEntity))
+            if (_syncedEntities.Contains(initialEntity))
             {
-                _syncedEntities.Remove(previousEntity);
-                _dirtyEntities.Add(updatedEntity);
+                _syncedEntities.Remove(initialEntity);
+                _removedEntities.Add(initialEntity);
+                _newEntities.Add(updatedEntity);
             }
+            if(_newEntities.Contains(initialEntity))
+            {
+                _newEntities.Remove(initialEntity);
+                _newEntities.Add(updatedEntity);
+            }
+        }
+
+        public void SyncUnitOfWorkState()
+        {
+            foreach (var entity in _newEntities)
+                _syncedEntities.Add(entity);
+            _newEntities.Clear();
+            _removedEntities.Clear();
         }
     }
 }

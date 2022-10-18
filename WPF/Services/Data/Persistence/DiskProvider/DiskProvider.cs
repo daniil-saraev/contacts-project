@@ -4,9 +4,9 @@ using Desktop.Services.Data.UnitOfWork;
 using System;
 using System.Threading.Tasks;
 
-namespace Desktop.Services.Data.Persistence.DataProviders
+namespace Desktop.Services.Data.Persistence.DiskProvider
 {
-    public class DiskProvider
+    public class DiskProvider : IDiskProvider
     {
         private readonly IFileService<UnitOfWorkState<Contact>> _fileService;
 
@@ -15,7 +15,7 @@ namespace Desktop.Services.Data.Persistence.DataProviders
             _fileService = fileService;
         }
 
-        public Task<UnitOfWorkState<Contact>?> TryLoadFromDisk()
+        public Task<UnitOfWorkState<Contact>?> TryLoadFromDiskAsync()
         {
             UnitOfWorkState<Contact>? unitOfWorkState = null;
             return Task.Run(() =>
@@ -31,7 +31,7 @@ namespace Desktop.Services.Data.Persistence.DataProviders
             });
         }
 
-        public Task TrySaveToDisk(UnitOfWorkState<Contact> unitOfWorkState)
+        public Task TrySaveToDiskAsync(UnitOfWorkState<Contact> unitOfWorkState)
         {
             return Task.Run(() =>
             {

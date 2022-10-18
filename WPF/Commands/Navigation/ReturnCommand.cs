@@ -10,7 +10,7 @@ namespace Desktop.Commands.Navigation
 
         public ReturnCommand(Func<object?, bool>? canExecuteCustom = null) : base(canExecuteCustom)
         {
-            _navigationService = NavigationService.GetNavigationService();
+            _navigationService = NavigationService.GetInstance();
 
         }
 

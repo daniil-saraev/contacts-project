@@ -1,6 +1,7 @@
 ﻿using ApiServices.Interfaces;
+using Desktop.Exceptions;
 using Desktop.Services.Data.FileServices;
-using Desktop.Services.Data.Persistence.DataProviders;
+using Desktop.Services.Data.Persistence.DiskProvider;
 using Desktop.Services.Data.UnitOfWork;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -10,30 +11,27 @@ namespace Desktop.Services.Data.Persistence
     public class NotAuthenticatedPersistenceProvider : IPersistenceProvider
     {
         private readonly UnitOfWork<Contact> _contactsUnitOfWork;
-        private readonly DiskProvider _diskProvider;
+        private readonly IDiskProvider _diskProvider;
 
-        public NotAuthenticatedPersistenceProvider(UnitOfWork<Contact> unitOfWork, IFileService<UnitOfWorkState<Contact>> fileService)
+        public NotAuthenticatedPersistenceProvider(UnitOfWork<Contact> unitOfWork, IDiskProvider diskProvider)
         {
             _contactsUnitOfWork = unitOfWork;
-            _diskProvider = new DiskProvider(fileService);
+            _diskProvider = diskProvider;
         }
 
-        public Task AddContact(Contact contact)
+        public void AddContact(Contact contact)
         {
             _contactsUnitOfWork.RegisterNewEntity(contact);
-            return Task.CompletedTask;
         }
 
-        public Task UpdateContact(Contact initialContact, Contact updatedContact)
+        public void UpdateContact(Contact initialContact, Contact updatedContact)
         {
             _contactsUnitOfWork.RegisterUpdatedEntity(initialContact, updatedContact);
-            return Task.CompletedTask;
         }
 
-        public Task RemoveContact(Contact contact) 
+        public void RemoveContact(Contact contact) 
         {
             _contactsUnitOfWork.RegisterRemovedEntity(contact);
-            return Task.CompletedTask;
         }
 
         public async Task<IEnumerable<Contact>> LoadContactsAsync()
@@ -44,14 +42,21 @@ namespace Desktop.Services.Data.Persistence
 
         public Task SaveContactsAsync()
         {
-            return _diskProvider.TrySaveToDisk(_contactsUnitOfWork.UnitOfWorkState);
+            return _diskProvider.TrySaveToDiskAsync(_contactsUnitOfWork.UnitOfWorkState);
         }
 
         private async Task LoadUnitOfWorkState()
         {
-            UnitOfWorkState<Contact>? unitOfWorkState = await _diskProvider.TryLoadFromDisk();
-            if (unitOfWorkState != null)
-                _contactsUnitOfWork.UnitOfWorkState = unitOfWorkState;
+            try
+            {
+                UnitOfWorkState<Contact>? unitOfWorkState = await _diskProvider.TryLoadFromDiskAsync();
+                if (unitOfWorkState != null)
+                    _contactsUnitOfWork.UnitOfWorkState = unitOfWorkState;
+            }
+            catch (ReadingDataException)
+            {
+                return;
+            }           
         }
     }
 }

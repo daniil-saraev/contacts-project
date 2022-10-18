@@ -48,11 +48,11 @@ namespace Desktop.ViewModels.Account
         public ICommand Login { get; }
         public ICommand NavigateToRegisterView { get; }
 
-        public LoginViewModel(AccountCommandsFactory commandsFactory)
+        public LoginViewModel(AuthenticationService authenticationService, IViewModelsFactory viewModelsFactory)
         {
-            Return = new ReturnCommand();
-            Login = commandsFactory.NewLoginCommand(this, Return);
-            NavigateToRegisterView = new NavigateCommand(new RegisterViewModel(commandsFactory));
+            Return = new NavigateToHomeViewCommand(viewModelsFactory);
+            Login = new LoginCommand(this, authenticationService, Return);
+            NavigateToRegisterView = new NavigateToRegisterViewCommand(viewModelsFactory);
         }
     }
 }

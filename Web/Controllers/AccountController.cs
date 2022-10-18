@@ -66,7 +66,8 @@ namespace Web.Controllers
             }
             catch(Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError(ex, ex.Message);
+                return BadRequest();
             }
             
             return Redirect(model.ReturnUrl);
@@ -114,7 +115,8 @@ namespace Web.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError(ex, ex.Message);
+                return BadRequest();
             }
 
             return Redirect(model.ReturnUrl);
@@ -134,7 +136,7 @@ namespace Web.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError(ex, ex.Message);
             }
 
             return SignOut(new AuthenticationProperties

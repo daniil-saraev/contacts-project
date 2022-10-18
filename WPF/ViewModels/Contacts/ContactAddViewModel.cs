@@ -1,18 +1,13 @@
-﻿using OpenApi;
-using Desktop.Commands.Contacts;
-using Desktop.Commands.Navigation;
-using Desktop.Services.Authentication.UserServices;
+﻿using Desktop.Commands.Navigation;
 using System.Windows.Input;
-using Desktop.Services.Factories;
-using Desktop.Containers;
+using Desktop.Commands.Contacts;
+using Desktop.Services.Containers;
 
 namespace Desktop.ViewModels.Contacts
 {
     public class ContactAddViewModel : BaseViewModel
     {
-        private readonly SelectedContact _selectedContact;
         private readonly ContactViewModel _newContactViewModel;
-        private readonly ContactCommandsFactory _commandsFactory;
 
         public ContactViewModel Contact
         {
@@ -23,14 +18,18 @@ namespace Desktop.ViewModels.Contacts
 
         public ICommand Return { get; }
 
-        public ContactAddViewModel(SelectedContact currentContact, ContactCommandsFactory commandsFactory)
+        public ContactAddViewModel(IContactsStore contactsStore)
         {
-            _selectedContact = currentContact;
-            _selectedContact.Contact = User.IsAuthenticated ? new Contact(User.Id) : new Contact();
-            _newContactViewModel = new ContactViewModel(_selectedContact.Contact);
-            _commandsFactory = commandsFactory;
+            _newContactViewModel = new ContactViewModel(new Contact());
             Return = new ReturnCommand();
-            AddContact = _commandsFactory.NewAddContactCommand(_newContactViewModel, Return);
+            AddContact = new AddContactCommand(_newContactViewModel, contactsStore, Return);
+            _newContactViewModel.PropertyChanged += NewContactViewModel_PropertyChanged;
+        }
+
+        private void NewContactViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (_newContactViewModel.GetContact() == null)
+                _newContactViewModel.SetContact(new Contact());
         }
     }
 }

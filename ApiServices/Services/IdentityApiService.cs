@@ -22,29 +22,29 @@ namespace ApiServices.Services
             _httpClient.SetBearerToken(token);
         }
 
-        public async Task<TokenResponse> LoginAsync(LoginRequest request)
+        public Task<TokenResponse> LoginAsync(LoginRequest request)
         {
-            return await _identityApi.LoginAsync(request);
+            return _identityApi.LoginAsync(request);
         }
 
-        public async Task LogoutAsync()
+        public Task LogoutAsync()
         {
-            await _identityApi.LogoutAsync();
+            return _identityApi.LogoutAsync();
         }
 
-        public async Task<TokenResponse> RefreshAsync(RefreshTokenRequest request)
+        public Task<TokenResponse> RefreshAsync(RefreshTokenRequest request)
         {
-            return await _identityApi.RefreshAsync(request);
+            return _identityApi.RefreshAsync(request);
         }
 
-        public async Task<TokenResponse> RegisterAsync(RegisterRequest request)
+        public Task<TokenResponse> RegisterAsync(RegisterRequest request)
         {
-            return await _identityApi.RegisterAsync(request);
+            return _identityApi.RegisterAsync(request);
         }
 
-        public async Task RevokeAsync(string userId)
+        public Task RevokeAsync(string userId)
         {
-            await _identityApi.RevokeAsync(userId);
+            return _identityApi.RevokeAsync(userId);
         }
     }
 }

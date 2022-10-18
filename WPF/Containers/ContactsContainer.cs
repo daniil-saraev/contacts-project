@@ -1,17 +1,17 @@
 ﻿using Desktop.Services.Authentication.UserServices;
 using Desktop.Services.Data.Persistence;
 using Desktop.Services.Factories;
-using System;                   
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Desktop.Containers;
 
-namespace Desktop.Services.Data
+namespace Desktop.Services.Containers
 {
     /// <summary>
-    /// Temporary storage for all contacts the user is working with. Is a singleton.
+    /// Temporary storage for all contacts the user is working with.
     /// </summary>
-    public class ContactsStore : IContactsStore
+    public class ContactsContainer : IContactsPresenter, IContactsStore
     {
         private readonly List<Contact> _contacts;
         private readonly PersistenceProvidersFactory _persistenceProviderFactory;
@@ -21,34 +21,40 @@ namespace Desktop.Services.Data
 
         public event Action? CollectionChanged;
 
-        public ContactsStore(PersistenceProvidersFactory persistenceProviderFactory)
+        public ContactsContainer(PersistenceProvidersFactory persistenceProviderFactory)
         {
             _contacts = new List<Contact>();
             _persistenceProviderFactory = persistenceProviderFactory;
-            _persistenceProvider = User.IsAuthenticated ? _persistenceProviderFactory.GetAuthenticatedPersistenceProvider() 
+            _persistenceProvider = User.IsAuthenticated ? _persistenceProviderFactory.GetAuthenticatedPersistenceProvider()
                                                         : _persistenceProviderFactory.GetNotAuthenticatedPersistenceProvider();
             User.AuthenticationStateChanged += User_AuthenticationStateChanged;
         }
 
-        public Task RemoveContact(Contact contact)
+        public void RemoveContact(Contact contact)
         {
+            if (!_contacts.Contains(contact))
+                return;
             _contacts.Remove(contact);
             CollectionChanged?.Invoke();
-            return _persistenceProvider.RemoveContact(contact);
+            _persistenceProvider.RemoveContact(contact);
         }
 
-        public Task UpdateContact(Contact previousContact, Contact updatedContact)
+        public void UpdateContact(Contact initialContact, Contact updatedContact)
         {
-            _contacts[_contacts.IndexOf(previousContact)] = updatedContact;
+            if (!_contacts.Contains(initialContact))
+                return;
+            _contacts[_contacts.IndexOf(initialContact)] = updatedContact;
             CollectionChanged?.Invoke();
-            return _persistenceProvider.UpdateContact(previousContact, updatedContact);
+            _persistenceProvider.UpdateContact(initialContact, updatedContact);
         }
 
-        public Task AddContact(Contact contact)
+        public void AddContact(Contact contact)
         {
+            if (_contacts.Contains(contact))
+                return;
             _contacts.Add(contact);
             CollectionChanged?.Invoke();
-            return _persistenceProvider.AddContact(contact);
+            _persistenceProvider.AddContact(contact);
         }
 
         public async Task LoadContactsAsync()

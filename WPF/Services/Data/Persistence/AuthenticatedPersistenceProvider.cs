@@ -1,7 +1,7 @@
-﻿using ApiServices.Interfaces;
-using Desktop.Services.Data.FileServices;
-using Desktop.Services.Data.Persistence.DataProviders;
+﻿using Desktop.Services.Data.Persistence.DiskProvider;
+using Desktop.Services.Data.Persistence.RemoteRepositoryProvider;
 using Desktop.Services.Data.UnitOfWork;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -10,15 +10,15 @@ namespace Desktop.Services.Data.Persistence
     public class AuthenticatedPersistenceProvider : NotAuthenticatedPersistenceProvider
     {
         private readonly UnitOfWork<Contact> _contactsUnitOfWork;
-        private readonly DiskProvider _diskProvider;
-        private readonly RemoteRepositoryProvider _remoteRepositoryProvider;
+        private readonly IDiskProvider _diskProvider;
+        private readonly IRemoteRepositoryProvider _remoteRepositoryProvider;
 
-        public AuthenticatedPersistenceProvider(UnitOfWork<Contact> unitOfWork, IFileService<UnitOfWorkState<Contact>> fileService, IRepository<Contact> contactRepository)
-            : base(unitOfWork, fileService)
+        public AuthenticatedPersistenceProvider(UnitOfWork<Contact> unitOfWork, IDiskProvider diskProvider, IRemoteRepositoryProvider remoteRepositoryProvider)
+            : base(unitOfWork, diskProvider)
         {
             _contactsUnitOfWork = unitOfWork;
-            _diskProvider = new DiskProvider(fileService);
-            _remoteRepositoryProvider = new RemoteRepositoryProvider(contactRepository);
+            _diskProvider = diskProvider;
+            _remoteRepositoryProvider = remoteRepositoryProvider;
         }
 
         new public async Task<IEnumerable<Contact>> LoadContactsAsync()
@@ -29,47 +29,76 @@ namespace Desktop.Services.Data.Persistence
 
         new public async Task SaveContactsAsync()
         {
-            await Task.WhenAll(
-            _diskProvider.TrySaveToDisk(_contactsUnitOfWork.UnitOfWorkState),
-            _remoteRepositoryProvider.TrySyncWithRemoteRepository(_contactsUnitOfWork.UnitOfWorkState));  
-            SyncLocalUnitOfWork();
+            try
+            {
+                await SyncChangesWithRemoteRepositoryIfAnyAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                await _diskProvider.TrySaveToDiskAsync(_contactsUnitOfWork.UnitOfWorkState);
+            }       
         }
 
         private async Task LoadUnitOfWorkStateAsync()
         {
-            await LoadUnitOfWorkStateFromDiskAsync();
-            await PushLocalChangesToRemoteRepositoryAsync();
-            await LoadUnitOfWorkStateFromRemoteRepositoryAsync();
+            try
+            {
+                await LoadUnitOfWorkStateFromDiskAsync();
+                await SyncChangesWithRemoteRepositoryIfAnyAsync();
+                await LoadUnitOfWorkStateFromRemoteRepositoryAsync();
+            }
+            catch (Exception)
+            {
+                return;
+            }       
         }
 
         private async Task LoadUnitOfWorkStateFromDiskAsync()
         {
-            UnitOfWorkState<Contact>? unitOfWorkState = await _diskProvider.TryLoadFromDisk();
-            if (unitOfWorkState != null)
-                _contactsUnitOfWork.UnitOfWorkState = unitOfWorkState;
+            try
+            {
+                UnitOfWorkState<Contact>? unitOfWorkState = await _diskProvider.TryLoadFromDiskAsync();
+                if (unitOfWorkState != null)
+                    _contactsUnitOfWork.UnitOfWorkState = unitOfWorkState;
+            }
+            catch (Exception)
+            {
+                return;
+            }           
         }
 
-        private async Task PushLocalChangesToRemoteRepositoryAsync()
+        private async Task SyncChangesWithRemoteRepositoryIfAnyAsync()
         {
-            if (!_contactsUnitOfWork.IsSynced)
-                await _remoteRepositoryProvider.TrySyncWithRemoteRepository(_contactsUnitOfWork.UnitOfWorkState);
+            try
+            {
+                if (!_contactsUnitOfWork.IsSynced)
+                {
+                    await _remoteRepositoryProvider.TryPushChangesToRemoteRepositoryAsync(_contactsUnitOfWork.UnitOfWorkState);
+                    _contactsUnitOfWork.SyncUnitOfWorkState();
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }                     
         }
 
         private async Task LoadUnitOfWorkStateFromRemoteRepositoryAsync()
         {
-            UnitOfWorkState<Contact>? unitOfWorkState = await _remoteRepositoryProvider.TryLoadFromRemoteRepository();
-            if (unitOfWorkState != null)
-                _contactsUnitOfWork.UnitOfWorkState = unitOfWorkState;
-        }
-
-        private void SyncLocalUnitOfWork()
-        {
-            foreach (var contact in _contactsUnitOfWork.DirtyEntities)
-                _contactsUnitOfWork.RegisterSyncedEntity(contact);
-            foreach (var contact in _contactsUnitOfWork.NewEntities)
-                _contactsUnitOfWork.RegisterSyncedEntity(contact);
-            foreach (var contact in _contactsUnitOfWork.RemovedEntities)
-                _contactsUnitOfWork.RegisterSyncedEntity(contact);
+            try
+            {
+                UnitOfWorkState<Contact>? unitOfWorkState = await _remoteRepositoryProvider.TryLoadFromRemoteRepositoryAsync();
+                if (unitOfWorkState != null)
+                    _contactsUnitOfWork.UnitOfWorkState = unitOfWorkState;
+            }
+            catch (Exception)
+            {
+                return;
+            }       
         }
     }
 }

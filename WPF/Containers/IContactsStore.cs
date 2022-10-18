@@ -1,16 +1,18 @@
-﻿using OpenApi;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Desktop.Services.Data.Persistence;
 using System.Threading.Tasks;
 
-namespace Desktop.Containers
+namespace Desktop.Services.Containers
 {
     public interface IContactsStore
     {
-        IEnumerable<Contact> Contacts { get; }
+        public void RemoveContact(Contact contact);
 
-        event Action? CollectionChanged;
+        public void UpdateContact(Contact initialContact, Contact updatedContact);
+
+        public void AddContact(Contact contact);
+
+        public Task LoadContactsAsync();
+
+        public Task SaveContactsAsync();
     }
 }

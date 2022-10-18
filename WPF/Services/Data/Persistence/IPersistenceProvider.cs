@@ -7,11 +7,11 @@ namespace Desktop.Services.Data.Persistence
 {
     public interface IPersistenceProvider
     {
-        Task AddContact(Contact contact);
+        void AddContact(Contact contact);
 
-        Task UpdateContact(Contact initialContact, Contact updatedContact);
+        void UpdateContact(Contact initialContact, Contact updatedContact);
 
-        Task RemoveContact(Contact contact);
+        void RemoveContact(Contact contact);
 
         Task<IEnumerable<Contact>> LoadContactsAsync();
 

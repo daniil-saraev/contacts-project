@@ -114,6 +114,8 @@ namespace Desktop.Services.Authentication.Identity
                 throw userNotFoundException;
             if (errorMessage == wrongPasswordException.Message)
                 throw wrongPasswordException;
+            else
+                throw new Exception(errorMessage);
         }
     }
 }

@@ -4,7 +4,7 @@ using System;
 namespace Desktop.Containers
 {
     /// <summary>
-    /// Temporary storage for a single contact the user is currently working with. Is a singleton.
+    /// Temporary storage for a single contact the user is currently working with.
     /// </summary>
     public class SelectedContact
     {

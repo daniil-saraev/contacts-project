@@ -57,8 +57,6 @@ namespace ContactsDatabaseAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddAsync([FromBody] Contact contact)
         {
-            if (!ModelState.IsValid)
-                return BadRequest();
             try
             {
                 await _dbContext.Contacts.AddAsync(contact);
@@ -79,8 +77,6 @@ namespace ContactsDatabaseAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddRangeAsync([FromBody] IEnumerable<Contact> contacts)
         {
-            if (!ModelState.IsValid)
-                return BadRequest();
             try
             {
                 await _dbContext.Contacts.AddRangeAsync(contacts);
@@ -151,9 +147,6 @@ namespace ContactsDatabaseAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateAsync([FromBody] Contact contact)
         {
-            if (!ModelState.IsValid)
-                return BadRequest();
-
             if (contact.UserId != _userId)
                 return BadRequest();
             try
@@ -176,9 +169,6 @@ namespace ContactsDatabaseAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateRangeAsync([FromBody] IEnumerable<Contact> contacts)
         {
-            if (!ModelState.IsValid)
-                return BadRequest();
-
             if (!contacts.All(c => c.UserId == _userId))
                 return BadRequest();
             try

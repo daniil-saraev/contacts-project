@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using Desktop.ViewModels;
+using System.Windows;
 using System.Windows.Input;
 
 namespace Desktop
@@ -8,13 +9,17 @@ namespace Desktop
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        private readonly MainViewModel _mainViewModel;
+        public MainWindow(MainViewModel mainViewModel)
         {
             InitializeComponent();
+            _mainViewModel = mainViewModel;
+            this.DataContext = mainViewModel;
         }
 
         private void CloseButtonClick(object sender, RoutedEventArgs e)
         {
+            _mainViewModel.Dispose();
             Application.Current.Shutdown();
         }
 

@@ -2,8 +2,6 @@
 using Desktop.Commands.Navigation;
 using Desktop.Services.Authentication;
 using Desktop.Services.Factories;
-using Desktop.Containers;
-using Desktop.ViewModels.Contacts;
 using System.ComponentModel.DataAnnotations;
 using System.Windows.Input;
 
@@ -83,11 +81,13 @@ namespace Desktop.ViewModels.Account
 
         public ICommand Return { get; }
         public ICommand Register { get; }
+        public ICommand NavigateToLoginView { get; }
 
-        public RegisterViewModel(AccountCommandsFactory commandsFactory)
+        public RegisterViewModel(AuthenticationService authenticationService, IViewModelsFactory viewModelsFactory)
         {
-            Return = new ReturnCommand();
-            Register = commandsFactory.NewRegisterCommand(this, Return);
+            Return = new NavigateToHomeViewCommand(viewModelsFactory);
+            Register = new RegisterCommand(this, authenticationService, Return);
+            NavigateToLoginView = new NavigateToLoginViewCommand(viewModelsFactory);
         }
     }
 }

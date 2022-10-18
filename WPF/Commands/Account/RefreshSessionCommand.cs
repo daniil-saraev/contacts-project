@@ -1,5 +1,4 @@
 ﻿using Desktop.Services.Authentication;
-using Desktop.Services.ExceptionHandlers;
 using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -9,13 +8,11 @@ namespace Desktop.Commands.Account
     public class RefreshSessionCommand : BaseCommand
     {
         private readonly AuthenticationService _authenticationService;
-        private readonly IExceptionHandler _exceptionHandler;
         private readonly ICommand? _returnCommand;
 
-        public RefreshSessionCommand(AuthenticationService authenticationService, IExceptionHandler exceptionHandler, ICommand? returnCommand)
+        public RefreshSessionCommand(AuthenticationService authenticationService, ICommand? returnCommand)
         {
             _authenticationService = authenticationService;
-            _exceptionHandler = exceptionHandler;
             _returnCommand = returnCommand;
         }
 
@@ -28,7 +25,7 @@ namespace Desktop.Commands.Account
             }
             catch (Exception ex)
             {
-                _exceptionHandler.HandleException(ex);
+                
             }         
         }
     }

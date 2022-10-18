@@ -4,9 +4,9 @@ using Desktop.Services.Data.UnitOfWork;
 using System;
 using System.Threading.Tasks;
 
-namespace Desktop.Services.Data.Persistence.DataProviders
+namespace Desktop.Services.Data.Persistence.RemoteRepositoryProvider
 {
-    public class RemoteRepositoryProvider
+    public class RemoteRepositoryProvider : IRemoteRepositoryProvider
     {
         private readonly IRepository<Contact> _contactRepository;
 
@@ -15,7 +15,7 @@ namespace Desktop.Services.Data.Persistence.DataProviders
             _contactRepository = contactRepository;
         }
 
-        public Task<UnitOfWorkState<Contact>?> TryLoadFromRemoteRepository()
+        public Task<UnitOfWorkState<Contact>?> TryLoadFromRemoteRepositoryAsync()
         {
             return Task.Run(async () =>
             {
@@ -24,7 +24,10 @@ namespace Desktop.Services.Data.Persistence.DataProviders
                 {
                     var contacts = await _contactRepository.GetAllAsync();
                     if (contacts != null)
-                        unitOfWorkState = new UnitOfWorkState<Contact>(contacts);
+                    {
+                        unitOfWorkState = new UnitOfWorkState<Contact>();
+                        unitOfWorkState.SyncedEntities = contacts;
+                    }
                     return unitOfWorkState;
                 }
                 catch (Exception)
@@ -34,15 +37,14 @@ namespace Desktop.Services.Data.Persistence.DataProviders
             });
         }
 
-        public Task TrySyncWithRemoteRepository(UnitOfWorkState<Contact> unitOfWorkState)
+        public Task TryPushChangesToRemoteRepositoryAsync(UnitOfWorkState<Contact> unitOfWorkState)
         {
             return Task.Run(async () =>
             {
                 try
                 {
-                    await _contactRepository.UpdateRangeAsync(unitOfWorkState.DirtyEntities);
-                    await _contactRepository.AddRangeAsync(unitOfWorkState.NewEntities);
                     await _contactRepository.DeleteRangeAsync(unitOfWorkState.RemovedEntities);
+                    await _contactRepository.AddRangeAsync(unitOfWorkState.NewEntities);
                 }
                 catch (Exception)
                 {
