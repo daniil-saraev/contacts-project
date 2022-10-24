@@ -1,4 +1,5 @@
-﻿using Desktop.Services.Containers;
+﻿using Desktop.Interactors;
+using Desktop.Services.ExceptionHandler;
 using System;
 using System.Threading.Tasks;
 
@@ -7,13 +8,15 @@ namespace Desktop.Commands.Contacts.LoadCommand
     public class LoadContactsCommand : ILoadContactsCommand
     {
         private readonly IContactsStore _contactsStore;
+        private readonly IExceptionHandler _exceptionHandler;
 
-        public LoadContactsCommand(IContactsStore contactsStore)
+        public LoadContactsCommand(IContactsStore contactsStore, IExceptionHandler exceptionHandler)
         {
             _contactsStore = contactsStore;
+            _exceptionHandler = exceptionHandler;
         }
 
-        public async Task Load()
+        public async Task Execute()
         {
             try
             {
@@ -21,7 +24,7 @@ namespace Desktop.Commands.Contacts.LoadCommand
             }
             catch (Exception ex)
             {
-                
+                _exceptionHandler.HandleException(ex);
             }
         }
     }

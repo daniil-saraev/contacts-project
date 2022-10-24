@@ -11,7 +11,7 @@
           "Data"
         ],
         "summary": "Returns a collection of all contacts in DB.",
-        "operationId": "GetAll",
+        "operationId": "GetAllAsync",
         "responses": {
           "200": {
             "description": "Success",
@@ -53,8 +53,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             }
           }
         ],
@@ -65,6 +64,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Contact"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -387,7 +396,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "format": "uuid"
+            "nullable": true
           },
           "userId": {
             "type": "string"
@@ -413,10 +422,6 @@
           "description": {
             "type": "string",
             "nullable": true
-          },
-          "lastChanged": {
-            "type": "string",
-            "format": "date-time"
           }
         },
         "additionalProperties": false

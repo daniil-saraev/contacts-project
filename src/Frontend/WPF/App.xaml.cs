@@ -1,4 +1,6 @@
-﻿global using Contact = OpenApi.Contact;
+﻿global using Core.Models;
+global using ApiServices.Identity;
+global using ApiServices.Interfaces;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;

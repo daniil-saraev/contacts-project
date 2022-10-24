@@ -1,4 +1,4 @@
-﻿using ApiServices.Interfaces;
+﻿using Core.Interfaces;
 using Desktop.Exceptions;
 using Desktop.Services.Data.FileServices;
 using Desktop.Services.Data.Persistence.DiskProvider;
@@ -37,7 +37,7 @@ namespace Desktop.Services.Data.Persistence
         public async Task<IEnumerable<Contact>> LoadContactsAsync()
         {
             await LoadUnitOfWorkState();
-            return _contactsUnitOfWork.CreateRelevantEntitiesList();
+            return _contactsUnitOfWork.CreateListOfSyncedAndNewEntities();
         }
 
         public Task SaveContactsAsync()
@@ -47,16 +47,9 @@ namespace Desktop.Services.Data.Persistence
 
         private async Task LoadUnitOfWorkState()
         {
-            try
-            {
-                UnitOfWorkState<Contact>? unitOfWorkState = await _diskProvider.TryLoadFromDiskAsync();
-                if (unitOfWorkState != null)
-                    _contactsUnitOfWork.UnitOfWorkState = unitOfWorkState;
-            }
-            catch (ReadingDataException)
-            {
-                return;
-            }           
+            UnitOfWorkState<Contact>? unitOfWorkState = await _diskProvider.TryLoadFromDiskAsync();
+            if (unitOfWorkState != null)
+                _contactsUnitOfWork.UnitOfWorkState = unitOfWorkState;          
         }
     }
 }

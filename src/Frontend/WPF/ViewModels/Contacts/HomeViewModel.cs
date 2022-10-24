@@ -1,12 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using Desktop.Commands.Contacts;
-using Desktop.Containers;
-using Desktop.Services.Containers;
+using Desktop.Interactors;
 using Desktop.Services.Factories;
 using Desktop.Services.Navigation;
 using NuGet.Packaging;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Desktop.Services.ExceptionHandler;
 using System.Windows.Input;
 
 namespace Desktop.ViewModels.Contacts
@@ -38,11 +38,12 @@ namespace Desktop.ViewModels.Contacts
         public ICommand NavigateToEditView { get; }
         public ICommand NavigateToAddView { get; }
 
-        public HomeViewModel(IContactsPresenter contactsPresenter, IContactsStore contactsStore, SelectedContact selectedContact, INavigationService navigationService)  
+        public HomeViewModel(IContactsPresenter contactsPresenter, IContactsStore contactsStore, SelectedContact selectedContact, 
+                            INavigationService navigationService, IExceptionHandler exceptionHandler)  
         {
             _contactsPresenter = contactsPresenter;
             _selectedContact = selectedContact;
-            DeleteContact = new DeleteContactCommand(selectedContact, contactsStore, null);
+            DeleteContact = new DeleteContactCommand(selectedContact, contactsStore, exceptionHandler, null);
             NavigateToInfoView = new RelayCommand(() => navigationService.NavigateTo<ContactInfoViewModel>());
             NavigateToEditView = new RelayCommand(() => navigationService.NavigateTo<ContactEditViewModel>());
             NavigateToAddView = new RelayCommand(() => navigationService.NavigateTo<ContactAddViewModel>());

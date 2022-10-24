@@ -91,7 +91,7 @@ namespace DesktopTests.Data.Persistence
             _unitOfWork.UnitOfWorkState = new UnitOfWorkState<Contact>()
             {
                 NewEntities = new List<Contact> { _contact }
-            };;
+            };
             _diskProviderMock.Setup(disk => disk.TrySaveToDiskAsync(It.IsAny<UnitOfWorkState<Contact>>())).ThrowsAsync(new WritingDataException());
             _remoteRepositoryProviderMock.Setup(provider => provider.TryPushChangesToRemoteRepositoryAsync(It.IsAny<UnitOfWorkState<Contact>>())).ThrowsAsync(new SyncingWithRemoteRepositoryException());
 

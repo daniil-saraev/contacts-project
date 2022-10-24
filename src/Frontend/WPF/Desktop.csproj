@@ -9,10 +9,6 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\ApiServices\ApiServices.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
 		<PackageReference Include="IdentityModel" Version="6.0.0" />
 		<PackageReference Include="MaterialDesignColors" Version="2.0.6" />
@@ -34,6 +30,10 @@
 
 	<ItemGroup>
 	  <Content Include="Resources\Icons\app.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\Backend\ApiServices\ApiServices.csproj" />
 	</ItemGroup>
 
   <ItemGroup>

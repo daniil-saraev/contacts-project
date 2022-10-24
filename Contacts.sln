@@ -3,29 +3,27 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web", "Web\Web.csproj", "{55C84238-E73D-4578-A3B3-A308E3BB71F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web", "src\Frontend\Web\Web.csproj", "{55C84238-E73D-4578-A3B3-A308E3BB71F0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{C49C30A7-FD81-4683-95E6-6FC2325394AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "src\Backend\Core\Core.csproj", "{C49C30A7-FD81-4683-95E6-6FC2325394AE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContactsDatabaseAPI", "DatabaseAPI\ContactsDatabaseAPI.csproj", "{EB080839-3783-447B-B77E-382F80995B5D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContactsDatabaseAPI", "src\Backend\DatabaseAPI\ContactsDatabaseAPI.csproj", "{EB080839-3783-447B-B77E-382F80995B5D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Backend", "Backend", "{39AF1CDE-3036-4682-A5EB-876DEA7C7F53}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Frontend", "Frontend", "{FD219EEF-0827-41A3-A6E3-50DFEF156A8A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityAPI", "IdentityAPI\IdentityAPI.csproj", "{16308DCD-F917-4801-8121-E28D1C46666F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityAPI", "src\Backend\IdentityAPI\IdentityAPI.csproj", "{16308DCD-F917-4801-8121-E28D1C46666F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desktop", "WPF\Desktop.csproj", "{69093E9E-2661-4BD5-A414-9B183F4F9D56}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desktop", "src\Frontend\WPF\Desktop.csproj", "{69093E9E-2661-4BD5-A414-9B183F4F9D56}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiServices", "ApiServices\ApiServices.csproj", "{59598D80-EF19-43B3-B7F5-88A6A1552AE5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiServices", "src\Backend\ApiServices\ApiServices.csproj", "{59598D80-EF19-43B3-B7F5-88A6A1552AE5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{2BCDBAC4-FB24-4DDA-A329-A62CF468DAF2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unit", "Unit", "{0589F762-4577-480B-91D4-822E3214043B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DesktopTests", "DesktopTests\DesktopTests.csproj", "{B9CCF210-ABFF-488A-93F3-E6F600126813}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebTests", "WebTests\WebTests.csproj", "{E66447DA-ABF3-4A73-88EB-90EBC90BDEA0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DesktopTests", "Tests\DesktopTests\DesktopTests.csproj", "{B9CCF210-ABFF-488A-93F3-E6F600126813}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,10 +59,6 @@ Global
 		{B9CCF210-ABFF-488A-93F3-E6F600126813}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B9CCF210-ABFF-488A-93F3-E6F600126813}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B9CCF210-ABFF-488A-93F3-E6F600126813}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E66447DA-ABF3-4A73-88EB-90EBC90BDEA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E66447DA-ABF3-4A73-88EB-90EBC90BDEA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E66447DA-ABF3-4A73-88EB-90EBC90BDEA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E66447DA-ABF3-4A73-88EB-90EBC90BDEA0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -78,7 +72,6 @@ Global
 		{59598D80-EF19-43B3-B7F5-88A6A1552AE5} = {39AF1CDE-3036-4682-A5EB-876DEA7C7F53}
 		{0589F762-4577-480B-91D4-822E3214043B} = {2BCDBAC4-FB24-4DDA-A329-A62CF468DAF2}
 		{B9CCF210-ABFF-488A-93F3-E6F600126813} = {0589F762-4577-480B-91D4-822E3214043B}
-		{E66447DA-ABF3-4A73-88EB-90EBC90BDEA0} = {0589F762-4577-480B-91D4-822E3214043B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D5515418-804C-453C-BC2F-8BC7EABC7FCE}

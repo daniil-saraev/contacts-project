@@ -145,7 +145,14 @@ namespace DesktopTests.Data.UnitOfWork
             {
                 SyncedEntities = new List<Contact>{ initialContact }
             };
-            Contact updatedContact = new Contact(initialContact.UserId, initialContact.Id)
+            Contact updatedContact = new Contact(initialContact.Id,
+                initialContact.UserId,
+                initialContact.FirstName,
+                initialContact.MiddleName,
+                initialContact.LastName,
+                initialContact.PhoneNumber,
+                initialContact.Address,
+                initialContact.Description)
             {
                 Description = "updated contact"
             };
@@ -170,10 +177,18 @@ namespace DesktopTests.Data.UnitOfWork
             {
                 NewEntities = new List<Contact>{ initialContact }
             };
-            Contact updatedContact = new Contact(initialContact.UserId, initialContact.Id)
+            Contact updatedContact = new Contact(initialContact.Id,
+                initialContact.UserId,
+                initialContact.FirstName,
+                initialContact.MiddleName,
+                initialContact.LastName,
+                initialContact.PhoneNumber,
+                initialContact.Address,
+                initialContact.Description)
             {
                 Description = "updated contact"
             };
+
 
             // Act
             unitOfWork.RegisterUpdatedEntity(initialContact, updatedContact);

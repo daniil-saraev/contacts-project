@@ -1,4 +1,5 @@
 ﻿using Desktop.Services.Authentication;
+using Desktop.Services.ExceptionHandler;
 using System;
 using System.Windows.Input;
 
@@ -6,12 +7,14 @@ namespace Desktop.Commands.Account
 {
     public class LogoutCommand : BaseCommand
     {
-        private readonly AuthenticationService _authenticationService;
+        private readonly IAuthenticationService _authenticationService;
+        private readonly IExceptionHandler _exceptionHandler;
         private readonly ICommand? _returnCommand;
 
-        public LogoutCommand(AuthenticationService authenticationService, ICommand? returnCommand)
+        public LogoutCommand(IAuthenticationService authenticationService, IExceptionHandler exceptionHandler, ICommand? returnCommand)
         {
             _authenticationService = authenticationService;
+            _exceptionHandler = exceptionHandler;
             _returnCommand = returnCommand;
         }
 
@@ -19,12 +22,12 @@ namespace Desktop.Commands.Account
         {
             try
             {
-                await _authenticationService.LogoutAsync();
+                await _authenticationService.Logout();
                 _returnCommand?.Execute(null);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                _returnCommand?.Execute(null);
+                _exceptionHandler.HandleException(ex);     
             }          
         }
     }

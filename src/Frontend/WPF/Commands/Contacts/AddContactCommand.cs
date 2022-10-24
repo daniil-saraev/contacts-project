@@ -1,8 +1,9 @@
 ﻿using System;
 using Desktop.ViewModels.Contacts;
 using System.Windows.Input;
-using Desktop.Services.Authentication.UserServices;
-using Desktop.Services.Containers;
+using Desktop.Services.Authentication;
+using Desktop.Interactors;
+using Desktop.Services.ExceptionHandler;
 
 namespace Desktop.Commands.Contacts
 {
@@ -10,13 +11,15 @@ namespace Desktop.Commands.Contacts
     {
         private readonly IContactsStore _contactStore;
         private readonly ContactViewModel _newContactViewModel;
+        private readonly IExceptionHandler _exceptionHandler;
         private readonly ICommand? _returnCommand;
 
-        public AddContactCommand(ContactViewModel newContactViewModel, IContactsStore contactsStore,
+        public AddContactCommand(ContactViewModel newContactViewModel, IContactsStore contactsStore, IExceptionHandler exceptionHandler,
                                  ICommand? returnCommand, Func<object?, bool>? canExecuteCustom = null) : base(canExecuteCustom)
         {
             _contactStore = contactsStore;
             _newContactViewModel = newContactViewModel;
+            _exceptionHandler = exceptionHandler;
             _returnCommand = returnCommand;
             _newContactViewModel.ErrorsChanged += NewContactViewModel_ErrorsChanged;
         }
@@ -39,20 +42,21 @@ namespace Desktop.Commands.Contacts
 
             if(User.IsAuthenticated)
                 _newContactViewModel.GetContact().SetUserId(User.Id);
+            
             try
             {
                 _contactStore.AddContact(_newContactViewModel.GetContact());
-                await _contactStore.SaveContactsAsync();
+                await _contactStore.SaveContactsAsync();                
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                
-            }
+                _exceptionHandler.HandleException(ex);
+            }   
             finally
             {
                 _newContactViewModel.Dispose();
                 _returnCommand?.Execute(null);
-            }       
+            }
         }
     }
 }

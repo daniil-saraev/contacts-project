@@ -1,4 +1,4 @@
-﻿using IdentityAPI.Identity;
+﻿using IdentityAPI.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace IdentityAPI.Data
@@ -16,16 +16,6 @@ namespace IdentityAPI.Data
 
             ApplicationUser admin = new ApplicationUser { UserName = adminName, Email = adminEmail };
             IdentityResult result = await userManager.CreateAsync(admin, adminPasswod);
-            if (result.Succeeded)
-            {
-                await userManager.AddClaimAsync(admin, ClaimStore.AdminClaim);
-            }
-
-            ApplicationUser Ivan = new ApplicationUser { UserName = "Ivan", Email = "ivan@mail.ru" };
-            await userManager.CreateAsync(Ivan, "Ivan123");
-
-            ApplicationUser Petr = new ApplicationUser { UserName = "Petr", Email = "petr@mail.ru" };
-            await userManager.CreateAsync(Petr, "Petr123");
         }
     }
 }

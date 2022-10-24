@@ -1,14 +1,11 @@
 ﻿using Desktop.Services.Authentication;
-using Desktop.Services.Authentication.UserServices;
 using Desktop.Services.Navigation;
 using System.Windows.Input;
 using Desktop.Commands.Contacts.LoadCommand;
 using System.Threading.Tasks;
-using Desktop.Commands.Account;
-using Desktop.Services.Factories;
 using CommunityToolkit.Mvvm.Input;
 using Desktop.ViewModels.Account;
-using Desktop.Commands.Account.Refresh;
+using Desktop.Commands.Account.RestoreCommand;
 
 namespace Desktop.ViewModels
 {
@@ -16,25 +13,25 @@ namespace Desktop.ViewModels
     {
         private readonly INavigationService _navigationService;
         private readonly ILoadContactsCommand _loadContactsCommand;
-        private readonly IRefreshSessionCommand _refreshUserSession;
+        private readonly IRestoreSessionCommand _restoreUserSessionCommand;
 
         public ICommand NavigateToUserView { get; private set; }
         public BaseViewModel? CurrentViewModel => _navigationService.CurrentViewModel;    
        
-        public MainViewModel(IRefreshSessionCommand refreshSessionCommand, ILoadContactsCommand loadContactsCommand, INavigationService navigationService)
+        public MainViewModel(IRestoreSessionCommand restoreSessionCommand, ILoadContactsCommand loadContactsCommand, INavigationService navigationService)
         {
             _navigationService = navigationService;
             _navigationService.CurrentViewModelChanged += OnCurrentViewModelChanged;
             _loadContactsCommand = loadContactsCommand;
-            _refreshUserSession = refreshSessionCommand;
+            _restoreUserSessionCommand = restoreSessionCommand;
             NavigateToUserView = new RelayCommand(() => navigationService.NavigateTo<LoginViewModel>());
             User.AuthenticationStateChanged += SetAccountView;
         }
 
         public async Task InitializeAsync()
         {
-            await _refreshUserSession.Refresh();
-            await _loadContactsCommand.Load();
+            await _restoreUserSessionCommand.Execute();
+            await _loadContactsCommand.Execute();
         }
 
         private void SetAccountView()

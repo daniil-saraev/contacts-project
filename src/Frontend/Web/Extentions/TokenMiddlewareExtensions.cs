@@ -1,6 +1,6 @@
-﻿using Web.Configuration;
-using Web.Middleware;
-using OpenApi;
+﻿using Web.Middleware;
+using Core.Interfaces;
+using Web.Configuration;
 using ApiServices.Interfaces;
 
 namespace Web.Extentions
@@ -10,11 +10,6 @@ namespace Web.Extentions
         public static IApplicationBuilder UseToken(this IApplicationBuilder builder, IEnumerable<IApiService> apiServices)
         {
             return builder.UseMiddleware<TokenMiddleware>(apiServices);
-        }
-
-        public static IApplicationBuilder UseRefreshToken(this IApplicationBuilder builder, IIdentityApi identityApi, AuthConfiguration configuration)
-        {
-            return builder.UseMiddleware<RefreshTokenMiddleware>(identityApi, configuration);
         }
     }
 }

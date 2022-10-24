@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using OpenApi;
 using Core.Constants;
-using ApiServices.Interfaces;
 using Web.ViewModels;
+using static Web.Configuration.TokenNameConstants;
+using ApiServices.Interfaces;
+using ApiServices.Identity;
 
 namespace Web.Controllers
 {
@@ -14,12 +13,10 @@ namespace Web.Controllers
     public class AccountController : Controller
     {
         private readonly IIdentityApi _identityApiService;
-        private readonly ILogger<AccountController> _logger;
-
-        public AccountController(IIdentityApi identityApiService, ILogger<AccountController> logger)
+        
+        public AccountController(IIdentityApi identityApiService)
         {
             _identityApiService = identityApiService;
-            _logger = logger;
         }
 
         [HttpGet]
@@ -27,7 +24,7 @@ namespace Web.Controllers
         {
             returnUrl ??= BaseUrls.WEB_CLIENT_URL;
 
-            if (User.Identity.IsAuthenticated)
+            if (User.Identity != null && User.Identity.IsAuthenticated)
                 return Redirect(returnUrl);
 
             LoginViewModel model = new LoginViewModel
@@ -50,25 +47,17 @@ namespace Web.Controllers
                 RememberMe = model.RememberMe
             };
 
-            try
-            {
-                TokenResponse response = await _identityApiService.LoginAsync(loginRequest);
-                if (!response.IsSuccessful)
-                {                    
-                    ModelState.AddModelError(string.Empty, response.ErrorMessage);
-                    return View(model);
-                }
+            TokenResponse response = await _identityApiService.LoginAsync(loginRequest);
+            if (!response.IsSuccessful)
+            {                    
+                ModelState.AddModelError(string.Empty, response.ErrorMessage);
+                return View(model);
+            }
 
-                if (model.RememberMe == true)
-                    AuthenticatePersistent(response);
-                else
-                    AuthenticateNonPersistent(response);
-            }
-            catch(Exception ex)
-            {
-                _logger.LogError(ex, ex.Message);
-                return BadRequest();
-            }
+            if (model.RememberMe == true)
+                AuthenticatePersistent(response);
+            else
+                AuthenticateNonPersistent(response);
             
             return Redirect(model.ReturnUrl);
         }
@@ -102,58 +91,36 @@ namespace Web.Controllers
                 Password = model.Password
             };
 
-            try
+            TokenResponse response = await _identityApiService.RegisterAsync(registerRequest);
+            if (!response.IsSuccessful)
             {
-                TokenResponse response = await _identityApiService.RegisterAsync(registerRequest);
-                if (!response.IsSuccessful)
-                {
-                    ModelState.AddModelError(string.Empty, response.ErrorMessage);
-                    return View(model);
-                }
-
-                AuthenticatePersistent(response);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, ex.Message);
-                return BadRequest();
+                ModelState.AddModelError(string.Empty, response.ErrorMessage);
+                return View(model);
             }
 
+            AuthenticatePersistent(response);
             return Redirect(model.ReturnUrl);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost]
-        public async Task<IActionResult> Logout()
+        public IActionResult Logout()
         {
             HttpContext.Response.Cookies.Delete("access_token");
             HttpContext.Response.Cookies.Delete("refresh_token");
             HttpContext.Session.Remove("access_token");
-
-            try
-            {
-                await _identityApiService.LogoutAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, ex.Message);
-            }
-
-            return SignOut(new AuthenticationProperties
-            {
-                RedirectUri = Url.Action("Index", "Home")
-            }, CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Index", "Home");
         }
 
         private void AuthenticatePersistent(TokenResponse response)
         {
-            HttpContext.Response.Cookies.Append("access_token", response.AccessToken);
-            HttpContext.Response.Cookies.Append("refresh_token", response.RefreshToken);
+            HttpContext.Response.Cookies.Append(ACCESS_TOKEN, response.AccessToken);
+            HttpContext.Response.Cookies.Append(REFRESH_TOKEN, response.RefreshToken);
         }
 
         private void AuthenticateNonPersistent(TokenResponse response)
         {
-            HttpContext.Session.SetString("access_token", response.AccessToken);
+            HttpContext.Session.SetString(ACCESS_TOKEN, response.AccessToken);
         }
     }
 }

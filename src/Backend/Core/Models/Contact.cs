@@ -3,13 +3,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Core.Models
 {
+    [Serializable]
     public class Contact
     {
         [Key]
-        public string Id { get; set; }
+        public string Id { get; private set; }
 
         [Required]
-        public string UserId { get; set; }
+        public string UserId { get; private set; }
 
         [Required]
         public string FirstName { get; set; }
@@ -26,6 +27,34 @@ namespace Core.Models
 
         public string? Description { get; set; }
 
-        public DateTimeOffset LastChanged { get; set; }
+        public Contact()
+        {
+            UserId = Guid.NewGuid().ToString();
+            Id = Guid.NewGuid().ToString();
+        }
+
+        public Contact(string id, 
+            string userId, 
+            string firstName, 
+            string? middleName, 
+            string? lastName, 
+            string phoneNumber, 
+            string? address, 
+            string? description)
+        {
+            Id = id;
+            UserId = userId;
+            FirstName = firstName;
+            MiddleName = middleName;
+            LastName = lastName;
+            PhoneNumber = phoneNumber;
+            Address = address;
+            Description = description;
+        }
+
+        public void SetUserId(string userId)
+        {
+            UserId = userId;
+        }
     }
 }

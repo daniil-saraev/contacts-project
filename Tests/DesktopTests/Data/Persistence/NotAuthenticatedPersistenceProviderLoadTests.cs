@@ -60,12 +60,8 @@ namespace DesktopTests.Data.Persistence
 
             NotAuthenticatedPersistenceProvider persistenceProvider = new NotAuthenticatedPersistenceProvider(new UnitOfWork<Contact>(), _diskProviderMock.Object);
 
-            // Act
-            var contacts = await persistenceProvider.LoadContactsAsync();
-
-            // Assert
-            Assert.NotNull(contacts);
-            Assert.Empty(contacts);
+            // Act & Assert
+            await Assert.ThrowsAsync<ReadingDataException>(async () => await persistenceProvider.LoadContactsAsync());
         }
     }
 }

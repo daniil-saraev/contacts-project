@@ -1,63 +1,96 @@
-﻿using ApiServices.Interfaces;
-using OpenApi;
-using IdentityModel.Client;
+﻿using IdentityModel.Client;
+using Core.Interfaces;
+using ApiServices.Database;
+using Core.Constants;
+using Core.Models;
 
 namespace ApiServices.Services
 {
-    public class ContactsDatabaseApiService : IRepository<Contact>, IApiService
+    public class ContactsDatabaseApiService : IRepository<Core.Models.Contact>, IApiService
     {
         private readonly DatabaseApi _contactsDbApi;
         private readonly HttpClient _httpClient;
 
-        public ContactsDatabaseApiService(string baseUrl)
+        public ContactsDatabaseApiService(HttpClient httpClient)
         {
-            _httpClient = new HttpClient();
-            _contactsDbApi = new DatabaseApi(baseUrl, _httpClient);
+            _httpClient = httpClient;
+            _contactsDbApi = new DatabaseApi(BaseUrls.CONTACTS_DATABASE_API_URL, _httpClient);
         }
 
-        public void InitializeToken(string token)
+        public void SetBearerToken(string token)
         {
             _httpClient.SetBearerToken(token);
         }
 
         public async Task AddAsync(Contact entity)
         {
-            await _contactsDbApi.AddAsync(entity);
+            await _contactsDbApi.AddAsync(Map(entity));
         }
 
         public async Task DeleteAsync(Contact entity)
         {
-            await _contactsDbApi.DeleteAsync(entity);
+            await _contactsDbApi.DeleteAsync(Map(entity));
         }
 
         public async Task<IEnumerable<Contact>?> GetAllAsync()
         {
-            return await _contactsDbApi.GetAllAsync();
+            return (await _contactsDbApi.GetAllAsync()).Select(contactDto => Map(contactDto));
         }
 
         public async Task<Contact?> GetAsync(string id)
         {
-            return await _contactsDbApi.GetAsync(id);
+            return Map((await _contactsDbApi.GetAsync(id)));
         }
 
         public async Task UpdateAsync(Contact entity)
         {
-            await _contactsDbApi.UpdateAsync(entity);
+            await _contactsDbApi.UpdateAsync(Map(entity));
         }
 
         public async Task AddRangeAsync(IEnumerable<Contact> entities)
         {
-            await _contactsDbApi.AddRangeAsync(entities);
+            await _contactsDbApi.AddRangeAsync(entities.Select(contact => Map(contact)));
         }
 
         public async Task UpdateRangeAsync(IEnumerable<Contact> entities)
         {
-            await _contactsDbApi.UpdateRangeAsync(entities);
+            await _contactsDbApi.UpdateRangeAsync(entities.Select(contact => Map(contact)));
         }
 
         public async Task DeleteRangeAsync(IEnumerable<Contact> entities)
         {
-            await _contactsDbApi.DeleteRangeAsync(entities);
+            await _contactsDbApi.DeleteRangeAsync(entities.Select(contact => Map(contact)));
+        }
+
+        private static ContactDto Map(Contact entity)
+        {
+            var contactDto = new ContactDto
+            {
+                Id = entity.Id,
+                UserId = entity.UserId,
+                FirstName = entity.FirstName,
+                MiddleName = entity.MiddleName,
+                LastName = entity.LastName,
+                PhoneNumber = entity.PhoneNumber,
+                Description = entity.Description,
+                Address = entity.Address
+            };
+            return contactDto;
+        }
+
+        private static Contact Map(ContactDto dto)
+        {
+            var contact = new Contact(
+                dto.Id,
+                dto.UserId,
+                dto.FirstName,
+                dto.MiddleName,
+                dto.LastName,
+                dto.PhoneNumber,
+                dto.Address,
+                dto.Description
+            );
+            return contact;
         }
     }
 }

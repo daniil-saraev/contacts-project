@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using Desktop.Commands.Account;
 using Desktop.Services.Authentication;
+using Desktop.Services.ExceptionHandler;
 using Desktop.Services.Factories;
 using Desktop.Services.Navigation;
 using Desktop.ViewModels.Contacts;
@@ -85,10 +86,10 @@ namespace Desktop.ViewModels.Account
         public ICommand Register { get; }
         public ICommand NavigateToLoginView { get; }
 
-        public RegisterViewModel(AuthenticationService authenticationService, INavigationService navigationService)
+        public RegisterViewModel(IAuthenticationService authenticationService, INavigationService navigationService, IExceptionHandler exceptionHandler)
         {
             Return = new RelayCommand(() => navigationService.NavigateTo<HomeViewModel>());
-            Register = new RegisterCommand(this, authenticationService, Return);
+            Register = new RegisterCommand(this, authenticationService, exceptionHandler, Return);
             NavigateToLoginView = new RelayCommand(() => navigationService.NavigateTo<LoginViewModel>());
         }
     }

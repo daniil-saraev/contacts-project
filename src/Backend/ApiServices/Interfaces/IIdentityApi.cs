@@ -1,4 +1,4 @@
-﻿using OpenApi;
+﻿using ApiServices.Identity;
 
 namespace ApiServices.Interfaces
 {
@@ -8,10 +8,6 @@ namespace ApiServices.Interfaces
 
         Task<TokenResponse> RegisterAsync(RegisterRequest request);
 
-        Task<TokenResponse> RefreshAsync(RefreshTokenRequest request);
-
-        Task RevokeAsync(string userId);
-
-        Task LogoutAsync();
+        Task<TokenResponse> RefreshTokenAsync(RefreshTokenRequest request);
     }
 }

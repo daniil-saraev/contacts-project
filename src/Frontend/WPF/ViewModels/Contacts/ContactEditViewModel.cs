@@ -1,9 +1,9 @@
 ﻿using Desktop.Commands.Contacts;
 using System.Windows.Input;
-using Desktop.Containers;
-using Desktop.Services.Containers;
+using Desktop.Interactors;
 using CommunityToolkit.Mvvm.Input;
 using Desktop.Services.Navigation;
+using Desktop.Services.ExceptionHandler;
 
 namespace Desktop.ViewModels.Contacts
 {
@@ -20,13 +20,13 @@ namespace Desktop.ViewModels.Contacts
         public ICommand UpdateContact { get; }
         public ICommand Return { get; }
 
-        public ContactEditViewModel(SelectedContact selectedContact, IContactsStore contactsStore, INavigationService navigationService)
+        public ContactEditViewModel(SelectedContact selectedContact, IContactsStore contactsStore, INavigationService navigationService, IExceptionHandler exceptionHandler)
         {
             _selectedContact = selectedContact;
             _selectedContact.ContactChanged += SelectedContact_ContactChanged;
             _editedContactViewModel = new ContactViewModel(CreateContactCopy(_selectedContact));
             Return = new RelayCommand(() => navigationService.Return(), () => navigationService.CanReturn);
-            UpdateContact = new UpdateContactCommand(selectedContact, contactsStore, _editedContactViewModel, Return);
+            UpdateContact = new UpdateContactCommand(selectedContact, contactsStore, _editedContactViewModel, exceptionHandler, Return);
         }
 
         private void SelectedContact_ContactChanged()
@@ -41,15 +41,16 @@ namespace Desktop.ViewModels.Contacts
             if (contact == null)
                 return new Contact();
 
-            Contact selectedContactCopy = new Contact(contact.UserId, contact.Id)
-            {
-                FirstName = contact.FirstName,
-                MiddleName = contact.MiddleName,
-                LastName = contact.LastName,
-                PhoneNumber = contact.PhoneNumber,
-                Address = contact.Address,
-                Description = contact.Description
-            };
+            Contact selectedContactCopy = new Contact
+                (contact.UserId,
+                contact.Id,
+                contact.FirstName,
+                contact.MiddleName,
+                contact.LastName,
+                contact.PhoneNumber,
+                contact.Address,
+                contact.Description);
+
             return selectedContactCopy;
         }
     }

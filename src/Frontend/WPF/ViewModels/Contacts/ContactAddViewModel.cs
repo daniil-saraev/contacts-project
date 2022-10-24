@@ -1,8 +1,9 @@
 ﻿using System.Windows.Input;
 using Desktop.Commands.Contacts;
-using Desktop.Services.Containers;
 using Desktop.Services.Navigation;
 using CommunityToolkit.Mvvm.Input;
+using Desktop.Interactors;
+using Desktop.Services.ExceptionHandler;
 
 namespace Desktop.ViewModels.Contacts
 {
@@ -19,12 +20,12 @@ namespace Desktop.ViewModels.Contacts
 
         public ICommand Return { get; }
 
-        public ContactAddViewModel(IContactsStore contactsStore, INavigationService navigationService)
+        public ContactAddViewModel(IContactsStore contactsStore, INavigationService navigationService, IExceptionHandler exceptionHandler)
         {
             _newContactViewModel = new ContactViewModel(new Contact());
             _newContactViewModel.PropertyChanged += NewContactViewModel_PropertyChanged;
             Return = new RelayCommand(() => navigationService.Return(), () => navigationService.CanReturn);
-            AddContact = new AddContactCommand(_newContactViewModel, contactsStore, Return);           
+            AddContact = new AddContactCommand(_newContactViewModel, contactsStore, exceptionHandler, Return);           
         }
 
         private void NewContactViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)

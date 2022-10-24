@@ -3,21 +3,25 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Net;
+using ApiServices.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Web.Configuration;
-using OpenApi;
+using Web.Middleware;
 using ApiServices.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Logging.AddConsole();
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
-builder.Services.AddApiServices();
 builder.Services.AddSession();
 builder.Services.AddDistributedMemoryCache();
 
 AuthConfiguration configuration = new AuthConfiguration();
 builder.Configuration.Bind("JWT", configuration);
 builder.Services.AddSingleton(configuration);
+builder.Services.AddSingleton<TokenValidator>();
+
+builder.Services.AddApiServices();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -34,13 +38,11 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuer = true,
         ValidateAudience = true
     };
-}).AddCookie();
+});
 
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
-
-app.Logger.LogInformation("App created...");
 
 if (app.Environment.IsDevelopment())
 {
@@ -68,12 +70,10 @@ app.UseStatusCodePages(async context =>
 
 app.UseSession();
 
-app.UseToken(app.Services.GetServices<IApiService>());
+app.UseMiddleware<TokenMiddleware>(app.Services.GetRequiredService<ITokenValidator>(), app.Services.GetRequiredService<IIdentityApi>());
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseRefreshToken(app.Services.GetRequiredService<IIdentityApi>(), configuration);
 
 app.MapDefaultControllerRoute();
 
-app.Logger.LogInformation("LAUNCHING");
 app.Run();

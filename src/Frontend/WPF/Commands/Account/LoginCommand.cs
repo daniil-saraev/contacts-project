@@ -1,7 +1,7 @@
 ﻿using Core.Exceptions.Identity;
 using Desktop.Services.Authentication;
+using Desktop.Services.ExceptionHandler;
 using Desktop.ViewModels.Account;
-using OpenApi;
 using System;
 using System.Windows.Input;
 
@@ -10,13 +10,15 @@ namespace Desktop.Commands.Account
     public class LoginCommand : BaseCommand
     {
         private readonly LoginViewModel _loginViewModel;
-        private readonly AuthenticationService _authenticationService;
+        private readonly IAuthenticationService _authenticationService;
+        private readonly IExceptionHandler _exceptionHandler;
         private readonly ICommand? _returnCommand;
 
-        public LoginCommand(LoginViewModel loginViewModel, AuthenticationService authenticationService, ICommand? returnCommand)
+        public LoginCommand(LoginViewModel loginViewModel, IAuthenticationService authenticationService, IExceptionHandler exceptionHandler, ICommand? returnCommand)
         {
             _loginViewModel = loginViewModel;
             _authenticationService = authenticationService;
+            _exceptionHandler = exceptionHandler;
             _returnCommand = returnCommand;
             _loginViewModel.ErrorsChanged += LoginViewModel_ErrorsChanged;      
         }
@@ -39,18 +41,20 @@ namespace Desktop.Commands.Account
 
             try
             {
-                await _authenticationService.LoginAsync(_loginViewModel.Email, _loginViewModel.Password);
+                await _authenticationService.Login(_loginViewModel.Email, _loginViewModel.Password);
                 _returnCommand?.Execute(null);
             }
             catch (WrongPasswordException ex)
             {
-                _loginViewModel.AddModelError(nameof(_loginViewModel.Password), ex.Message);
-                return;
+                _loginViewModel.AddModelError(nameof(_loginViewModel.Email), ex.Message);
             }          
             catch (UserNotFoundException ex)
             {
                 _loginViewModel.AddModelError(nameof(_loginViewModel.Email), ex.Message);
-                return;
+            }
+            catch(Exception ex)
+            {
+                _exceptionHandler.HandleException(ex);
             }
         }
     }

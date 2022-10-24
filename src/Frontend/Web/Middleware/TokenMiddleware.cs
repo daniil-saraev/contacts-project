@@ -1,39 +1,63 @@
-﻿using ApiServices.Interfaces;
+﻿using ApiServices.Identity;
+using ApiServices.Interfaces;
+using Core.Exceptions.Identity;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.Extensions.Primitives;
+using System.Security.Claims;
 using System.Text;
+using Web.Configuration;
+using static Web.Configuration.TokenNameConstants;
 
 namespace Web.Middleware
 {
     public class TokenMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IEnumerable<IApiService> _apiServices;
+        private readonly ITokenValidator _tokenValidator;
+        private readonly IIdentityApi _identityApi;
 
-        public TokenMiddleware(RequestDelegate next, IEnumerable<IApiService> apiServices)
+        public TokenMiddleware(RequestDelegate next, ITokenValidator tokenValidator, IIdentityApi identityApi)
         {
             _next = next;
-            _apiServices = apiServices;
+            _tokenValidator = tokenValidator;
+            _identityApi = identityApi;
         }
 
         public async Task Invoke(HttpContext context)
         {
-            context.Request.Cookies.TryGetValue("access_token", out string? token);
-            token ??= context.Session.GetString("access_token");
-            if(context.Request.Headers.Contains(new KeyValuePair<string, StringValues>("Authorization", "Bearer " + token)))
-            {
-                await _next.Invoke(context);
-                return;
-            }
+            context.Request.Cookies.TryGetValue(ACCESS_TOKEN, out string? accessToken);
+            accessToken ??= context.Session.GetString(ACCESS_TOKEN);
+            context.Request.Cookies.TryGetValue(REFRESH_TOKEN, out string? refreshToken);
 
-            if (!string.IsNullOrEmpty(token))
+            if (!string.IsNullOrEmpty(accessToken))
             {            
-                context.Request.Headers.Add("Authorization", "Bearer " + token);
-                foreach (var service in _apiServices)
-                    service.InitializeToken(token);
+                var isValidToken = _tokenValidator.ValidateToken(accessToken);
+                if (!isValidToken && refreshToken != null)
+                {
+                    var tokenResponse = await RefreshToken(context, refreshToken);
+                    context.Response.Cookies.Append(ACCESS_TOKEN, tokenResponse.AccessToken);
+                    context.Response.Cookies.Append(REFRESH_TOKEN, tokenResponse.RefreshToken);    
+                    accessToken = tokenResponse.AccessToken;
+                }
+                context.Request.Headers.Add("Authorization", "Bearer " + accessToken);
             }
-
             await _next.Invoke(context);
+        }
+
+        private async Task<TokenResponse> RefreshToken(HttpContext context, string refreshToken)
+        {
+            string? userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            RefreshTokenRequest tokenRequest = new RefreshTokenRequest()
+            {
+                UserId = userId,
+                RefreshToken = refreshToken
+            };
+
+            TokenResponse response = await _identityApi.RefreshTokenAsync(tokenRequest);
+            if (!response.IsSuccessful)
+                throw new InvalidRefreshTokenException();
+            else
+                return response;
         }
     }
 }

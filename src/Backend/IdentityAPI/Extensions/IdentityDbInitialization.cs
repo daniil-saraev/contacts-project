@@ -1,5 +1,5 @@
 ﻿using IdentityAPI.Data;
-using IdentityAPI.Identity;
+using IdentityAPI.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace IdentityAPI.Extensions

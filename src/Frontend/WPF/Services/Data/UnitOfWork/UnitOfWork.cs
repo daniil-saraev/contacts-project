@@ -45,7 +45,7 @@ namespace Desktop.Services.Data.UnitOfWork
             _removedEntities = new List<T>();
         }
 
-        public IEnumerable<T> CreateRelevantEntitiesList()
+        public IEnumerable<T> CreateListOfSyncedAndNewEntities()
         {
             var relevantContacts = new List<T>();
             relevantContacts.AddRange(_syncedEntities);

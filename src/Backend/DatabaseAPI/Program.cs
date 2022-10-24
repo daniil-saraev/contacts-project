@@ -7,10 +7,13 @@ using System.Reflection;
 using ContactsDatabaseAPI.Data;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Logging.AddConsole();
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("ApplicationDbConnection"));
@@ -78,17 +81,20 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(c => c.DisplayOperationId());
+
+app.UseExceptionHandler(app => app.Run(async context =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c => c.DisplayOperationId());
-}
+    var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+    var exception = exceptionHandlerPathFeature?.Error;
+    context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+    await context.Response.WriteAsync(exception?.Message);
+}));
 
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
-//app.UseMiddleware<UserIdMiddleware>();
 
 app.MapControllers();
 

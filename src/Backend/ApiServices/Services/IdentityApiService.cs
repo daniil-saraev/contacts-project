@@ -1,25 +1,18 @@
-﻿using ApiServices.Interfaces;
-using OpenApi;
-using IdentityModel.Client;
-using TokenResponse = OpenApi.TokenResponse;
-using RefreshTokenRequest = OpenApi.RefreshTokenRequest;
+﻿using ApiServices.Identity;
+using Core.Constants;
+using ApiServices.Interfaces;
 
 namespace ApiServices.Services
 {
-    public class IdentityApiService : IIdentityApi, IApiService
+    public class IdentityApiService : IIdentityApi
     {
         private readonly IdentityApi _identityApi;
         private readonly HttpClient _httpClient;
 
-        public IdentityApiService(string baseUrl)
+        public IdentityApiService(HttpClient httpClient)
         {
-            _httpClient = new HttpClient();
-            _identityApi = new IdentityApi (baseUrl, _httpClient);
-        }
-
-        public void InitializeToken(string token)
-        {
-            _httpClient.SetBearerToken(token);
+            _httpClient = httpClient;
+            _identityApi = new IdentityApi (BaseUrls.IDENTITY_API_URL, _httpClient);
         }
 
         public Task<TokenResponse> LoginAsync(LoginRequest request)
@@ -27,24 +20,14 @@ namespace ApiServices.Services
             return _identityApi.LoginAsync(request);
         }
 
-        public Task LogoutAsync()
+        public Task<TokenResponse> RefreshTokenAsync(RefreshTokenRequest request)
         {
-            return _identityApi.LogoutAsync();
-        }
-
-        public Task<TokenResponse> RefreshAsync(RefreshTokenRequest request)
-        {
-            return _identityApi.RefreshAsync(request);
+            return _identityApi.RefreshTokenAsync(request);
         }
 
         public Task<TokenResponse> RegisterAsync(RegisterRequest request)
         {
             return _identityApi.RegisterAsync(request);
-        }
-
-        public Task RevokeAsync(string userId)
-        {
-            return _identityApi.RevokeAsync(userId);
         }
     }
 }

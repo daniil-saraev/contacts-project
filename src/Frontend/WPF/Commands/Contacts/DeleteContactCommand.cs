@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
-using Desktop.Containers;
-using Desktop.Services.Containers;
+using Desktop.Interactors;
+using Desktop.Services.ExceptionHandler;
 
 namespace Desktop.Commands.Contacts
 {
@@ -9,13 +9,15 @@ namespace Desktop.Commands.Contacts
     {
         private readonly SelectedContact _selectedContact;
         private readonly IContactsStore _contactsStore;
+        private readonly IExceptionHandler _exceptionHandler;
         private readonly ICommand? _returnCommand;
 
-        public DeleteContactCommand(SelectedContact selectedContact, IContactsStore contactsStore, 
+        public DeleteContactCommand(SelectedContact selectedContact, IContactsStore contactsStore, IExceptionHandler exceptionHandler,
                                     ICommand? returnCommand,Func<object?, bool>? canExecuteCustom = null) : base(canExecuteCustom)
         {
             _contactsStore = contactsStore;
             _selectedContact = selectedContact;
+            _exceptionHandler = exceptionHandler;
             _returnCommand = returnCommand;
             _selectedContact.ContactChanged += CurrentContactStore_SelectedContactChanged;
         }
@@ -35,16 +37,16 @@ namespace Desktop.Commands.Contacts
             try
             {
                 _contactsStore.RemoveContact(_selectedContact.Contact);
-                await _contactsStore.SaveContactsAsync();
+                await _contactsStore.SaveContactsAsync();              
             }
-            catch
+            catch(Exception ex)
             {
-                
-            }
-            finally
+                _exceptionHandler.HandleException(ex);
+            }      
+            finally 
             {
                 _returnCommand?.Execute(null);
-            }           
+            }
         }
     }
 }

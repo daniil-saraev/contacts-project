@@ -1,6 +1,7 @@
-﻿using Desktop.Services.Authentication;
+﻿using Core.Exceptions.Identity;
+using Desktop.Services.Authentication;
+using Desktop.Services.ExceptionHandler;
 using Desktop.ViewModels.Account;
-using OpenApi;
 using System;
 using System.Windows.Input;
 
@@ -9,13 +10,15 @@ namespace Desktop.Commands.Account
     public class RegisterCommand : BaseCommand
     {
         private readonly RegisterViewModel _registerViewModel;
-        private readonly AuthenticationService _authenticationService;
+        private readonly IAuthenticationService _authenticationService;
+        private readonly IExceptionHandler _exceptionHandler;
         private readonly ICommand? _returnCommand;
 
-        public RegisterCommand(RegisterViewModel registerViewModel, AuthenticationService authenticationService, ICommand? returnCommand)
+        public RegisterCommand(RegisterViewModel registerViewModel, IAuthenticationService authenticationService, IExceptionHandler exceptionHandler, ICommand? returnCommand)
         {
             _registerViewModel = registerViewModel;
             _authenticationService = authenticationService;
+            _exceptionHandler = exceptionHandler;
             _returnCommand = returnCommand;
             _registerViewModel.ErrorsChanged += RegisterViewModel_ErrorsChanged;
         }
@@ -38,13 +41,16 @@ namespace Desktop.Commands.Account
 
             try
             {
-                await _authenticationService.RegisterAsync(_registerViewModel.Username, _registerViewModel.Email, _registerViewModel.Password);
+                await _authenticationService.Register(_registerViewModel.Username, _registerViewModel.Email, _registerViewModel.Password);
                 _returnCommand?.Execute(null);
+            }
+            catch(DuplicateEmailsException ex)
+            {
+                _registerViewModel.AddModelError(nameof(_registerViewModel.Email), ex.Message);
             }
             catch (Exception ex)
             {
-                _registerViewModel.AddModelError(nameof(_registerViewModel.Username), ex.Message);
-                return;
+                _exceptionHandler.HandleException(ex);
             }          
         }
     }

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
@@ -23,12 +23,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Authentication\" />
     <Folder Include="Navigation\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\WPF\Desktop.csproj" />
+  <ItemGroup>    
+	  <ProjectReference Include="..\..\src\Frontend\WPF\Desktop.csproj" />
   </ItemGroup>
 
 </Project>

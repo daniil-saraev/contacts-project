@@ -4,7 +4,7 @@ namespace Desktop.Exceptions
 {
     public class WritingDataException : Exception 
     {
-        public WritingDataException() : base("Error occurred while writing data") { }
+        public WritingDataException() : base("Error occurred while saving data") { }
     }
     
 

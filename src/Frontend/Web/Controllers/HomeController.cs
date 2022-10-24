@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Web.ViewModels;
 using System.Diagnostics;
-using Microsoft.AspNetCore.Authentication;
-using Core.Constants;
 
 namespace Web.Controllers
 {
@@ -21,12 +19,6 @@ namespace Web.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
-
-        [Authorize]
-        public IActionResult Users()
-        {
-            return Redirect($"{BaseUrls.IDENTITY_API_URL}/Users/Index");
         }
     }
 }

@@ -1,59 +1,62 @@
-﻿using Core.Exceptions.Identity;
-using Desktop.Services.Authentication.Identity;
-using Desktop.Services.Authentication.UserServices;
-using System;
+﻿using Desktop.Services.Authentication;
 using System.Threading.Tasks;
 
 namespace Desktop.Services.Authentication
 {
-    public class AuthenticationService
+    public class AuthenticationService : IAuthenticationService
     {
-        private readonly IIdentityProvider _identityProvider;
+        private readonly TokenProvider _tokenProvider;
+        private readonly ITokenDecoder _tokenDecoder;
 
-        public AuthenticationService(IIdentityProvider identityProvider)
+        public AuthenticationService(TokenProvider tokenProvider, ITokenDecoder tokenDecoder)
         {
-            _identityProvider = identityProvider;
+            _tokenProvider = tokenProvider;
+            _tokenDecoder = tokenDecoder;
         }
 
-        public async Task LoginAsync(string login, string password)
+        public async Task Login(string login, string password)
         {
-            var claims = await _identityProvider.LoginAsync(login, password);
+            var tokenResponse = await _tokenProvider.SendLoginRequest(new LoginRequest
+            {
+                Email = login,
+                Password = password
+            });
+
+            Authenticate(tokenResponse.AccessToken);
+        }
+
+        public async Task Register(string username, string email, string password)
+        {
+            var tokenResponse = await _tokenProvider.SendRegisterRequest(new RegisterRequest
+            {
+                Email = email,
+                Username = username,
+                Password = password
+            });
+
+            Authenticate(tokenResponse.AccessToken);
+        }
+
+        public async Task Logout()
+        {
+            if (User.IsAuthenticated)
+            {
+                User.Logout();
+                await _tokenProvider.RemoveTokenData();
+            }     
+        }
+
+        public async Task RestoreSession()
+        {
+            var tokenResponse = await _tokenProvider.LoadTokenData();
+            if (tokenResponse != null)
+                Authenticate(tokenResponse.AccessToken);            
+        }
+
+        private void Authenticate(string accessToken)
+        {
+            var claims = _tokenDecoder.DecodeToken(accessToken);
             User.Authenticate(claims);
-        }
-
-        public async Task RegisterAsync(string username, string email, string password)
-        {
-            var claims = await _identityProvider.RegisterAsync(username, email, password);
-            User.Authenticate(claims);
-        }
-
-        public async Task LogoutAsync()
-        {
-            if (!User.IsAuthenticated)
-                return;
-            User.Logout();
-            await _identityProvider.LogoutAsync();
-        }
-
-        public async Task RefreshSessionAsync()
-        {
-            var claims = await _identityProvider.RestoreUserDataAsync();
-            if (claims == null)
-                return;
-
-            try
-            {
-                User.Authenticate(await _identityProvider.RefreshUserDataAsync());
-            }
-            catch (InvalidRefreshTokenException)
-            {
-                User.Authenticate(claims);
-                throw new InvalidRefreshTokenException();
-            }
-            catch (Exception)
-            {
-                return;
-            }
         }
     }
 }

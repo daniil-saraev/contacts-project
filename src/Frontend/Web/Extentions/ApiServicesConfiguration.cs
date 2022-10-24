@@ -1,7 +1,8 @@
-﻿using OpenApi;
-using Core.Constants;
-using ApiServices.Interfaces;
+﻿using Core.Models;
 using ApiServices.Services;
+using Core.Interfaces;
+using Web.HttpClientHandlers;
+using ApiServices.Interfaces;
 
 namespace Web.Extentions
 {
@@ -9,13 +10,14 @@ namespace Web.Extentions
 	{
 		public static IServiceCollection AddApiServices(this IServiceCollection services)
 		{
-			IdentityApiService identityApiService = new IdentityApiService(BaseUrls.IDENTITY_API_URL);
-			services.AddSingleton<IIdentityApi>(identityApiService);
-			services.AddSingleton<IApiService>(identityApiService);
+			services.AddSingleton<IIdentityApi, IdentityApiService>();
 
-			ContactsDatabaseApiService contactsDbApiService = new ContactsDatabaseApiService(BaseUrls.CONTACTS_DATABASE_API_URL);
-			services.AddSingleton<IRepository<Contact>>(contactsDbApiService);
-			services.AddSingleton<IApiService>(contactsDbApiService);
+			services.AddSingleton<ITokenValidator, TokenValidator>();
+			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        	services.AddTransient<HttpClientAuthorizationDelegatingHandler>();
+
+			services.AddHttpClient<IRepository<Contact>, ContactsDatabaseApiService>()
+                	.AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
 
 			return services;
 		}

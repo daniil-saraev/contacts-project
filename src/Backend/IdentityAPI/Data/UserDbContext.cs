@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using IdentityAPI.Identity;
+﻿using IdentityAPI.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +21,7 @@ namespace IdentityAPI.Data
             //builder.ApplyConfiguration(new ApplicationUserEntityConfiguration());
         }
 
-        internal class ApplicationUserEntityConfiguration : IEntityTypeConfiguration<ApplicationUser>
+        public class ApplicationUserEntityConfiguration : IEntityTypeConfiguration<ApplicationUser>
         {
             public void Configure(EntityTypeBuilder<ApplicationUser> builder)
             {

@@ -1,4 +1,4 @@
-﻿using ApiServices.Interfaces;
+﻿using Core.Interfaces;
 using Desktop.Exceptions;
 using Desktop.Services.Data.UnitOfWork;
 using System;

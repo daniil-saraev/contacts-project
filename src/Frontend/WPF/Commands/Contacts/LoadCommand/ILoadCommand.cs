@@ -8,6 +8,6 @@ namespace Desktop.Commands.Contacts.LoadCommand
 {
     public interface ILoadContactsCommand
     {
-        Task Load();
+        Task Execute();
     }
 }

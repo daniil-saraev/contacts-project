@@ -1,6 +1,6 @@
 ﻿using IdentityAPI.Configuration;
-using IdentityAPI.Identity;
-using IdentityAPI.Responses;
+using IdentityAPI.Models;
+using IdentityAPI.Models.Responses;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -20,11 +20,11 @@ namespace IdentityAPI.Services
             _userManager = userManager;
         }
 
-        public async Task<TokenResponse> CreateTokenAsync(ApplicationUser user)
+        public async Task<TokenResponse> CreateTokenResponseAsync(ApplicationUser user)
         {
             List<Claim> claims = new List<Claim>()
             {
-                new Claim("id", user.Id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Name, user.UserName),
             };

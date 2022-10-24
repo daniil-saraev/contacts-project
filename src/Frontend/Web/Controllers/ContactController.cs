@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using OpenApi;
+using Core.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Logging;
-using ApiServices.Interfaces;
+using Core.Interfaces;
+using System.Security.Claims;
 
 namespace Web.Controllers
 {
@@ -12,37 +11,28 @@ namespace Web.Controllers
     public class ContactController : Controller
     {
         private readonly IRepository<Contact> _contactsDbApi;
-        private readonly ILogger<ContactController> _logger;
 
-        private string _userId => User.FindFirst(c => c.Type == "id").Value;
+        private string _userId => User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value;
 
-        public ContactController(IRepository<Contact> contactsDbApi, ILogger<ContactController> logger)
+        public ContactController(IRepository<Contact> contactsDbApi)
         {
             _contactsDbApi = contactsDbApi;
-            _logger = logger;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            try
-            {
-                var contacts = await _contactsDbApi.GetAllAsync();
-                contacts ??= new List<Contact>();
-                return View(contacts);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return NotFound();
-            }        
+            var contacts = await _contactsDbApi.GetAllAsync();
+            contacts ??= new List<Contact>();
+            return View(contacts);     
         }
 
         [HttpGet]
         public async Task<IActionResult> Info(string id)
         {
             Contact? contactModel = await _contactsDbApi.GetAsync(id);
-            if (contactModel == null) return NotFound();
+            if (contactModel == null) 
+                return NotFound();
             return View(contactModel);
         }
 
@@ -50,23 +40,16 @@ namespace Web.Controllers
         public async Task<IActionResult> Delete(string id)
         {
             Contact? contactModel = await _contactsDbApi.GetAsync(id);
-            if (contactModel == null) return NotFound();
-            try
-            {
-                await _contactsDbApi.DeleteAsync(contactModel);
-                return RedirectToAction("Index");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return Problem(ex.Message, null, StatusCodes.Status500InternalServerError);
-            }         
+            if (contactModel == null) 
+                return NotFound();
+            await _contactsDbApi.DeleteAsync(contactModel);
+            return RedirectToAction("Index");       
         }
 
         [HttpGet]
         public IActionResult Add()
         {
-            Contact contactModel = new Contact(_userId);
+            Contact contactModel = new Contact();
             return View(contactModel);
         }
 
@@ -77,17 +60,8 @@ namespace Web.Controllers
             {
                 return View(contactModel);
             }
-            try
-            {           
-                await _contactsDbApi.AddAsync(contactModel);
-                return RedirectToAction("Index");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return View(contactModel);
-            }                  
+            await _contactsDbApi.AddAsync(contactModel);
+            return RedirectToAction("Index");              
         }
 
         [HttpGet]
@@ -105,17 +79,8 @@ namespace Web.Controllers
             {
                 return View(contactModel);               
             }
-            try
-            {
-                await _contactsDbApi.UpdateAsync(contactModel);
-                return RedirectToAction("Index");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return View(contactModel);
-            }       
+            await _contactsDbApi.UpdateAsync(contactModel);
+            return RedirectToAction("Index");    
         }
     }
 }

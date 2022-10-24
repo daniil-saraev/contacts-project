@@ -90,15 +90,9 @@ namespace DesktopTests.Data.Persistence
             _diskProviderMock.Setup(disk =>  disk.TryLoadFromDiskAsync()).ThrowsAsync(new ReadingDataException());
             _remoteRepositoryProviderMock.Setup(repositoty => repositoty.TryLoadFromRemoteRepositoryAsync()).Returns(Task.FromResult(_unitOfWorkStateFromRemoteRepository));
 
-            // Act
-            var contacts = await _authenticatedPersistenceProvider.LoadContactsAsync();
-
-            // Assert
-            Assert.Contains(_contact, _unitOfWork.SyncedEntities);
-            Assert.Contains(_contact, contacts);
-            _diskProviderMock.Verify(disk => disk.TryLoadFromDiskAsync());
-            _remoteRepositoryProviderMock.Verify(repositoty => repositoty.TryLoadFromRemoteRepositoryAsync());
-            _remoteRepositoryProviderMock.VerifyNoOtherCalls();
+            // Act & Assert
+            await Assert.ThrowsAsync<ReadingDataException>(async () => await _authenticatedPersistenceProvider.LoadContactsAsync());
+            Assert.NotNull(_unitOfWork.UnitOfWorkState);
         }
 
         [Fact]
@@ -108,15 +102,9 @@ namespace DesktopTests.Data.Persistence
             _diskProviderMock.Setup(disk => disk.TryLoadFromDiskAsync()).Returns(Task.FromResult(_unitOfWorkStateFormDisk));
             _remoteRepositoryProviderMock.Setup(repository => repository.TryPushChangesToRemoteRepositoryAsync(It.IsAny<UnitOfWorkState<Contact>>())).ThrowsAsync(new SyncingWithRemoteRepositoryException());
 
-            // Act
-            var contacts = await _authenticatedPersistenceProvider.LoadContactsAsync();
-
-            // Assert
-            Assert.Contains(_contact, _unitOfWork.NewEntities);
-            Assert.Contains(_contact, contacts);
-            _diskProviderMock.Verify(disk => disk.TryLoadFromDiskAsync());
-            _remoteRepositoryProviderMock.Verify(repository => repository.TryPushChangesToRemoteRepositoryAsync(It.IsAny<UnitOfWorkState<Contact>>()));
-            _remoteRepositoryProviderMock.VerifyNoOtherCalls();
+            // Act & Assert
+            await Assert.ThrowsAsync<SyncingWithRemoteRepositoryException>(async () => await _authenticatedPersistenceProvider.LoadContactsAsync());
+            Assert.NotNull(_unitOfWork.UnitOfWorkState);
         }
 
         [Fact]
@@ -126,15 +114,9 @@ namespace DesktopTests.Data.Persistence
             _diskProviderMock.Setup(disk => disk.TryLoadFromDiskAsync()).ThrowsAsync(new ReadingDataException());
             _remoteRepositoryProviderMock.Setup(repositoty => repositoty.TryLoadFromRemoteRepositoryAsync()).ThrowsAsync(new SyncingWithRemoteRepositoryException());
 
-            // Act
-            var contacts = await _authenticatedPersistenceProvider.LoadContactsAsync();
-
-            // Assert
+            // Act & Assert
+            await Assert.ThrowsAsync<ReadingDataException>(async () => await _authenticatedPersistenceProvider.LoadContactsAsync());
             Assert.NotNull(_unitOfWork.UnitOfWorkState);
-            Assert.NotNull(contacts);
-            _diskProviderMock.Verify(disk => disk.TryLoadFromDiskAsync());
-            _remoteRepositoryProviderMock.Verify(repository => repository.TryLoadFromRemoteRepositoryAsync());
-            _remoteRepositoryProviderMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using OpenApi;
-using Core.Models.Validation;
+﻿using Core.Models.Validation;
 using System.ComponentModel.DataAnnotations;
 using System;
 
@@ -17,6 +16,7 @@ namespace Desktop.ViewModels.Contacts
         public void SetContact(Contact contact)
         {
             _contact = contact;
+            ValidateModel();
         }
 
         public Contact? GetContact()
@@ -27,7 +27,7 @@ namespace Desktop.ViewModels.Contacts
         public override void Dispose()
         {
             _contact = null;
-            OnPropertyChanged();
+            ValidateModel();
         }
 
         #region Properties
@@ -37,7 +37,6 @@ namespace Desktop.ViewModels.Contacts
             get { return _contact?.Id; }
         }
 
-        [Required]
         public string? UserId
         {
             get { return _contact?.UserId; }

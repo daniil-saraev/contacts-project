@@ -1,11 +1,11 @@
-﻿using IdentityAPI.Identity;
-using IdentityAPI.Responses;
+﻿using IdentityAPI.Models;
+using IdentityAPI.Models.Responses;
 
 namespace IdentityAPI.Services
 {
     public interface ITokenService
     {
-        Task<TokenResponse> CreateTokenAsync(ApplicationUser user);
+        Task<TokenResponse> CreateTokenResponseAsync(ApplicationUser user);
 
         bool ValidateRefreshToken(string token);
     }
