@@ -1,0 +1,63 @@
+﻿@page
+@model IndexModel
+
+<div class="container p-3">
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2 class="text-primary">Contacts</h2>
+		</div>
+        <div class="col-6 text-end">
+            <a asp-page="Add" class="btn btn-primary">
+               <i class="bi bi-plus-lg"></i> Create New Contact
+            </a>
+		</div>
+	</div>
+    <br /><br />
+
+<table class="table table-hover" align="center" style="width:70%">
+    <thead>
+        <tr>
+            <th width="15%">       
+			</th>
+            <th width="35%">
+                Name
+			</th>
+            <th width="35%">
+                Phone
+			</th>
+            <th width="35%">       
+			</th>
+		</tr>
+	</thead>
+    <tbody>
+        @{int i = 1;}
+        @foreach(Contact contact in Model.Contacts)
+        {
+                <tr class="table-light">
+                    <td width="15%" align="center">
+                    <a class="nav-link" asp-page="Info" asp-route-id="@contact.Id">@i</a>
+				    </td>
+                <td width="35%">
+                    @contact.FirstName @contact.MiddleName @contact.LastName
+				</td>
+                <td width="35%">
+                    @contact.PhoneNumber
+				</td>
+                <td width="15%" align="center">
+                    <div class="btn-group" role="group">
+                        <a asp-page="Info" asp-route-id="@contact.Id"
+                            class="btn btn-info">Info</a>
+                        <a asp-page="Edit" asp-route-id="@contact.Id"
+                            class="btn btn-primary">Edit</a>
+                        <a asp-page="Delete" asp-route-id="@contact.Id"
+                            class="btn btn-danger">Delete
+                        </a>
+					</div>
+				</td>
+                </tr>
+                i++;
+            }
+    </tbody>
+
+</table>
+</div>

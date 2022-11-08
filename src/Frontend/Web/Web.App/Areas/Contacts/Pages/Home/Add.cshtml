@@ -1,0 +1,56 @@
+﻿@page
+@model AddModel
+
+<div class="mrg">
+	<form method="post">
+	<div class="border p-3 mt-4">
+		<div class="row pb-2">
+			<h3 class="text-primary">Create Contact</h3>
+			<hr />
+		</div>
+		<div class="form-group">
+			<label>First name</label>
+			<input asp-for="ContactViewModel.FirstName" type="text" class="form-control"/>
+			<span asp-validation-for="ContactViewModel.FirstName" class="text-danger"></span>
+		</div>
+		<div class="form-group">
+			<label>Middle name</label>
+			<input asp-for="ContactViewModel.MiddleName" type="text" class="form-control"/>
+		</div>
+		<div class="form-group">
+			<label>Last name</label>
+			<input asp-for="ContactViewModel.LastName" type="text" class="form-control"/>
+		</div>
+		<div class="form-group">
+			<label>Phone number</label>
+			<input asp-for="ContactViewModel.PhoneNumber" type="text" class="form-control"/>
+			<span asp-validation-for="ContactViewModel.PhoneNumber" class="text-danger"></span>
+		</div>
+		<div class="form-group">
+			<label>Address</label>
+			<input asp-for="ContactViewModel.Address" type="text" class="form-control"/>
+		</div>
+		<div class="form-group">
+			<label>Description</label>
+			<input asp-for="ContactViewModel.Description" type="text" class="form-control" />
+		</div>
+		<p></p>
+		<div align="center">
+			<button type="submit" class="btn btn-primary" style="width:150px">Create</button>
+		<a asp-page="Home" class="btn btn-dark" style="width:150px">
+			Back to List
+		</a>
+		</div>		
+	</div>
+</form>
+</div>
+
+@section Scripts
+{
+	@{
+		<partial name="_ValidationScriptsPartial"/>
+	} 
+}
+
+
+
