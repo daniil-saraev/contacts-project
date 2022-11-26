@@ -1,25 +1,26 @@
-using Identity.Models;
-using IdentityServer4.Models;
+using Identity;
+using Web.Authentication;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
+using IAuthenticationService = Web.Authentication.IAuthenticationService;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Core.Identity.Exceptions;
 
-namespace Web.Areas.Identity.Pages.Account
+namespace Web.App.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
     [BindProperties]
     public class RegisterModel : PageModel
     {
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IAuthenticationService _authenticationService;
 
-        public RegisterModel(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager)
+        public RegisterModel(IAuthenticationService authenticationService)
         {
-            _signInManager = signInManager;
-            _userManager = userManager;
+            _authenticationService = authenticationService;
         }
 
         [Required]
@@ -52,19 +53,25 @@ namespace Web.Areas.Identity.Pages.Account
             if (!ModelState.IsValid)
                 return Page();
 
-            var user = new ApplicationUser { UserName = Username, Email = Email };
-            var result = await _userManager.CreateAsync(user, Password);
-
-            if (result.Succeeded)
+            try
             {
-                await _signInManager.SignInAsync(user, false);
+                var claimsPrincipal = await _authenticationService.RegisterAsync(Username, Email, Password);
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal, new AuthenticationProperties
+                {
+                    IsPersistent = false
+                });
                 return Redirect(ReturnUrl);
             }
-            else
+            catch (DuplicateEmailsException ex)
             {
-                ModelState.AddModelError(string.Empty, result.Errors.First().Description);
-                return Page();
+                ModelState.AddModelError(string.Empty, ex.Message);
             }
+            catch (RegisterErrorException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
+
+            return Page();
         }
     }
 }

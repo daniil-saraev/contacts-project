@@ -1,14 +1,11 @@
-using Contacts.Data.Configuration;
-using Identity.Data.Configuration;
+using Identity.Common.Configuration;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Web.Extensions;
+using Web.App.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Logging.AddConsole();
 builder.Services.AddMvc();
-
-builder.Services.AddIdentityServices(builder.Configuration);
 
 builder.Services.AddCoreServices(builder.Configuration);
 
@@ -16,19 +13,22 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options =>
     {
         options.LoginPath = "/Account/Login";
-        options.LogoutPath = "/Account/Logout";
+        options.ReturnUrlParameter = "returnUrl";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite = SameSiteMode.Strict;
+        options.SlidingExpiration = true;
     });
 
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// using (var scope = app.Services.CreateScope())
-// {
-//     var scopedProvider = scope.ServiceProvider;
-//     await IdentityDbInitialization.InitializeDbAsync(scopedProvider);
-//     await ContactsDbConfiguration.InitializeDbAsync(scopedProvider);
-// }
+using (var scope = app.Services.CreateScope())
+{
+    var scopedProvider = scope.ServiceProvider;
+    await IdentityDbInitialization.InitializeDbAsync(scopedProvider);
+}
 
 if (app.Environment.IsDevelopment())
 {
@@ -40,6 +40,7 @@ else
     app.UseHsts();
 }
 
+app.UseStatusCodePagesWithReExecute("/Home/Error");
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();

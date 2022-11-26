@@ -1,17 +1,17 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using ContactBook;
-using Core.Entities;
+using Web.Authentication;
+using Web.App.Areas.Contacts.ViewModels;
+using Core.Contacts.Interfaces;
 
-namespace Web.Areas.Contacts.Pages.Home;
+namespace Web.App.Areas.Contacts.Pages.Home;
 
 [Authorize]
+[TypeFilter(typeof(RefreshTokenFilter))]
 public class IndexModel : PageModel
 {
     private readonly IContactBookService _contactBook;
-    private string _userId => User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
     public IndexModel(IContactBookService contactBook)
     {
@@ -19,10 +19,10 @@ public class IndexModel : PageModel
     }
 
     [BindProperty]
-    public IEnumerable<Contact> Contacts { get; set; }
+    public IEnumerable<ContactViewModel> Contacts { get; set; }
 
     public async Task OnGet()
     {
-        Contacts = await _contactBook.GetContacts(_userId);
+        Contacts = (await _contactBook.GetAllContacts()).Select(dto => new ContactViewModel(dto));
     }
 }

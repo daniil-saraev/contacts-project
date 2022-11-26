@@ -1,14 +1,19 @@
-﻿using ContactBook.Configuration;
-using Web.ContactBook.Configuration;
-
-namespace Web.Extensions
+﻿using Api.Services.Gateway.Contacts;
+using Core.Contacts.Interfaces;
+using Web.Authentication;
+using Web.Authentication.Configuration;
+using static Core.Common.Constants.BaseUrls;
+namespace Web.App.Extensions
 {
-    public static class CoreServicesConfiguration
+    internal static class CoreServicesConfiguration
     {
         public static IServiceCollection AddCoreServices(this IServiceCollection services, IConfiguration configuration)
-        {        
-            WebContactBookConfiguration.RegisterWebContactBook(configuration, services);
-
+        {
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<AuthenticationHeaderHandler>();
+            services.AddHttpClient<IContactBookService, ContactBookService>(client => new ContactBookService(CONTACTS_DATABASE_API_URL, client))
+                    .AddHttpMessageHandler<AuthenticationHeaderHandler>();
+            services.RegisterIdentityServices(configuration);
             return services;
         }
     }

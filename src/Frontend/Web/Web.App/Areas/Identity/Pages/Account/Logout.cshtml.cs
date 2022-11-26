@@ -1,21 +1,16 @@
-using Identity.Models;
-using Identity.Data;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Web.Areas.Identity.Pages.Account
+namespace Web.App.Areas.Identity.Pages.Account
 {
     [Authorize]
     public class LogoutModel : PageModel
     {
-        private readonly SignInManager<ApplicationUser> _signInManager;
-
-        public LogoutModel(SignInManager<ApplicationUser> signInManager)
+        public LogoutModel()
         {
-            _signInManager = signInManager;
         }
 
         public void OnGet()
@@ -26,7 +21,7 @@ namespace Web.Areas.Identity.Pages.Account
         public async Task<IActionResult> OnPost(string returnUrl)
         {
             returnUrl ??= Url.Content("~/");
-            await _signInManager.SignOutAsync();
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return Redirect(returnUrl);
         }
     }

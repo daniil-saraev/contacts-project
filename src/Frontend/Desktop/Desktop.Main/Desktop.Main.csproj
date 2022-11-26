@@ -1,0 +1,87 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>Common\Resources\Icons\app.ico</ApplicationIcon>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
+		<PackageReference Include="MaterialDesignColors" Version="2.0.6" />
+		<PackageReference Include="MaterialDesignExtensions" Version="3.3.0" />
+		<PackageReference Include="MaterialDesignThemes" Version="4.5.0" />
+		<PackageReference Include="MaterialDesignThemes.Wpf" Version="1.0.1" />
+		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.7" />
+		<PackageReference Include="Nito.AsyncEx" Version="4.0.1" />
+		<PackageReference Include="ShowMeTheXAML.MSBuild" Version="2.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Desktop.Authentication\Desktop.Authentication.csproj" />
+	  <ProjectReference Include="..\Desktop.Common\Desktop.Common.csproj" />
+	  <ProjectReference Include="..\Desktop.Contacts\Desktop.Contacts.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+    <None Remove="Common\Resources\Icons\app.png" />
+    <None Remove="Common\Resources\Icons\back.png" />
+    <None Remove="Common\Resources\Icons\close.png" />
+    <None Remove="Common\Resources\Icons\plus.png" />
+    <None Remove="Common\Resources\Icons\user.png" />
+  </ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Common\Resources\Icons\app.ico" />
+	</ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Common\Resources\Icons\app.png" />
+    <Resource Include="Common\Resources\Icons\back.png" />
+    <Resource Include="Common\Resources\Icons\close.png" />
+    <Resource Include="Common\Resources\Icons\plus.png" />
+    <Resource Include="Common\Resources\Icons\user.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="App.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\Account\LoginView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+	<Page Update="Views\Account\RegisterView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+	<Page Update="Views\Account\AccountView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Contacts\Views\ContactAddView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Contacts\Views\ContactInfoView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Contacts\Views\ContactEditView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Contacts\Views\HomeView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Common\Views\MainWindow.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+
+</Project>

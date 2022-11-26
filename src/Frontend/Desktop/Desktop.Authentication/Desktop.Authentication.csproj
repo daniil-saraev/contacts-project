@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -7,8 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Backend\API\Api.Services.Gateway\Api.Services.Gateway.csproj" />
-    <ProjectReference Include="..\..\..\Domain\Identity\Identity.csproj" />
+    <ProjectReference Include="..\..\..\Backend\Api.Services.Gateway\Api.Services.Gateway.csproj" />
+    <ProjectReference Include="..\..\..\Core\Core.Identity\Core.Identity.csproj" />
+    <ProjectReference Include="..\Desktop.Common\Desktop.Common.csproj" />
   </ItemGroup>
 
 </Project>

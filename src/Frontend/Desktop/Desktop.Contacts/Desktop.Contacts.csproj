@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Backend\Api.Services.Gateway\Api.Services.Gateway.csproj" />
+    <ProjectReference Include="..\..\..\Core\Core.Contacts\Core.Contacts.csproj" />
+    <ProjectReference Include="..\Desktop.Common\Desktop.Common.csproj" />
+    <ProjectReference Include="..\Desktop.Authentication\Desktop.Authentication.csproj" />
+  </ItemGroup>
+
+</Project>

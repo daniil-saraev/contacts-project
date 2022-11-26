@@ -1,18 +1,18 @@
-using System.Security.Claims;
-using ContactBook;
-using Core.Entities;
+using Core.Contacts.Requests;
+using Core.Contacts.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Web.Areas.Contacts.ViewModels;
+using Web.App.Areas.Contacts.ViewModels;
+using Web.Authentication;
 
-namespace Web.Areas.Contacts.Pages.Home;
+namespace Web.App.Areas.Contacts.Pages.Home;
 
 [Authorize]
+[TypeFilter(typeof(RefreshTokenFilter))]
 public class EditModel : PageModel
 {
     private readonly IContactBookService _contactBook;
-    private string _userId => User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
     public EditModel(IContactBookService contactBook)
     {
@@ -24,9 +24,7 @@ public class EditModel : PageModel
 
     public async Task<IActionResult> OnGet(string id)
     {
-        var contact = (await _contactBook.GetContacts(_userId, contact => contact.Id == id)).FirstOrDefault(defaultValue: null);
-        if (contact == null)
-            return NotFound();
+        var contact = await _contactBook.GetContactById(id);
         ContactViewModel = new ContactViewModel(contact);
         return Page();
     }
@@ -35,17 +33,17 @@ public class EditModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var contact = new Contact(
-                ContactViewModel.Id,
-                ContactViewModel.UserId,
-                ContactViewModel.FirstName,
-                ContactViewModel.MiddleName,
-                ContactViewModel.LastName,
-                ContactViewModel.PhoneNumber,
-                ContactViewModel.Address,
-                ContactViewModel.Description
-            );
-            await _contactBook.UpdateContact(contact);
+            var updateRequest = new UpdateContactRequest
+            {
+                Id = ContactViewModel.Id,
+                FirstName = ContactViewModel.FirstName,
+                MiddleName = ContactViewModel.MiddleName,
+                LastName = ContactViewModel.LastName,
+                PhoneNumber = ContactViewModel.PhoneNumber,
+                Address = ContactViewModel.Address,
+                Description = ContactViewModel.Description
+            };
+            await _contactBook.UpdateContact(updateRequest);
             return RedirectToPage("Home");
         }
         else

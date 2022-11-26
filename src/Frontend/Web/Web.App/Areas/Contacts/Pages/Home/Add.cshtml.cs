@@ -1,18 +1,18 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Core.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using Web.Areas.Contacts.ViewModels;
-using ContactBook;
+using Web.App.Areas.Contacts.ViewModels;
+using Web.Authentication;
+using Core.Contacts.Requests;
+using Core.Contacts.Interfaces;
 
-namespace Web.Areas.Contacts.Pages.Home;
+namespace Web.App.Areas.Contacts.Pages.Home;
 
 [Authorize]
+[TypeFilter(typeof(RefreshTokenFilter))]
 public class AddModel : PageModel
 {
     private readonly IContactBookService _contactBook;
-    private string _userId => User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
     public AddModel(IContactBookService contactBook)
     {
@@ -31,9 +31,8 @@ public class AddModel : PageModel
     {
         if (ModelState.IsValid)
         {
-            var contact = new Contact()
+            var addRequest = new AddContactRequest()
             {
-                UserId = _userId,
                 FirstName = ContactViewModel.FirstName,
                 MiddleName = ContactViewModel.MiddleName,
                 LastName = ContactViewModel.LastName,
@@ -41,7 +40,7 @@ public class AddModel : PageModel
                 Address = ContactViewModel.Address,
                 Description = ContactViewModel.Description
             };
-            await _contactBook.AddContact(contact);
+            await _contactBook.AddContact(addRequest);
             return RedirectToPage("Home");
         }
         else

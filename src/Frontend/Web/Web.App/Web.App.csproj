@@ -22,21 +22,14 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.ApiDescription.Client" Version="6.0.7">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.7" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="NSwag.ApiDescription.Client" Version="13.16.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\backend\Infrastructure\Identity.Data\Identity.Data.csproj" />
-    <ProjectReference Include="..\Web.ContactBook\Web.ContactBook.csproj" />
+    <ProjectReference Include="..\..\..\Backend\Api.Services.Gateway\Api.Services.Gateway.csproj" />
+    <ProjectReference Include="..\..\..\Core\Core.Contacts\Core.Contacts.csproj" />
+    <ProjectReference Include="..\Web.Authentication\Web.Authentication.csproj" />
   </ItemGroup>
 
 </Project>

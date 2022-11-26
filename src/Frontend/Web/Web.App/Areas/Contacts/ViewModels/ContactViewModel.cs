@@ -1,22 +1,23 @@
 using System.ComponentModel.DataAnnotations;
-using Core.Entities;
-using Core.Entities.Validation;
+using Core.Common.Entities;
+using Core.Contacts.Models;
 
-namespace Web.Areas.Contacts.ViewModels;
+namespace Web.App.Areas.Contacts.ViewModels;
 
 public class ContactViewModel
 {
     public string? Id { get; set; }
 
-    public string? UserId { get; set; }
-
     [Required]
+    [MaxLength(50)]
     [Display(Name = "Firstname")]
     public string FirstName { get; set; }
 
+    [MaxLength(50)]
     [Display(Name = "Middlename")]
     public string? MiddleName { get; set; }
 
+    [MaxLength(50)]
     [Display(Name = "Lastname")]
     public string? LastName { get; set; }
 
@@ -25,14 +26,15 @@ public class ContactViewModel
     [Display(Name = "Phone number")]
     public string PhoneNumber { get; set; }
 
+    [MaxLength(250)]
     public string? Address { get; set; }
 
+    [MaxLength(250)]
     public string? Description { get; set; }
 
-    public ContactViewModel(Contact contact)
+    public ContactViewModel(ContactData contact)
     {
         Id = contact.Id;
-        UserId = contact.UserId;
         FirstName = contact.FirstName;
         MiddleName = contact.MiddleName;
         LastName = contact.LastName;
@@ -41,5 +43,7 @@ public class ContactViewModel
         Description = contact.Description;
     }
 
-    public ContactViewModel() { }
+    public ContactViewModel() : this(new ContactData())
+    {
+    }
 }

@@ -31,7 +31,7 @@
 	</thead>
     <tbody>
         @{int i = 1;}
-        @foreach(Contact contact in Model.Contacts)
+        @foreach(ContactViewModel contact in Model.Contacts)
         {
                 <tr class="table-light">
                     <td width="15%" align="center">
@@ -45,18 +45,21 @@
 				</td>
                 <td width="15%" align="center">
                     <div class="btn-group" role="group">
+
                         <a asp-page="Info" asp-route-id="@contact.Id"
-                            class="btn btn-info">Info</a>
+                           class="btn btn-info">Info</a>
+
                         <a asp-page="Edit" asp-route-id="@contact.Id"
-                            class="btn btn-primary">Edit</a>
+                           class="btn btn-primary">Edit</a>
+
                         <a asp-page="Delete" asp-route-id="@contact.Id"
-                            class="btn btn-danger">Delete
-                        </a>
+                           class="btn btn-danger">Delete</a>
+                       
 					</div>
 				</td>
                 </tr>
                 i++;
-            }
+            } 
     </tbody>
 
 </table>

@@ -1,23 +1,23 @@
-using Identity.Models;
-using Identity.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
+using IAuthenticationService = Web.Authentication.IAuthenticationService;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Core.Identity.Exceptions;
 
-namespace Web.Areas.Identity.Pages.Account
+namespace Web.App.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
     [BindProperties]
     public class LoginModel : PageModel
     {
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IAuthenticationService _authenticationService;
 
-        public LoginModel(SignInManager<ApplicationUser> signInManager)
+        public LoginModel(IAuthenticationService authenticationService)
         {
-            _signInManager = signInManager;
+            _authenticationService = authenticationService;
         }
 
         [Required]
@@ -44,27 +44,29 @@ namespace Web.Areas.Identity.Pages.Account
             if (!ModelState.IsValid)
                 return Page();
 
-            var user = await _signInManager.UserManager.FindByEmailAsync(Email);
-            if (user == null)
+            try
             {
-                ModelState.AddModelError(string.Empty, "Invalid username or password");
-                return Page();
-            }
-
-            var result = await _signInManager.PasswordSignInAsync(user, Password, RememberMe, true);
-            if (result.Succeeded)
+                var claimsPrincipal = await _authenticationService.LoginAsync(Email, Password);
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal, new AuthenticationProperties
+                {
+                    IsPersistent = RememberMe
+                });
                 return Redirect(ReturnUrl);
-
-            if (result.IsLockedOut)
-            {
-                ModelState.AddModelError(string.Empty, "Account locked out");
-                return Page();
             }
-            else
+            catch (UserNotFoundException)
             {
                 ModelState.AddModelError(string.Empty, "Invalid username or password");
-                return Page();
             }
+            catch (WrongPasswordException)
+            {
+                ModelState.AddModelError(string.Empty, "Invalid username or password");
+            }
+            catch (UserLockedOutException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
+
+            return Page();
         }
     }
 }

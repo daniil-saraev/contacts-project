@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Web.ViewModels;
+using Web.App.ViewModels;
 using System.Diagnostics;
 
-namespace Web.Controllers
+namespace Web.App.Controllers
 {
     [AllowAnonymous]
     public class HomeController : Controller

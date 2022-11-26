@@ -8,8 +8,7 @@
 			<h3 class="text-primary">Edit Contact</h3>
 			<hr />
 		</div>
-		<input type="hidden" asp-for="ContactViewModel.Id" />
-		<input type="hidden" asp-for="ContactViewModel.UserId" />
+		<input type="hidden" asp-for="ContactViewModel.Id"/>
 		<div class="form-group">
 			<label>First name</label>
 			<input asp-for="ContactViewModel.FirstName" value="@Model.ContactViewModel.FirstName" type="text" class="form-control"/>

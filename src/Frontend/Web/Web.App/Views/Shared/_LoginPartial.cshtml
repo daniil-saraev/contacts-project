@@ -5,7 +5,7 @@
         <a id="manage" class="nav-link disabled text-dark">Hello @User.Identity.Name!</a>
     </li>
     <li class="nav-item">
-        <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout">
+        <form id="logoutForm" class="form-inline" asp-area="Identity" method="post" asp-page="/Account/Logout">
             <button id="logout" type="submit" class="btn btn-outline-dark">Logout</button>
         </form>
     </li>
