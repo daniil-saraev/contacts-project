@@ -2,7 +2,7 @@
 
 namespace Desktop.Main.Contacts.Notifier
 {
-    public interface INotifyContactsChanged
+    public interface INotifyUpdateContacts
     {
         void Notify();
 

@@ -2,7 +2,7 @@
 
 namespace Desktop.Main.Contacts.Notifier
 {
-    internal class ContactsChangesNotifier : INotifyContactsChanged
+    internal class ContactsUpdateNotifier : INotifyUpdateContacts
     {
         public event Action? ContactsChanged;
 

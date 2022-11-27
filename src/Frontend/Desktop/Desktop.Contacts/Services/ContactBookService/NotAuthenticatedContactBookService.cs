@@ -36,12 +36,12 @@ internal class NotAuthenticatedContactBookService : IContactBookService, IPersis
 
     public Task<ContactData> GetContactById(string id)
     {
-        return Task.FromResult<ContactData>(_unitOfWork.ExistingContacts.First(unit => unit.Id == id));
+        return Task.FromResult(_unitOfWork.ExistingContacts.First(unit => unit.Id == id));
     }
 
     public virtual Task<IEnumerable<ContactData>> GetAllContacts()
     {
-        return Task.FromResult<IEnumerable<ContactData>>(_unitOfWork.ExistingContacts);
+        return Task.FromResult(_unitOfWork.ExistingContacts);
     }
 
     public virtual async Task LoadContacts()

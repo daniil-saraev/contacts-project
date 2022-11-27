@@ -1,42 +1,14 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using Desktop.Common.Services;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Desktop.Common.Commands.Async
 {
     public abstract class AsyncBaseCommand : BaseCommand, IAsyncCommand
     {
-        private bool _isCompleted;
         private bool _isRunning;
-        protected Task? _executionTask;
 
-        public event PropertyChangedEventHandler? PropertyChanged;
-         
-        public Task ExecutionTask
-        {
-            get
-            {
-                ArgumentNullException.ThrowIfNull(_executionTask);
-                return _executionTask;
-            }
-        }
-
-        public bool IsCompleted
-        {
-            get => _isCompleted;
-            protected set
-            {
-                _isCompleted = value;
-                OnPropertyChanged();
-            }
-        }
+        public event PropertyChangedEventHandler? PropertyChanged;     
 
         public bool IsRunning
         {
@@ -48,22 +20,22 @@ namespace Desktop.Common.Commands.Async
             }
         }
 
-        protected AsyncBaseCommand()
-        {
-            _executionTask = ExecuteAsync();
-        }
-
         public abstract Task ExecuteAsync();
 
         public override async void Execute(object? parameter)
         {
             try
             {
+                IsRunning = true;
                 await ExecuteAsync();
             }
             catch (Exception)
             {
                 throw;
+            }
+            finally
+            {
+                IsRunning = false;
             }
         }
 

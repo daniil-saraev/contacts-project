@@ -5,14 +5,13 @@ namespace Desktop.Common.Services
     public class NavigationService : INavigationService
     {
         private readonly IViewModelsFactory _viewModelsFactory;
-        private BaseViewModel _currentViewModel;
-        public BaseViewModel CurrentViewModel => _currentViewModel;
+        private BaseViewModel? _currentViewModel;
+        public BaseViewModel? CurrentViewModel => _currentViewModel;
         public event Action? CurrentViewModelChanged;
 
-        public NavigationService(IViewModelsFactory viewModelsFactory, BaseViewModel initialViewModel)
+        public NavigationService(IViewModelsFactory viewModelsFactory)
         {
             _viewModelsFactory = viewModelsFactory;
-            _currentViewModel = initialViewModel;
         }
 
         public void NavigateTo<T>() where T : BaseViewModel

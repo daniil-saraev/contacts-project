@@ -1,17 +1,18 @@
 ﻿using Desktop.Authentication.Services;
-using Desktop.Common.Commands;
 using Desktop.Common.Commands.Async;
 using Desktop.Common.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace Desktop.Main.Account.Commands
 {
-    public class LogoutCommand : BaseCommand
+    public class LogoutCommand : AsyncBaseCommand
     {
         private IAuthenticationService _authenticationService => ServiceProvider.GetRequiredService<IAuthenticationService>();
         private IExceptionHandler _exceptionHandler => ServiceProvider.GetRequiredService<IExceptionHandler>();
+
         private readonly ICommand? _returnCommand;
 
         public LogoutCommand(ICommand? returnCommand)
@@ -19,7 +20,7 @@ namespace Desktop.Main.Account.Commands
             _returnCommand = returnCommand;
         }
 
-        public override async void Execute(object? paramete = null)
+        public override async Task ExecuteAsync()
         {
             try
             {

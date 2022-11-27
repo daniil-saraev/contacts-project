@@ -1,17 +1,16 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.Input;
+using Desktop.Common.Commands.Async;
 using System.Collections;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using Desktop.Common.Commands.Async;
-using Desktop.Common.Services;
 
 namespace Desktop.Common.ViewModels
 {
     public abstract class BaseViewModel : INotifyPropertyChanged, INotifyDataErrorInfo
     {
+        public IAsyncRelayCommand? LoadingTask { get; protected set; }
+
         #region PropertyChanged
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -102,7 +101,5 @@ namespace Desktop.Common.ViewModels
         }
 
         #endregion
-
-        public virtual void Dispose() { }
     }
 }

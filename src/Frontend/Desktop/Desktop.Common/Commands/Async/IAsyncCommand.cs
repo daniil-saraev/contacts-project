@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
+using System.Windows.Input;
 
 namespace Desktop.Common.Commands.Async
 {
-    public interface IAsyncCommand : INotifyPropertyChanged
+    public interface IAsyncCommand : INotifyPropertyChanged, ICommand
     {
-        public Task ExecutionTask { get; }
-        public bool IsCompleted { get; }
         public bool IsRunning { get; }
 
         public Task ExecuteAsync();

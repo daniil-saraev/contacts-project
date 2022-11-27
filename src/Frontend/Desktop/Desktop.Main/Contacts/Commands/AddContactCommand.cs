@@ -8,15 +8,17 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Windows.Input;
 using Core.Contacts.Requests;
+using Desktop.Common.Commands.Async;
+using System.Threading.Tasks;
 
 namespace Desktop.Main.Contacts.Commands
 {
-    public class AddContactCommand : BaseCommand
+    public class AddContactCommand : AsyncBaseCommand
     {
         private IContactBookService _contactBook => ServiceProvider.GetRequiredService<IContactBookService>();
         private IPersistenceProvider _persistence => ServiceProvider.GetRequiredService<IPersistenceProvider>();
         private IExceptionHandler _exceptionHandler => ServiceProvider.GetRequiredService<IExceptionHandler>();
-        private INotifyContactsChanged _notifyContactsChanged => ServiceProvider.GetRequiredService<INotifyContactsChanged>();
+        private INotifyUpdateContacts _notifyContactsChanged => ServiceProvider.GetRequiredService<INotifyUpdateContacts>();
 
         private readonly SelectedContact _selectedContact;     
         private readonly ICommand? _returnCommand;
@@ -38,7 +40,7 @@ namespace Desktop.Main.Contacts.Commands
             return base.CanExecute(parameter) && ! _selectedContact.ContactViewModel.HasErrors;
         }
 
-        public override async void Execute(object? parameter = null)   
+        public override async Task ExecuteAsync()
         {
             _selectedContact.ContactViewModel.ValidateModel();
             if (_selectedContact.ContactViewModel.HasErrors)

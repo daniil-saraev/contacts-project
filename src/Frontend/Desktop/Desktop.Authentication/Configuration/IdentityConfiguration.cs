@@ -16,7 +16,7 @@ namespace Desktop.Authentication.Configuration
         {
             services.AddSingleton<User>();
             services.AddHttpClient();
-            services.AddSingleton<IIdentityService, IdentityService>(services => new IdentityService(IDENTITY_API_URL, services.GetRequiredService<HttpClient>()));
+            services.AddSingleton<IIdentityService, IdentityService>(services => new IdentityService(services.GetRequiredService<HttpClient>()));
             services.AddSingleton<IAuthenticationService, AuthenticationService>();
             services.AddSingleton(typeof(IFileService<UserData?>), new JsonFileService<UserData?>($"{Environment.CurrentDirectory}\\user.json"));
             services.AddSingleton<IUserDataStorage, UserDataStorage>();

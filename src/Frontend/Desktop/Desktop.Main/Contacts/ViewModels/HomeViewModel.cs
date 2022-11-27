@@ -6,11 +6,11 @@ using Desktop.Main.Common.Commands;
 using Desktop.Main.Contacts.Models;
 using Desktop.Main.Contacts.Commands;
 using Desktop.Main.Contacts.Notifier;
-using Nito.AsyncEx;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Desktop.Common.Commands.Async;
 using CommunityToolkit.Mvvm.Input;
+using System.Windows;
 
 namespace Desktop.Main.Contacts.ViewModels
 {
@@ -18,9 +18,7 @@ namespace Desktop.Main.Contacts.ViewModels
     {
         private readonly ObservableCollection<ContactViewModel> _contacts;
         private readonly SelectedContact _selectedContact;
-        private readonly INotifyContactsChanged _notifier;
-
-        public INotifyTaskCompletion? LoadContactsTask { get; private set; }
+        private readonly INotifyUpdateContacts _notifier;
 
         public ContactViewModel? SelectedContactViewModel
         {
@@ -46,7 +44,7 @@ namespace Desktop.Main.Contacts.ViewModels
         public ICommand NavigateToEditView { get; } = new NavigateTo<ContactEditViewModel>();
         public ICommand NavigateToAddView { get; } = new NavigateTo<ContactAddViewModel>();
 
-        public HomeViewModel(SelectedContact selectedContact, INotifyContactsChanged notifier)
+        public HomeViewModel(SelectedContact selectedContact, INotifyUpdateContacts notifier)
         {
             _selectedContact = selectedContact;
             _notifier = notifier;
@@ -55,18 +53,22 @@ namespace Desktop.Main.Contacts.ViewModels
             Contacts = new ReadOnlyObservableCollection<ContactViewModel>(_contacts);
             DeleteContact = new DeleteContactCommand(selectedContact, null);
             GetContacts = new GetContactsCommand();
-            LoadContactsTask = NotifyTaskCompletion.Create(LoadContacts());   
+            LoadingTask = new AsyncRelayCommand(LoadContacts);
         }
-        
+
         private async void UpdateContacts()
         {
-            await LoadContacts();
+            await LoadingTask.ExecuteAsync(null);
         }
 
         private async Task LoadContacts()
         {
-            _contacts.Clear();
-            _contacts.AddRange(await GetContacts.ExecuteAsync());
+            var contacts = await GetContacts.ExecuteAsync();
+            if(contacts != null)
+            {
+                _contacts.Clear();
+                _contacts.AddRange(contacts);
+            }     
         }
     }
 }

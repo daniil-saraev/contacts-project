@@ -24,12 +24,6 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var scopedProvider = scope.ServiceProvider;
-    await IdentityDbInitialization.InitializeDbAsync(scopedProvider);
-}
-
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();

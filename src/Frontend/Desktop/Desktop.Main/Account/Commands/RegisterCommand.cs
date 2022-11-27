@@ -6,11 +6,12 @@ using Desktop.Common.Services;
 using Desktop.Main.Account.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace Desktop.Main.Account.Commands
 {
-    public class RegisterCommand : BaseCommand
+    public class RegisterCommand : AsyncBaseCommand
     {
         private IAuthenticationService _authenticationService => ServiceProvider.GetRequiredService<IAuthenticationService>();
         private IExceptionHandler _exceptionHandler => ServiceProvider.GetRequiredService<IExceptionHandler>();
@@ -34,7 +35,7 @@ namespace Desktop.Main.Account.Commands
             return base.CanExecute(parameter) && !_registerViewModel.HasErrors;
         }
 
-        public override async void Execute(object? parameter = null)
+        public override async Task ExecuteAsync()
         {
             _registerViewModel.ValidateModel();
             if (_registerViewModel.HasErrors)

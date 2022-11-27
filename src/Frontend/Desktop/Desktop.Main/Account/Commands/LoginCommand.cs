@@ -1,16 +1,16 @@
 ﻿using Core.Identity.Exceptions;
 using Desktop.Authentication.Services;
-using Desktop.Common.Commands;
 using Desktop.Common.Commands.Async;
 using Desktop.Common.Services;
 using Desktop.Main.Account.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace Desktop.Main.Account.Commands
 {
-    public class LoginCommand : BaseCommand
+    public class LoginCommand : AsyncBaseCommand
     {
         private IAuthenticationService _authenticationService => ServiceProvider.GetRequiredService<IAuthenticationService>();
         private IExceptionHandler _exceptionHandler => ServiceProvider.GetRequiredService<IExceptionHandler>();
@@ -34,7 +34,7 @@ namespace Desktop.Main.Account.Commands
             return base.CanExecute(parameter) && !_loginViewModel.HasErrors;
         }
 
-        public override async void Execute(object? parameter = null)
+        public override async Task ExecuteAsync()
         {
             _loginViewModel.ValidateModel();
             if (_loginViewModel.HasErrors)

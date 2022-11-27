@@ -6,7 +6,12 @@ namespace Desktop.Authentication.Models
     public class User
     {
         private UserData? _data;
+
         public bool IsAuthenticated => _data != null;
+
+        public event Action? UserLoggedIn;
+        public event Action? UserLoggedOut;
+
         public UserData Data
         {
             get
@@ -37,6 +42,7 @@ namespace Desktop.Authentication.Models
                 Email = email,
                 Name = username
             };
+            UserLoggedIn?.Invoke();
         }
 
         public struct UserData

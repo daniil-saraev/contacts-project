@@ -75,17 +75,18 @@
                     </StackPanel>
                 </Grid>
             </Border>
-            <ProgressBar
+            <Border Grid.Row="2" Margin="10,10,10,10">
+                <Grid>
+                    <ProgressBar
                         VerticalAlignment="Center"
                         HorizontalAlignment="Center"
-                        IsEnabled="{Binding InitializationTask.IsNotCompleted}"
+                        Visibility="{Binding ProgressBarVisibility}"
                         Style="{DynamicResource MaterialDesignCircularProgressBar}" 
                         IsIndeterminate="True" 
                         Foreground="#FF56CC9D"/>
                     
-            <Border Grid.Row="2" Margin="10,10,10,10">
-                <Grid>                 
-                    <ContentControl Content="{Binding CurrentViewModel}">
+                    <ContentControl Content="{Binding CurrentViewModel}"
+                                    Visibility="{Binding ContentVisibility}">
                         <ContentControl.Resources>
                             <DataTemplate DataType="{x:Type contactviewmodels:HomeViewModel}">
                                 <contactviews:HomeView/>

@@ -31,10 +31,9 @@ namespace Desktop.Main
             BaseCommand.SetServiceProvider(_host.Services);
 
             MainWindow = _host.Services.GetRequiredService<MainWindow>();
-            MainWindow.Show();
-
             _host.Services.GetRequiredService<MainViewModel>().OnStartup();
-
+            MainWindow.Show();
+         
             base.OnStartup(e);
         }
 

@@ -3,6 +3,7 @@ using Core.Identity.Interfaces;
 using Core.Identity.Requests;
 using Core.Identity.Responses;
 using Desktop.Authentication.Models;
+using Desktop.Common.Exceptions;
 
 namespace Desktop.Authentication.Services;
 
@@ -97,7 +98,7 @@ internal class AuthenticationService : IAuthenticationService
             case ExceptionType.WrongPasswordException:
                 throw new WrongPasswordException();
             default:
-                throw new Exception();
+                throw new Exception("Error");
         }
     }
 }

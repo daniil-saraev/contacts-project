@@ -4,6 +4,8 @@ using Desktop.Main.Account.Commands;
 using Desktop.Main.Contacts.ViewModels;
 using System.ComponentModel.DataAnnotations;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
+using Desktop.Common.Commands.Async;
 
 namespace Desktop.Main.Account.ViewModels
 {
@@ -79,13 +81,20 @@ namespace Desktop.Main.Account.ViewModels
             }
         }
 
+
+        private IAsyncCommand _register;
+        public IRelayCommand Register { get; }
         public ICommand Return { get; } = new NavigateTo<HomeViewModel>();
-        public ICommand Register { get; }
         public ICommand NavigateToLoginView { get; } = new NavigateTo<LoginViewModel>();
 
         public RegisterViewModel()
         {
-            Register = new RegisterCommand(this, Return);
+            _register = new RegisterCommand(this, Return);
+            LoadingTask = new AsyncRelayCommand(_register.ExecuteAsync);
+            Register = new RelayCommand(async () =>
+            {
+                await LoadingTask.ExecuteAsync(null);
+            });
         }
     }
 }

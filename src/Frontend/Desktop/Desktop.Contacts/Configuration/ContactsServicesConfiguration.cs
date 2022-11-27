@@ -5,6 +5,7 @@ using Desktop.Authentication.Models;
 using Desktop.Common.Services;
 using Desktop.Contacts.Persistence;
 using Desktop.Contacts.Services;
+using Desktop.Contacts.Services.SyncService;
 using Microsoft.Extensions.DependencyInjection;
 using static Core.Common.Constants.BaseUrls;
 
@@ -15,13 +16,11 @@ public static class ContactsServicesConfiguration
     public static void RegisterContactsServices(this IServiceCollection services)
     {
         services.AddTransient<AuthenticationHeaderHandler>();
-        services.AddHttpClient<ContactBookService>(client => new ContactBookService(CONTACTS_DATABASE_API_URL, client))
+        services.AddHttpClient<ContactBookService>(client => new ContactBookService(client))
                 .AddHttpMessageHandler<AuthenticationHeaderHandler>();
 
-        services.AddTransient((services) => 
-            new AuthenticatedContactBookService(services.GetRequiredService<ContactBookService>(),
-            services.GetRequiredService<ILocalContactsStorage>(), services.GetRequiredService<ContactsUnitOfWork>()));
-
+        services.AddSingleton<ISyncService, SyncService>(services => new SyncService(services.GetRequiredService<ContactBookService>()));
+        services.AddTransient<AuthenticatedContactBookService>();
         services.AddTransient<NotAuthenticatedContactBookService>();
 
         services.AddSingleton(typeof(IFileService<UnitOfWorkState?>), new JsonFileService<UnitOfWorkState?>($"{Environment.CurrentDirectory}\\contacts.json"));

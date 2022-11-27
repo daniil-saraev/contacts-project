@@ -1,4 +1,6 @@
-﻿using Core.Contacts.Interfaces;
+﻿using Core.Common.Constants;
+using Core.Common.Exceptions;
+using Core.Contacts.Interfaces;
 using Core.Contacts.Models;
 using Core.Contacts.Requests;
 
@@ -9,35 +11,70 @@ namespace Api.Services.Gateway.Contacts
         private readonly ContactsApi _contactsApi;
         private readonly HttpClient _httpClient;
 
-        public ContactBookService(string baseUrl, HttpClient httpClient)
+        public ContactBookService( HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _contactsApi = new ContactsApi(baseUrl, _httpClient);
+            _contactsApi = new ContactsApi(BaseUrls.CONTACTS_DATABASE_API_URL, _httpClient);
         }
 
         public virtual async Task AddContact(AddContactRequest request)
         {
-            await _contactsApi.AddAsync(request);
+            try
+            {
+                await _contactsApi.AddAsync(request);
+            }
+            catch (Exception ex)
+            {
+                throw new ConnectionErrorException(ex);
+            }
         }
 
         public virtual async Task DeleteContact(DeleteContactRequest request)
         {
-            await _contactsApi.DeleteAsync(request);
+            try
+            {
+                await _contactsApi.DeleteAsync(request);
+            }
+            catch (Exception ex)
+            {
+                throw new ConnectionErrorException(ex);
+            }
         }
 
         public virtual async Task<IEnumerable<ContactData>> GetAllContacts()
         {
-            return await _contactsApi.GetAllAsync();
+            try
+            {
+                return await _contactsApi.GetAllAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new ConnectionErrorException(ex);
+            }
         }
 
         public virtual async Task<ContactData> GetContactById(string id)
         {
-            return await _contactsApi.GetAsync(id);
+            try
+            {
+                return await _contactsApi.GetAsync(id);
+            }
+            catch (Exception ex)
+            {
+                throw new ConnectionErrorException(ex);
+            }
         }
 
         public virtual async Task UpdateContact(UpdateContactRequest request)
         {
-            await _contactsApi.UpdateAsync(request);
+            try
+            {
+                await _contactsApi.UpdateAsync(request);
+            }
+            catch (Exception ex)
+            {
+                throw new ConnectionErrorException(ex);
+            }
         }
     }
 }

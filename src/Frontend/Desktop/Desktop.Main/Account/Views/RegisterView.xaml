@@ -36,14 +36,14 @@
                 <Grid Margin="0,0,0,5">
                     <TextBox Style="{DynamicResource MaterialDesignFloatingHintTextBox}" 
                              HorizontalAlignment="Stretch"
-                             Text="{Binding Username, ValidatesOnNotifyDataErrors=True}"
+                             Text="{Binding Username, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
                              materialDesign:HintAssist.Hint="Username"/>
                 </Grid>
                 
                 <Grid Margin="0,0,0,5">
                     <TextBox Style="{DynamicResource MaterialDesignFloatingHintTextBox}" 
                              HorizontalAlignment="Stretch"
-                             Text="{Binding Email, ValidatesOnNotifyDataErrors=True}"
+                             Text="{Binding Email, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}"
                              materialDesign:HintAssist.Hint="Email"/>
                 </Grid>
 

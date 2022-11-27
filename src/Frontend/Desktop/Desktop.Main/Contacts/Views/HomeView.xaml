@@ -16,14 +16,7 @@
 
     <Border Background="{DynamicResource MaterialDesignPaper}">
         <Grid>
-            <ProgressBar
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Center"
-                        IsEnabled="{Binding LoadContactsTask.IsNotCompleted}"
-                        Style="{DynamicResource MaterialDesignCircularProgressBar}" 
-                        IsIndeterminate="True" 
-                        Foreground="#FF56CC9D"/>
-            
+
             <StackPanel>
                 
                 <Button Width="25"
@@ -56,9 +49,8 @@
                           SelectedItem="{Binding SelectedContactViewModel}"
                           IsReadOnly="True"
                           FontSize="14"
-                          Margin="0,10,0,0"
-                          IsEnabled="{Binding LoadContactsTask.IsCompleted}">
-                    
+                          Margin="0,10,0,0">
+
                     <DataGrid.Columns>
                         <materialDesign:DataGridTextColumn Binding="{Binding FullName}"                                                 
                                                            Header="Name" 

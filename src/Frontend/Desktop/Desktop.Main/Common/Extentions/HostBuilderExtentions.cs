@@ -21,9 +21,8 @@ namespace Desktop.Main.Common.Extentions
             {
                 services.AddSingleton<IExceptionHandler, MessageBoxExceptionHandler>();
                 services.AddSingleton<IViewModelsFactory, ViewModelsFactory>();
-                services.AddSingleton<INavigationService>((services) => new NavigationService(services.GetRequiredService<IViewModelsFactory>(),
-                                                            services.GetRequiredService<HomeViewModel>()));                                                                                           
-                services.AddSingleton<INotifyContactsChanged, ContactsChangesNotifier>();
+                services.AddSingleton<INavigationService, NavigationService>();                                                                                         
+                services.AddSingleton<INotifyUpdateContacts, ContactsUpdateNotifier>();
                 services.AddSingleton<SelectedContact>();
                 services.RegisterIdentityServices();
                 services.RegisterContactsServices();
@@ -39,7 +38,8 @@ namespace Desktop.Main.Common.Extentions
                 services.AddTransient<ContactAddViewModel>();
                 services.AddTransient<ContactEditViewModel>();
                 services.AddTransient<ContactInfoViewModel>();
-                services.AddTransient<HomeViewModel>();
+                services.AddSingleton<HomeViewModel>();
+
                 services.AddTransient<AccountViewModel>();
                 services.AddTransient<LoginViewModel>();
                 services.AddTransient<RegisterViewModel>();

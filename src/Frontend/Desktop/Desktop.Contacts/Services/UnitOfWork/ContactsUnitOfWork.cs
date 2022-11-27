@@ -9,7 +9,6 @@ internal class ContactsUnitOfWork
 {
     private UnitOfWorkState _state;
     public IEnumerable<ContactData> ExistingContacts => _state.ExistingUnits.Select(unit => unit.Contact);
-    public bool IsSynced => _state.PendingDeleteRequests.Count == 0 && _state.ExistingUnits.All(unit => unit.State == State.Synced);
 
     public UnitOfWorkState UnitOfWorkState
     {
@@ -73,7 +72,7 @@ internal class ContactsUnitOfWork
         {
             if(unit.State == State.Synced || unit.State == State.Changed)
             {
-                _state.PendingDeleteRequests.Enqueue(request);
+                _state.PendingDeleteRequests.Add(request);
             }
             _state.ExistingUnits.Remove(unit);           
         }
