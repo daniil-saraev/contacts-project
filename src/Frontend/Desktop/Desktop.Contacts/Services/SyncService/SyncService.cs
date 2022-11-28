@@ -1,9 +1,10 @@
 ﻿using Core.Contacts.Interfaces;
+using Core.Contacts.Models;
 using Core.Contacts.Requests;
 using Desktop.Common.Exceptions;
 using Desktop.Contacts.Models;
 
-namespace Desktop.Contacts.Services.SyncService
+namespace Desktop.Contacts.Services
 {
     internal class SyncService : ISyncService
     {
@@ -14,70 +15,68 @@ namespace Desktop.Contacts.Services.SyncService
             _contactBookApi = contactBookApi;
         }
 
-        public async Task<UnitOfWorkState> Sync(UnitOfWorkState state)
+        public async Task<IEnumerable<ContactData>> Pull()
         {
             try
             {
-                await Push(state);
-                return await Pull();           
+                return await _contactBookApi.GetAllContacts();
             }
             catch (Exception)
             {
                 throw new SyncingWithRemoteRepositoryException();
-            }
-            
+            }     
         }
 
-        private async Task<UnitOfWorkState> Pull()
+        public async Task Push(UnitOfWorkState state)
         {
-            return new UnitOfWorkState
+            try
             {
-                ExistingUnits = (await _contactBookApi.GetAllContacts())
-                                    .Select(contact => new ContactUnit(contact, State.Synced))
-                                    .ToList()
-            };
-        }
-
-        private async Task Push(UnitOfWorkState state)
-        {
-            await SendAddRequests(state.ExistingUnits.Where(unit => unit.State == State.New));
-            await SendUpdateRequests(state.ExistingUnits.Where(unit => unit.State == State.Changed));
-            await SendDeleteRequests(state.PendingDeleteRequests);
+                await SendAddRequests(state.ExistingUnits.Where(unit => unit.State == State.New));
+                await SendUpdateRequests(state.ExistingUnits.Where(unit => unit.State == State.Changed));
+                await SendDeleteRequests(state.PendingDeleteRequests);
+            }
+            catch (Exception)
+            {
+                throw new SyncingWithRemoteRepositoryException();
+            }         
         }
 
         private async Task SendAddRequests(IEnumerable<ContactUnit> addedUnits)
         {
-            foreach (var unit in addedUnits)
-            {
-                await _contactBookApi.AddContact(new AddContactRequest
+            if(addedUnits.Any())
+                foreach (var unit in addedUnits)
                 {
-                    FirstName = unit.Contact.FirstName,
-                    MiddleName = unit.Contact.MiddleName,
-                    LastName = unit.Contact.LastName,
-                    PhoneNumber = unit.Contact.PhoneNumber,
-                    Address = unit.Contact.Address,
-                    Description = unit.Contact.Description
-                });
-                unit.State = State.Synced;
-            }
+                    var contact = await _contactBookApi.AddContact(new AddContactRequest
+                    {
+                        FirstName = unit.Contact.FirstName,
+                        MiddleName = unit.Contact.MiddleName,
+                        LastName = unit.Contact.LastName,
+                        PhoneNumber = unit.Contact.PhoneNumber,
+                        Address = unit.Contact.Address,
+                        Description = unit.Contact.Description
+                    });
+                    unit.Contact = contact;
+                    unit.State = State.Synced;
+                }
         }
 
         private async Task SendUpdateRequests(IEnumerable<ContactUnit> changedUnits)
-        {
-            foreach (var unit in changedUnits)
-            {
-                await _contactBookApi.UpdateContact(new UpdateContactRequest
+        {   
+            if (changedUnits.Any())
+                foreach (var unit in changedUnits)
                 {
-                    Id = unit.Contact.Id,
-                    FirstName = unit.Contact.FirstName,
-                    MiddleName = unit.Contact.MiddleName,
-                    LastName = unit.Contact.LastName,
-                    PhoneNumber = unit.Contact.PhoneNumber,
-                    Address = unit.Contact.Address,
-                    Description = unit.Contact.Description
-                });
-                unit.State = State.Synced;
-            }
+                    await _contactBookApi.UpdateContact(new UpdateContactRequest
+                    {
+                        Id = unit.Contact.Id,
+                        FirstName = unit.Contact.FirstName,
+                        MiddleName = unit.Contact.MiddleName,
+                        LastName = unit.Contact.LastName,
+                        PhoneNumber = unit.Contact.PhoneNumber,
+                        Address = unit.Contact.Address,
+                        Description = unit.Contact.Description
+                    });
+                    unit.State = State.Synced;
+                }
         }
 
         private async Task SendDeleteRequests(List<DeleteContactRequest> requests)
@@ -86,7 +85,7 @@ namespace Desktop.Contacts.Services.SyncService
             {
                 var request = requests.First();
                 await _contactBookApi.DeleteContact(request);
-                request.Remove(request);
+                requests.Remove(request);
             }
         }
     }

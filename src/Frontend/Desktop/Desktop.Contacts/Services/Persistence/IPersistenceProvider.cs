@@ -1,4 +1,4 @@
-﻿namespace Desktop.Contacts.Persistence
+﻿namespace Desktop.Contacts.Services
 {
     public interface IPersistenceProvider
     {

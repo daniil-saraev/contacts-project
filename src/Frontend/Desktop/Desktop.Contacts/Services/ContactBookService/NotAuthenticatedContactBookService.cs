@@ -1,7 +1,6 @@
 using Core.Contacts.Interfaces;
 using Core.Contacts.Models;
 using Core.Contacts.Requests;
-using Desktop.Contacts.Persistence;
 
 namespace Desktop.Contacts.Services;
 
@@ -16,16 +15,14 @@ internal class NotAuthenticatedContactBookService : IContactBookService, IPersis
         _unitOfWork = unitOfWork;
     }
 
-    public Task AddContact(AddContactRequest request)
+    public Task<ContactData> AddContact(AddContactRequest request)
     {
-        _unitOfWork.AddContact(request);
-        return Task.CompletedTask;
+        return Task.FromResult(_unitOfWork.AddContact(request));
     }
 
-    public Task UpdateContact(UpdateContactRequest request)
+    public Task<ContactData> UpdateContact(UpdateContactRequest request)
     {
-        _unitOfWork.UpdateContact(request);
-        return Task.CompletedTask;
+        return Task.FromResult(_unitOfWork.UpdateContact(request));
     }
 
     public Task DeleteContact(DeleteContactRequest request)

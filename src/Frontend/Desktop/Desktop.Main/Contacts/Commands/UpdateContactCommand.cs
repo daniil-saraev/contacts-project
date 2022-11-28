@@ -2,7 +2,7 @@
 using Core.Contacts.Requests;
 using Desktop.Common.Commands.Async;
 using Desktop.Common.Services;
-using Desktop.Contacts.Persistence;
+using Desktop.Contacts.Services;
 using Desktop.Main.Contacts.Models;
 using Desktop.Main.Contacts.Notifier;
 using Microsoft.Extensions.DependencyInjection;
@@ -50,7 +50,7 @@ namespace Desktop.Main.Contacts.Commands
             {
                 await _contactBook.UpdateContact(new UpdateContactRequest
                 {
-                    Id = _selectedContact.ContactViewModel.Id,
+                    Id = _selectedContact.ContactViewModel.Contact.Id,
                     FirstName = _selectedContact.ContactViewModel.FirstName,
                     MiddleName = _selectedContact.ContactViewModel.MiddleName,
                     LastName = _selectedContact.ContactViewModel.LastName,

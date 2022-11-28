@@ -51,6 +51,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contacts.Common", "src\Back
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desktop.Main", "src\Frontend\Desktop\Desktop.Main\Desktop.Main.csproj", "{11A4573E-AFFB-4A32-A182-EABB04327F21}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desktop.Tests", "Tests\Unit\Desktop.Tests\Desktop.Tests.csproj", "{840B0B6A-2C5D-41A6-8B87-7538EE655F26}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -113,6 +115,10 @@ Global
 		{11A4573E-AFFB-4A32-A182-EABB04327F21}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11A4573E-AFFB-4A32-A182-EABB04327F21}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11A4573E-AFFB-4A32-A182-EABB04327F21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{840B0B6A-2C5D-41A6-8B87-7538EE655F26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{840B0B6A-2C5D-41A6-8B87-7538EE655F26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{840B0B6A-2C5D-41A6-8B87-7538EE655F26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{840B0B6A-2C5D-41A6-8B87-7538EE655F26}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -140,6 +146,7 @@ Global
 		{8DDB5902-95F9-4EB1-8B69-43C39F347E8F} = {D72C1C10-2A9C-47DA-9B79-10AFE15ECB50}
 		{85E2989A-1059-48A2-A199-20FC76799518} = {F8F60AB4-DCC0-4396-87B2-B84763FBA5CA}
 		{11A4573E-AFFB-4A32-A182-EABB04327F21} = {7BEB28C2-C40F-443F-B196-5CD6560B5A77}
+		{840B0B6A-2C5D-41A6-8B87-7538EE655F26} = {0589F762-4577-480B-91D4-822E3214043B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D5515418-804C-453C-BC2F-8BC7EABC7FCE}

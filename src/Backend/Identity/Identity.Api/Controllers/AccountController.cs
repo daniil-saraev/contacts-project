@@ -25,10 +25,12 @@ namespace Identity.Api.Controllers
         }
 
         /// <summary>
-        /// Tries to sign-in a user based on LoginRequest.
+        /// Tries to sign-in a user form request.
         /// </summary>
-        /// <returns>TokenResponse with access and refresh tokens if sign-in was successful. 
-        /// Otherwise, TokenResponse with error message and IsSuccessful property set to false</returns>
+        /// <returns>
+        /// Successful <see cref="AuthenticationResponse"/> if sing-in was successful.
+        /// Otherwise, unsuccessful <see cref="AuthenticationResponse"/> with specified <see cref="ExceptionType"/>.
+        /// </returns>
         [HttpPost("/login")]
         public async Task<ActionResult<AuthenticationResponse>> Login([FromBody] LoginRequest request)
         {
@@ -52,10 +54,12 @@ namespace Identity.Api.Controllers
         }
 
         /// <summary>
-        /// Tries to create a user based on RegisterRequest.
+        /// Tries to create a user form request.
         /// </summary>
-        /// <returns>TokenResponse with access and refresh tokens if account was created successfully. 
-        /// Otherwise, TokenResponse with error message and IsSuccessful property set to false.</returns>
+        /// <returns>
+        /// Successful <see cref="AuthenticationResponse"/> if user was created successfuly.
+        /// Otherwise, unsuccessful <see cref="AuthenticationResponse"/> with specified <see cref="ExceptionType"/>.
+        /// </returns>
         [HttpPost("/register")]
         public async Task<ActionResult<AuthenticationResponse>> Register([FromBody] RegisterRequest request)
         {
@@ -75,10 +79,12 @@ namespace Identity.Api.Controllers
         }
 
         /// <summary>
-        /// Tries to issue new access and refresh tokens based on RefreshTokenRequest.
+        /// Tries to re-authenticate a user form request.
         /// </summary>
-        /// <returns>TokenResponse with access and refresh tokens if RefreshTokenRequest was validated successfully. 
-        /// Otherwise, TokenResponse with error message and IsSuccessful property set to false.</returns>
+        /// <returns>
+        /// Successful <see cref="AuthenticationResponse"/> if refresh was successful.
+        /// Otherwise, unsuccessful <see cref="AuthenticationResponse"/> with specified <see cref="ExceptionType"/>.
+        /// </returns>
         [HttpPost("/refresh")]
         public async Task<ActionResult<AuthenticationResponse>> RefreshToken([FromBody] RefreshTokenRequest request)
         {
@@ -97,6 +103,9 @@ namespace Identity.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Produces unsuccessful <see cref="AuthenticationResponse"/> with specified <see cref="ExceptionType"/>.
+        /// </summary>
         private ActionResult<AuthenticationResponse> Error(ExceptionType exceptionType)
         {
             var response = new AuthenticationResponse();

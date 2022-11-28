@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Contacts.Common.Commands;
 
-internal class CreateCommandHandler : IRequestHandler<CreateCommand, ContactData>
+internal class CreateCommandHandler : IRequestHandler<CreateRequest, ContactData>
 {
     private readonly IContactsRepository _repository;
     private readonly IMapper _mapper;
@@ -17,7 +17,7 @@ internal class CreateCommandHandler : IRequestHandler<CreateCommand, ContactData
         _mapper = mapper;
     }
 
-    public async Task<ContactData> Handle(CreateCommand request, CancellationToken cancellationToken = default)
+    public async Task<ContactData> Handle(CreateRequest request, CancellationToken cancellationToken = default)
     {
         var contact = new Contact(
             request.UserId,

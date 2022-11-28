@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Contacts.Common.Commands;
 
-internal class UpdateCommandHandler : IRequestHandler<UpdateCommand, ContactData>
+internal class UpdateCommandHandler : IRequestHandler<UpdateRequest, ContactData>
 {
     private readonly IContactsRepository _repository;
     private readonly IMapper _mapper;
@@ -17,7 +17,7 @@ internal class UpdateCommandHandler : IRequestHandler<UpdateCommand, ContactData
         _mapper = mapper;
     }
 
-    public async Task<ContactData> Handle(UpdateCommand request, CancellationToken cancellationToken = default)
+    public async Task<ContactData> Handle(UpdateRequest request, CancellationToken cancellationToken = default)
     {
         var contact = await _repository.GetAsync(request.Id, cancellationToken);
         if(contact == null || contact.UserId != request.UserId)

@@ -1,9 +1,13 @@
-﻿namespace Desktop.Contacts.Services
+﻿using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
+
+namespace Desktop.Contacts.Services
 {
     internal interface ILocalContactsStorage
     {
-        Task Save(UnitOfWorkState unitOfWorkState);
+        public Task Save(UnitOfWorkState unitOfWorkState);
 
-        Task<UnitOfWorkState?> Load();
+        public Task<UnitOfWorkState?> Load();
     }
 }

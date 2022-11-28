@@ -4,7 +4,6 @@ using static Core.Identity.Constants.TokenConstants;
 using Identity.Common.Models;
 using Identity.Common.Services;
 using Web.Authentication.Configuration;
-using Microsoft.EntityFrameworkCore;
 using Core.Identity.Exceptions;
 
 namespace Web.Authentication

@@ -1,6 +1,6 @@
 ﻿using Desktop.Common.Commands.Async;
 using Desktop.Common.Services;
-using Desktop.Contacts.Persistence;
+using Desktop.Contacts.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;

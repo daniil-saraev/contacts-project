@@ -1,7 +1,7 @@
 ﻿using Core.Contacts.Interfaces;
 using Desktop.Common.Commands;
 using Desktop.Common.Services;
-using Desktop.Contacts.Persistence;
+using Desktop.Contacts.Services;
 using Desktop.Main.Contacts.Models;
 using Desktop.Main.Contacts.Notifier;
 using Microsoft.Extensions.DependencyInjection;

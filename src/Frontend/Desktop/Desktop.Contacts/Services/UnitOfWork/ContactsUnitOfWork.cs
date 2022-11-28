@@ -8,6 +8,7 @@ namespace Desktop.Contacts.Services;
 internal class ContactsUnitOfWork
 {
     private UnitOfWorkState _state;
+
     public IEnumerable<ContactData> ExistingContacts => _state.ExistingUnits.Select(unit => unit.Contact);
 
     public UnitOfWorkState UnitOfWorkState
@@ -27,7 +28,19 @@ internal class ContactsUnitOfWork
         _state = new UnitOfWorkState();
     }
 
-    public void AddContact(AddContactRequest request)
+    public void AddContacts(IEnumerable<ContactData> contacts)
+    {
+        foreach(var contact in contacts)
+        {
+            if(_state.ExistingUnits.Any(unit => unit.Id == contact.Id))
+                continue;
+            if(_state.PendingDeleteRequests.Any(request => request.Id == contact.Id))
+                continue;
+            _state.ExistingUnits.Add(new ContactUnit(contact, State.Synced));
+        }
+    }
+
+    public ContactData AddContact(AddContactRequest request)
     {
         ContactData contact = new ContactData
         {
@@ -41,9 +54,10 @@ internal class ContactsUnitOfWork
         };
         ContactUnit unit = new ContactUnit(contact, State.New);
         _state.ExistingUnits.Add(unit);
+        return unit.Contact;
     }
 
-    public void UpdateContact(UpdateContactRequest request)
+    public ContactData UpdateContact(UpdateContactRequest request)
     {
         var unit = _state.ExistingUnits.Find(unit => unit.Id == request.Id);
         if(unit != null)
@@ -60,6 +74,7 @@ internal class ContactsUnitOfWork
             };
             if (unit.State == State.Synced)
                 unit.State = State.Changed;
+            return unit.Contact;
         }
         else
             throw new ContactNotFoundException();

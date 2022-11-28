@@ -11,7 +11,7 @@ public interface IContactBookService
 
     public Task DeleteContact(DeleteContactRequest request);
 
-    public Task UpdateContact(UpdateContactRequest request);
+    public Task<ContactData> UpdateContact(UpdateContactRequest request);
 
-    public Task AddContact(AddContactRequest request);
+    public Task<ContactData> AddContact(AddContactRequest request);
 }

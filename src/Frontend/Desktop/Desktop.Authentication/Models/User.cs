@@ -25,15 +25,12 @@ namespace Desktop.Authentication.Models
 
         public void Logout()
         {
-            if (!IsAuthenticated)
-                return;
             _data = null;
+            UserLoggedOut?.Invoke();
         }
 
         public void Authenticate(Token accessToken, Token refreshToken, string id, string email, string username)
         {
-            if (IsAuthenticated)
-                return;
             _data = new UserData
             {
                 AccessToken = accessToken,

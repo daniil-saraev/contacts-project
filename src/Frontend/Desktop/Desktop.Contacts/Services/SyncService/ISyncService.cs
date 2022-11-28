@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Core.Contacts.Models;
 
-namespace Desktop.Contacts.Services.SyncService
+namespace Desktop.Contacts.Services
 {
     internal interface ISyncService
     {
-        Task<UnitOfWorkState> Sync(UnitOfWorkState state);
+        Task<IEnumerable<ContactData>> Pull();
+
+        Task Push(UnitOfWorkState state);
     }
 }

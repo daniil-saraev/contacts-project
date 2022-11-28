@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Contacts.Common.Commands;
 
-public class CreateCommand : IRequest<ContactData>
+public struct CreateRequest : IRequest<ContactData>
 {
     public string UserId { get; set; }
 

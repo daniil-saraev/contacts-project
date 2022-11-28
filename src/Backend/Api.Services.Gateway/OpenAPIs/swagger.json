@@ -10,7 +10,7 @@
         "tags": [
           "Contacts"
         ],
-        "summary": "Returns a collection of all contacts in DB.",
+        "summary": "Returns a collection of Core.Contacts.Models.ContactData for all user's contacts.",
         "operationId": "GetAllAsync",
         "responses": {
           "200": {
@@ -65,7 +65,7 @@
         "tags": [
           "Contacts"
         ],
-        "summary": "Returns a contact by id if found.",
+        "summary": "Searches for a user's contact by id.",
         "operationId": "GetAsync",
         "parameters": [
           {
@@ -127,7 +127,7 @@
         "tags": [
           "Contacts"
         ],
-        "summary": "Adds a contact to dataset. Saves changes.",
+        "summary": "Creates a contact from request.",
         "operationId": "AddAsync",
         "requestBody": {
           "content": {
@@ -140,7 +140,14 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContactData"
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad Request",
@@ -181,7 +188,7 @@
         "tags": [
           "Contacts"
         ],
-        "summary": "Removes a contact from dataset. Saves changes.",
+        "summary": "Removes a contact found from request.",
         "operationId": "DeleteAsync",
         "requestBody": {
           "content": {
@@ -235,7 +242,7 @@
         "tags": [
           "Contacts"
         ],
-        "summary": "Updates a contact. Saves changes.",
+        "summary": "Updates a contact found from request.",
         "operationId": "UpdateAsync",
         "requestBody": {
           "content": {
@@ -248,7 +255,14 @@
         },
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContactData"
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad Request",

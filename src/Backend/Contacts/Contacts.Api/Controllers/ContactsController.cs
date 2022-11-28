@@ -34,7 +34,7 @@ namespace Contacts.Api.Controllers
         }
 
         /// <summary>
-        /// Returns a collection of all contacts in DB.
+        /// Returns a collection of <see cref="ContactData"/> for all user's contacts.
         /// </summary>
         [HttpGet("/getall")]
         public async Task<ActionResult<IEnumerable<ContactData>>> GetAllAsync()
@@ -47,8 +47,11 @@ namespace Contacts.Api.Controllers
         }
 
         /// <summary>
-        /// Returns a contact by id if found.
+        /// Searches for a user's contact by id.
         /// </summary>
+        /// <returns>
+        /// <see cref="ContactData"/> for the contact if found.
+        /// </returns>
         [HttpGet("/get/{contactId}")]
         public async Task<ActionResult<ContactData>> GetAsync(string contactId)
         {
@@ -61,42 +64,48 @@ namespace Contacts.Api.Controllers
         }
 
         /// <summary>
-        /// Adds a contact to dataset. Saves changes.
+        /// Creates a contact from request.
         /// </summary>
+        /// <returns>
+        /// <see cref="ContactData"/> for the created contact.
+        /// </returns>
         [HttpPost("/add/")]
-        public async Task<IActionResult> AddAsync([FromBody] AddContactRequest request)
+        public async Task<ActionResult<ContactData>> AddAsync([FromBody] AddContactRequest request)
         {
-            CreateCommand createCommand = _mapper.Map<CreateCommand>(request);
-            createCommand.UserId = _userInfoService.UserId;
-            await _mediator.Send(createCommand);
-            return Ok();
+            CreateRequest createRequest = _mapper.Map<CreateRequest>(request);
+            createRequest.UserId = _userInfoService.UserId;
+            var contact = await _mediator.Send(createRequest);
+            return Ok(contact);
         }
 
         /// <summary>
-        /// Removes a contact from dataset. Saves changes.
+        /// Removes a contact found from request.
         /// </summary>
         [HttpDelete("/delete")]
         public async Task<IActionResult> DeleteAsync([FromBody] DeleteContactRequest request)
         {
-            DeleteCommand deleteCommand = new DeleteCommand
+            DeleteRequest deleteRequest = new DeleteRequest
             {
                 Id = request.Id,
                 UserId = _userInfoService.UserId
             };
-            await _mediator.Send(deleteCommand);
+            await _mediator.Send(deleteRequest);
             return Ok();
         }
 
         /// <summary>
-        /// Updates a contact. Saves changes.
+        /// Updates a contact found from request.
         /// </summary>
+        /// <returns>
+        /// <see cref="ContactData"/> for the updated contact.
+        /// </returns>
         [HttpPut("/update")]
-        public async Task<IActionResult> UpdateAsync([FromBody] UpdateContactRequest request)
+        public async Task<ActionResult<ContactData>> UpdateAsync([FromBody] UpdateContactRequest request)
         {
-            UpdateCommand updateCommand = _mapper.Map<UpdateCommand>(request);
-            updateCommand.UserId = _userInfoService.UserId;
-            await _mediator.Send(updateCommand);
-            return Ok();
+            UpdateRequest updateRequest = _mapper.Map<UpdateRequest>(request);
+            updateRequest.UserId = _userInfoService.UserId;
+            var contact = await _mediator.Send(updateRequest);
+            return Ok(contact);
         }
     }
 }

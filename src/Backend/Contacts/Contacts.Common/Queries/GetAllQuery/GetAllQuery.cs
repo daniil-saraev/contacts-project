@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Contacts.Common.Queries;
 
-public class GetAllQuery : IRequest<IEnumerable<ContactData>>
+public struct GetAllQuery : IRequest<IEnumerable<ContactData>>
 {
     public string UserId { get; set; }
 }

@@ -10,7 +10,7 @@
         "tags": [
           "Account"
         ],
-        "summary": "Tries to sign-in a user based on LoginRequest.",
+        "summary": "Tries to sign-in a user form request.",
         "operationId": "Login",
         "requestBody": {
           "content": {
@@ -53,7 +53,7 @@
         "tags": [
           "Account"
         ],
-        "summary": "Tries to create a user based on RegisterRequest.",
+        "summary": "Tries to create a user form request.",
         "operationId": "Register",
         "requestBody": {
           "content": {
@@ -96,7 +96,7 @@
         "tags": [
           "Account"
         ],
-        "summary": "Tries to issue new access and refresh tokens based on RefreshTokenRequest.",
+        "summary": "Tries to re-authenticate a user form request.",
         "operationId": "RefreshToken",
         "requestBody": {
           "content": {

@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Contacts.Common.Commands;
 
-public class UpdateCommand : IRequest<ContactData>
+public struct UpdateRequest : IRequest<ContactData>
 {
     public string Id { get; set; }
 

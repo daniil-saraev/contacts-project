@@ -1,6 +1,5 @@
 using Core.Contacts.Models;
 using Desktop.Common.Exceptions;
-using Desktop.Contacts.Services.SyncService;
 
 namespace Desktop.Contacts.Services;
 
@@ -19,11 +18,11 @@ internal class AuthenticatedContactBookService : NotAuthenticatedContactBookServ
     {
         try
         {
-            _unitOfWork.UnitOfWorkState = await _syncService.Sync(_unitOfWork.UnitOfWorkState);
+            _unitOfWork.AddContacts(await _syncService.Pull());
             await _localStorage.Save(_unitOfWork.UnitOfWorkState);
             return await base.GetAllContacts();
         }
-        catch (SyncingWithRemoteRepositoryException)
+        catch (Exception)
         {
             return await base.GetAllContacts();
         }     
@@ -31,21 +30,27 @@ internal class AuthenticatedContactBookService : NotAuthenticatedContactBookServ
 
     public override async Task LoadContacts()
     {
-        var unitOfWorkState = await _localStorage.Load();
-        if(unitOfWorkState == null)
-            return;
-        else
-            _unitOfWork.UnitOfWorkState = unitOfWorkState;
+        try
+        {
+            var unitOfWorkState = await _localStorage.Load();
+            if (unitOfWorkState == null)
+                return;
+            else _unitOfWork.UnitOfWorkState = unitOfWorkState;
 
-        if (!unitOfWorkState.IsSynced)
-            _unitOfWork.UnitOfWorkState = await _syncService.Sync(unitOfWorkState);
+        }
+        finally
+        {
+            if (!_unitOfWork.UnitOfWorkState.IsSynced)
+                await _syncService.Push(_unitOfWork.UnitOfWorkState);
+            _unitOfWork.AddContacts(await _syncService.Pull());
+        }
     }
 
     public override async Task SaveContacts()
     {  
         try 
         {
-            _unitOfWork.UnitOfWorkState = await _syncService.Sync(_unitOfWork.UnitOfWorkState);
+            await _syncService.Push(_unitOfWork.UnitOfWorkState);
         }
         finally
         {

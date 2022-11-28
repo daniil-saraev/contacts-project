@@ -34,8 +34,8 @@ public static class ContactsServicesConfiguration
             config.CreateProfile(string.Empty, config =>
             {
                 config.CreateMap<Contact, ContactData>();
-                config.CreateMap<AddContactRequest, CreateCommand>();
-                config.CreateMap<UpdateContactRequest, UpdateCommand>();
+                config.CreateMap<AddContactRequest, CreateRequest>();
+                config.CreateMap<UpdateContactRequest, UpdateRequest>();
             });
         });
     }

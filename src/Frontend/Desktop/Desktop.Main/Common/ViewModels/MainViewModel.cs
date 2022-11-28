@@ -10,8 +10,8 @@ using Desktop.Main.Contacts.Commands;
 using Desktop.Common.Commands.Async;
 using CommunityToolkit.Mvvm.Input;
 using System.Windows;
-using Desktop.Main.Contacts.ViewModels;
 using Desktop.Main.Contacts.Notifier;
+using Desktop.Main.Contacts.ViewModels;
 
 namespace Desktop.Main.Common.ViewModels
 {
@@ -21,13 +21,13 @@ namespace Desktop.Main.Common.ViewModels
         private readonly INavigationService _navigationService;
         private readonly INotifyUpdateContacts _updateNotifier;
         private readonly IAsyncCommand _loadContacts;
+        private readonly IAsyncCommand _saveContacts;
         private readonly IAsyncCommand _restoreUserSession;
 
         public Visibility ProgressBarVisibility { get; private set; }
         public Visibility ContentVisibility { get; private set; }
 
         public ICommand NavigateToUserView { get; private set; }
-
         public BaseViewModel? CurrentViewModel => _navigationService.CurrentViewModel;
 
         public MainViewModel(User user, INavigationService navigationService, INotifyUpdateContacts notifier)
@@ -39,6 +39,7 @@ namespace Desktop.Main.Common.ViewModels
             _navigationService.CurrentViewModelChanged += OnCurrentViewModelChanged;
             _updateNotifier = notifier;
             _loadContacts = new LoadContactsCommand();
+            _saveContacts = new SaveContactsCommand();
             _restoreUserSession = new RestoreUserSessionCommand();
             NavigateToUserView = new NavigateTo<LoginViewModel>();
         }
@@ -58,10 +59,14 @@ namespace Desktop.Main.Common.ViewModels
             await _loadContacts.ExecuteAsync();
         }
 
-        private void UserLoggedIn()
+        private async void UserLoggedIn()
         {
+            LoadingTask = new AsyncRelayCommand(_saveContacts.ExecuteAsync);
+            LoadingTask.PropertyChanged += InitializationTask_PropertyChanged;
+            await LoadingTask.ExecuteAsync(null);
             NavigateToUserView = new NavigateTo<AccountViewModel>();
             OnPropertyChanged(nameof(NavigateToUserView));
+            _navigationService.NavigateTo<HomeViewModel>();
             _updateNotifier.Notify();
         }
 

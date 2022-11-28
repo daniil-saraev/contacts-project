@@ -3,7 +3,7 @@ using Core.Identity.Interfaces;
 using Core.Identity.Requests;
 using Core.Identity.Responses;
 using Desktop.Authentication.Models;
-using Desktop.Common.Exceptions;
+using System.Runtime.CompilerServices;
 
 namespace Desktop.Authentication.Services;
 
@@ -65,6 +65,8 @@ internal class AuthenticationService : IAuthenticationService
 
     public async Task Logout()
     {
+        if(!_user.IsAuthenticated)
+            return;
         _user.Logout();
         await _userDataStorage.RemoveData();
     }

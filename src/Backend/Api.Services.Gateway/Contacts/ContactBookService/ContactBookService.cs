@@ -17,19 +17,19 @@ namespace Api.Services.Gateway.Contacts
             _contactsApi = new ContactsApi(BaseUrls.CONTACTS_DATABASE_API_URL, _httpClient);
         }
 
-        public virtual async Task AddContact(AddContactRequest request)
+        public async Task<ContactData> AddContact(AddContactRequest request)
         {
             try
             {
-                await _contactsApi.AddAsync(request);
+                return await _contactsApi.AddAsync(request);
             }
             catch (Exception ex)
             {
-                throw new ConnectionErrorException(ex);
+                throw new ServerErrorException(ex);
             }
         }
 
-        public virtual async Task DeleteContact(DeleteContactRequest request)
+        public async Task DeleteContact(DeleteContactRequest request)
         {
             try
             {
@@ -37,11 +37,11 @@ namespace Api.Services.Gateway.Contacts
             }
             catch (Exception ex)
             {
-                throw new ConnectionErrorException(ex);
+                throw new ServerErrorException(ex);
             }
         }
 
-        public virtual async Task<IEnumerable<ContactData>> GetAllContacts()
+        public async Task<IEnumerable<ContactData>> GetAllContacts()
         {
             try
             {
@@ -49,11 +49,11 @@ namespace Api.Services.Gateway.Contacts
             }
             catch (Exception ex)
             {
-                throw new ConnectionErrorException(ex);
+                throw new ServerErrorException(ex);
             }
         }
 
-        public virtual async Task<ContactData> GetContactById(string id)
+        public async Task<ContactData> GetContactById(string id)
         {
             try
             {
@@ -61,19 +61,19 @@ namespace Api.Services.Gateway.Contacts
             }
             catch (Exception ex)
             {
-                throw new ConnectionErrorException(ex);
+                throw new ServerErrorException(ex);
             }
         }
 
-        public virtual async Task UpdateContact(UpdateContactRequest request)
+        public async Task<ContactData> UpdateContact(UpdateContactRequest request)
         {
             try
             {
-                await _contactsApi.UpdateAsync(request);
+                return await _contactsApi.UpdateAsync(request);
             }
             catch (Exception ex)
             {
-                throw new ConnectionErrorException(ex);
+                throw new ServerErrorException(ex);
             }
         }
     }

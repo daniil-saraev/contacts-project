@@ -3,7 +3,7 @@ using Core.Contacts.Interfaces;
 using Desktop.Common.Commands;
 using Desktop.Common.Commands.Async;
 using Desktop.Common.Services;
-using Desktop.Contacts.Persistence;
+using Desktop.Contacts.Services;
 using Desktop.Main.Contacts.Models;
 using Desktop.Main.Contacts.Notifier;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,7 +46,7 @@ namespace Desktop.Main.Contacts.Commands
             {
                 await _contactBook.DeleteContact(new DeleteContactRequest
                 {
-                    Id = _selectedContact.ContactViewModel.Id
+                    Id = _selectedContact.ContactViewModel.Contact.Id
                 });
                 await _persistence.SaveContacts();
             }

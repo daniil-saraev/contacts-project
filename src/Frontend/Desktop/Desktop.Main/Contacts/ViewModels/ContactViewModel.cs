@@ -35,11 +35,6 @@ namespace Desktop.Main.Contacts.ViewModels
 
         #region Properties
 
-        public string Id
-        {
-            get { return _contact.Id; }
-        }
-
         public string FullName
         {
             get { return $"{_contact.LastName} {_contact.FirstName}"; }

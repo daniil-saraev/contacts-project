@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Contacts.Common.Commands;
 
-internal class DeleteCommandHandler : IRequestHandler<DeleteCommand>
+internal class DeleteCommandHandler : IRequestHandler<DeleteRequest>
 {
     private readonly IContactsRepository _repository;
 
@@ -13,7 +13,7 @@ internal class DeleteCommandHandler : IRequestHandler<DeleteCommand>
         _repository = repository;
     }
 
-    public async Task<Unit> Handle(DeleteCommand request, CancellationToken cancellationToken = default)
+    public async Task<Unit> Handle(DeleteRequest request, CancellationToken cancellationToken = default)
     {
         var contact = await _repository.GetAsync(request.Id, cancellationToken);
         if(contact == null || contact.UserId != request.UserId)

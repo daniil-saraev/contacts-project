@@ -3,11 +3,8 @@ using Core.Contacts.Interfaces;
 using Desktop.Authentication.HttpClientHandlers;
 using Desktop.Authentication.Models;
 using Desktop.Common.Services;
-using Desktop.Contacts.Persistence;
 using Desktop.Contacts.Services;
-using Desktop.Contacts.Services.SyncService;
 using Microsoft.Extensions.DependencyInjection;
-using static Core.Common.Constants.BaseUrls;
 
 namespace Desktop.Contacts.Configuration;
 

@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Desktop.Common.ViewModels;
+using System;
+using Desktop.Common.Services;
 
-namespace Desktop.Common.Services
+namespace Desktop.Main.Common.Services
 {
     public class ViewModelsFactory : IViewModelsFactory
     {

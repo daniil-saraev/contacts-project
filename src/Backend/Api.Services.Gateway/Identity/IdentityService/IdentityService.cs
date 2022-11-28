@@ -1,5 +1,4 @@
-﻿using ApiServices.Identity;
-using Core.Common.Constants;
+﻿using Core.Common.Constants;
 using Core.Common.Exceptions;
 using Core.Identity.Interfaces;
 using Core.Identity.Requests;
@@ -27,7 +26,7 @@ namespace Api.Services.Gateway.Identity
             }
             catch (Exception ex)
             {
-                throw new ConnectionErrorException(ex);
+                throw new ServerErrorException(ex);
             }           
         }
 
@@ -40,7 +39,7 @@ namespace Api.Services.Gateway.Identity
             }
             catch (Exception ex)
             {
-                throw new ConnectionErrorException(ex);
+                throw new ServerErrorException(ex);
             }
             
         }
@@ -54,7 +53,7 @@ namespace Api.Services.Gateway.Identity
             }
             catch (Exception ex)
             {
-                throw new ConnectionErrorException(ex);
+                throw new ServerErrorException(ex);
             }         
         }
     }

@@ -26,18 +26,11 @@ public class AuthenticationHeaderHandler : DelegatingHandler
                 await _authenticationService.Refresh(data.RefreshToken.Value, data.Id);
                 data = _user.Data;
             }
-            catch (InvalidRefreshTokenException)
-            {
-                throw;
-            }         
-            catch (UserNotFoundException)
-            {
-                throw;
-            }
-            finally
+            catch (Exception)
             {
                 await _authenticationService.Logout();
-            }
+                throw;
+            }         
         }
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", data.AccessToken.Value);
 

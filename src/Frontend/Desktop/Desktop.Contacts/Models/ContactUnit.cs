@@ -29,7 +29,7 @@ internal class ContactUnit
     }
 }
 
-public enum State 
+internal enum State 
 {
     Synced,
     New,

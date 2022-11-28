@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+    <_Parameter1>Desktop.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\..\Backend\Api.Services.Gateway\Api.Services.Gateway.csproj" />
     <ProjectReference Include="..\..\..\Core\Core.Contacts\Core.Contacts.csproj" />
     <ProjectReference Include="..\Desktop.Common\Desktop.Common.csproj" />
