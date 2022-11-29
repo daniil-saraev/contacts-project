@@ -27,10 +27,10 @@ namespace Desktop.Main.Contacts.Commands
         {
             _selectedContact = selectedContact;
             _returnCommand = returnCommand;
-            _selectedContact.ContactChanged += CurrentContactStore_SelectedContactChanged;
+            _selectedContact.ContactChanged += SelectedContactChanged;
         }
 
-        private void CurrentContactStore_SelectedContactChanged()
+        private void SelectedContactChanged()
         {
             OnCanExecuteChanged();
         }

@@ -1,5 +1,4 @@
 ﻿using System.Net.Http.Headers;
-using Core.Identity.Exceptions;
 using Desktop.Authentication.Models;
 using Desktop.Authentication.Services;
 
@@ -16,6 +15,11 @@ public class AuthenticationHeaderHandler : DelegatingHandler
         _user = user;
     }
 
+    /// <summary>
+    /// Validates access token and tries to refresh it if token has expired.
+    /// If refreh was unsuccessful, signs user out and throws exception.
+    /// Sets the token as authentication header.
+    /// </summary>
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         var data = _user.Data;

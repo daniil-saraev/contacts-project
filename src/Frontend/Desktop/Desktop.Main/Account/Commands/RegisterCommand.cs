@@ -22,10 +22,10 @@ namespace Desktop.Main.Account.Commands
         {
             _registerViewModel = registerViewModel;
             _returnCommand = returnCommand;
-            _registerViewModel.ErrorsChanged += RegisterViewModel_ErrorsChanged;
+            _registerViewModel.ErrorsChanged += ErrorsChanged;
         }
 
-        private void RegisterViewModel_ErrorsChanged(object? sender, System.ComponentModel.DataErrorsChangedEventArgs e)
+        private void ErrorsChanged(object? sender, System.ComponentModel.DataErrorsChangedEventArgs e)
         {
             OnCanExecuteChanged();
         }

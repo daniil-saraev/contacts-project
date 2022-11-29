@@ -4,6 +4,11 @@ using Core.Contacts.Requests;
 
 namespace Desktop.Contacts.Services;
 
+/// <summary>
+/// Implementation of <see cref="IContactBookService"/> that is designed to work with not authenticated user 
+/// extended by <see cref="IPersistenceProvider"/> interface.
+/// Allows for change tracking, saving and loading functionality.
+/// </summary>
 internal class NotAuthenticatedContactBookService : IContactBookService, IPersistenceProvider
 {
     protected readonly ILocalContactsStorage _localStorage;

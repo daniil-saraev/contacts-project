@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Identity.Common.Data;
 using Identity.Common.Models;
 using Identity.Common.Services;
-using Web.Authentication;
+using Identity.Common.Configuration;
 
 namespace Web.Authentication.Configuration
 {
@@ -20,11 +20,7 @@ namespace Web.Authentication.Configuration
 
             services.AddIdentityCore<ApplicationUser>(options =>
             {
-                options.Password.RequiredLength = 6;
-                options.User.RequireUniqueEmail = true;
-                options.Password.RequireNonAlphanumeric = false;
-                options.SignIn.RequireConfirmedAccount = false;
-                options.Lockout.MaxFailedAccessAttempts = 5;
+                IdentityOptionsConfiguration.ConfigureDefaultIdentityOptions(options);
 
             }).AddEntityFrameworkStores<IdentityDbContext>()
             .AddDefaultUI();

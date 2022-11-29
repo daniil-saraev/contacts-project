@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Core.Common.Interfaces;
-using Core.Common.Entities;
 
 namespace Core.Common.Base;
 

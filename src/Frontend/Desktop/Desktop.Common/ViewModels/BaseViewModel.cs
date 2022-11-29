@@ -9,6 +9,9 @@ namespace Desktop.Common.ViewModels
 {
     public abstract class BaseViewModel : INotifyPropertyChanged, INotifyDataErrorInfo
     {
+        /// <summary>
+        /// Encapsulates a process that needs to be represented with a progress bar.
+        /// </summary>
         public IAsyncRelayCommand? LoadingTask { get; protected set; }
 
         #region PropertyChanged
@@ -45,6 +48,10 @@ namespace Desktop.Common.ViewModels
             ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
         }
 
+        /// <summary>
+        /// Validates a value based on validation attributes the property has.
+        /// Adds new validation error and raises <see cref="ErrorsChanged"/> if validation failed.
+        /// </summary>
         protected virtual void ValidateProperty(object value, [CallerMemberName] string propertyName = null)
         {
             if (_validationErrors.ContainsKey(propertyName))
@@ -64,6 +71,10 @@ namespace Desktop.Common.ViewModels
             RaiseErrorsChanged(propertyName);
         }
 
+        /// <summary>
+        /// Validates all properties based on validation attributes they have.
+        /// Adds new validation error for each property that failed validation and raises <see cref="ErrorsChanged"/>.
+        /// </summary>
         public void ValidateModel()
         {
             _validationErrors.Clear();
@@ -87,6 +98,12 @@ namespace Desktop.Common.ViewModels
             }
         }
 
+
+        /// <summary>
+        /// Adds new validation error of a specified property and raises <see cref="ErrorsChanged"/>.
+        /// </summary>
+        /// <param name="property"></param>
+        /// <param name="errorMessage"></param>
         public void AddModelError(string property, string errorMessage)
         {
             if (_validationErrors.ContainsKey(property))

@@ -13,6 +13,9 @@ namespace Web.Authentication
             _httpContextAccessor = httpContextAccessor;
         }
 
+        /// <summary>
+        /// Sets current access token as authentication header.
+        /// </summary>
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             string? accessToken = _httpContextAccessor.HttpContext?.User.FindFirst(ACCESS_TOKEN)?.Value;

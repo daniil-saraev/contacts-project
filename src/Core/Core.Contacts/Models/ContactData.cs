@@ -1,6 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using Core.Common.Entities;
-
 namespace Core.Contacts.Models;
 
 public struct ContactData

@@ -1,10 +1,8 @@
-using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using static Core.Identity.Constants.TokenConstants;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Web.Authentication;
@@ -19,12 +17,15 @@ public class RefreshTokenFilter : Attribute, IAsyncAuthorizationFilter
         _authenticationService = authenticationService;
     }
 
+    /// <summary>
+    /// Tries to refresh token. If refresh fails, redirects user to login page.
+    /// </summary>
     public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
     {
         string? accessToken = context.HttpContext.User.FindFirstValue(ACCESS_TOKEN);
         string? email = context.HttpContext.User.FindFirstValue(ClaimTypes.Email);
         if (string.IsNullOrEmpty(accessToken) || string.IsNullOrEmpty(email))
-            return;
+            await context.HttpContext.ChallengeAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
         try
         {

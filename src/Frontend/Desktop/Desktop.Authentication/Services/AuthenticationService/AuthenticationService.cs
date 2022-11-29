@@ -3,7 +3,6 @@ using Core.Identity.Interfaces;
 using Core.Identity.Requests;
 using Core.Identity.Responses;
 using Desktop.Authentication.Models;
-using System.Runtime.CompilerServices;
 
 namespace Desktop.Authentication.Services;
 
@@ -99,8 +98,6 @@ internal class AuthenticationService : IAuthenticationService
                 throw new UserNotFoundException();
             case ExceptionType.WrongPasswordException:
                 throw new WrongPasswordException();
-            default:
-                throw new Exception("Error");
         }
     }
 }

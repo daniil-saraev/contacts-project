@@ -23,12 +23,18 @@ namespace Desktop.Authentication.Models
             }
         }
 
+        /// <summary>
+        /// Clears user data and raises <see cref="UserLoggedOut"/>.
+        /// </summary>
         public void Logout()
         {
             _data = null;
             UserLoggedOut?.Invoke();
         }
 
+        /// <summary>
+        /// Sets user data and raises <see cref="UserLoggedIn"/>.
+        /// </summary>
         public void Authenticate(Token accessToken, Token refreshToken, string id, string email, string username)
         {
             _data = new UserData

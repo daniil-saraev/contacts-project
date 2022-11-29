@@ -1,7 +1,7 @@
 using AutoMapper;
 using Core.Contacts.Models;
 using Core.Common.Entities;
-using Core.Common.Interfaces;
+using Core.Contacts.Interfaces;
 using MediatR;
 
 namespace Contacts.Common.Queries;

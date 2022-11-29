@@ -1,5 +1,3 @@
-using System;
-
 namespace Core.Contacts.Exceptions;
 
 public class ContactNotFoundException : Exception

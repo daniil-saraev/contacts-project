@@ -7,7 +7,10 @@ using Identity.Common.Models;
 namespace Identity.Common.Configuration
 {
     public static class IdentityDbInitialization
-    {
+    {  
+        /// <summary>
+        /// Restarts the database and seeds a default user.
+        /// </summary>
         public static async Task InitializeDbAsync(IServiceProvider serviceProvider)
         {
             var context = serviceProvider.GetRequiredService<IdentityDbContext>();

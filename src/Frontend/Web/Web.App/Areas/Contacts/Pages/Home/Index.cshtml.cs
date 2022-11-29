@@ -23,6 +23,6 @@ public class IndexModel : PageModel
 
     public async Task OnGet()
     {
-        Contacts = (await _contactBook.GetAllContacts()).Select(dto => new ContactViewModel(dto));
+        Contacts = (await _contactBook.GetAllContacts()).Select(contact => new ContactViewModel(contact));
     }
 }

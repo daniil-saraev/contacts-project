@@ -27,6 +27,13 @@ namespace Identity.Api.Services
             _jwtConfiguration = jwtConfiguration;
         }
 
+        /// <summary>
+        /// Tries to sign-in a user.
+        /// </summary>
+        /// <returns>Successful <see cref="AuthenticationResponse"/>.</returns>
+        /// <exception cref="UserNotFoundException"></exception>
+        /// <exception cref="UserLockedOutException"></exception>
+        /// <exception cref="WrongPasswordException"></exception>
         public async Task<AuthenticationResponse> LoginAsync(LoginRequest request)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
@@ -48,6 +55,12 @@ namespace Identity.Api.Services
             return await AuthenticateAsync(user);
         }
 
+        /// <summary>
+        /// Tries to create a user.
+        /// </summary>
+        /// <returns>Successful <see cref="AuthenticationResponse"/>.</returns>
+        /// <exception cref="DuplicateEmailsException"></exception>
+        /// <exception cref="RegisterErrorException"></exception>
         public async Task<AuthenticationResponse> RegisterAsync(RegisterRequest request)
         {
             if (await _userManager.FindByEmailAsync(request.Email) != null)
@@ -64,6 +77,12 @@ namespace Identity.Api.Services
             return await AuthenticateAsync(user);
         }
 
+        /// <summary>
+        /// Tries to re-authenticate a user with refresh token.
+        /// </summary>
+        /// <returns>Successful <see cref="AuthenticationResponse"/>.</returns>
+        /// <exception cref="InvalidRefreshTokenException"></exception>
+        /// <exception cref="UserNotFoundException"></exception>
         public async Task<AuthenticationResponse> RefreshAsync(RefreshTokenRequest request)
         {
             var result = _tokenService.ValidateToken(request.RefreshToken, _jwtConfiguration.RefreshTokenSecret);
@@ -87,6 +106,7 @@ namespace Identity.Api.Services
             return await AuthenticateAsync(user);
         }
 
+
         private async Task<AuthenticationResponse> AuthenticateAsync(ApplicationUser user)
         {
             var response = CreateAuthenticationResponse(user);
@@ -94,6 +114,9 @@ namespace Identity.Api.Services
             return response;
         }
 
+        /// <summary>
+        /// Generates tokens and composes response.
+        /// </summary>
         private AuthenticationResponse CreateAuthenticationResponse(ApplicationUser user)
         {
             IEnumerable<Claim> claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, user.Id) };
@@ -121,6 +144,9 @@ namespace Identity.Api.Services
             };
         }
 
+        /// <summary>
+        /// Adds or replaces user's refresh token claim.
+        /// </summary>
         private async Task SetRefreshTokenClaimAsync(ApplicationUser user, string refreshToken)
         {
             var refreshTokenClaim = new Claim(REFRESH_TOKEN, refreshToken);

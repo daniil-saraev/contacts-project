@@ -1,9 +1,11 @@
-﻿using System.Runtime.CompilerServices;
-using Core.Contacts.Requests;
+﻿using Core.Contacts.Requests;
 using Desktop.Contacts.Models;
 
 namespace Desktop.Contacts.Services
 {
+    /// <summary>
+    /// An object that is stored locally on disk.
+    /// </summary>
     internal class UnitOfWorkState
     {
         public List<DeleteContactRequest> PendingDeleteRequests { get; set; } = new List<DeleteContactRequest>();

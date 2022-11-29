@@ -21,10 +21,10 @@ namespace Desktop.Main.Account.Commands
         {
             _loginViewModel = loginViewModel;
             _returnCommand = returnCommand;
-            _loginViewModel.ErrorsChanged += LoginViewModel_ErrorsChanged;
+            _loginViewModel.ErrorsChanged += ErrorsChanged;
         }
 
-        private void LoginViewModel_ErrorsChanged(object? sender, System.ComponentModel.DataErrorsChangedEventArgs e)
+        private void ErrorsChanged(object? sender, System.ComponentModel.DataErrorsChangedEventArgs e)
         {
             OnCanExecuteChanged();
         }

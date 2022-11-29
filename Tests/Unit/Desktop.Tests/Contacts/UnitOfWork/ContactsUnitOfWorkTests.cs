@@ -160,7 +160,7 @@ namespace Desktop.Tests.Contacts
 
             // Assert
             Assert.Null(_unitOfWork.UnitOfWorkState.ExistingUnits.Find(unit => unit.Id == data.Id));
-            Assert.True(_unitOfWork.UnitOfWorkState.PendingDeleteRequests.Contains(request));
+            Assert.Contains(request, _unitOfWork.UnitOfWorkState.PendingDeleteRequests);
             Assert.False(_unitOfWork.UnitOfWorkState.IsSynced);   
         }
 
@@ -187,7 +187,7 @@ namespace Desktop.Tests.Contacts
 
             // Assert
             Assert.Null(_unitOfWork.UnitOfWorkState.ExistingUnits.Find(unit => unit.Id == data.Id));
-            Assert.True(_unitOfWork.UnitOfWorkState.PendingDeleteRequests.Contains(request));
+            Assert.Contains(request, _unitOfWork.UnitOfWorkState.PendingDeleteRequests);
             Assert.False(_unitOfWork.UnitOfWorkState.IsSynced);   
         }
 
@@ -214,7 +214,7 @@ namespace Desktop.Tests.Contacts
 
             // Assert
             Assert.Null(_unitOfWork.UnitOfWorkState.ExistingUnits.Find(unit => unit.Id == data.Id));
-            Assert.False(_unitOfWork.UnitOfWorkState.PendingDeleteRequests.Contains(request));
+            Assert.DoesNotContain(request, _unitOfWork.UnitOfWorkState.PendingDeleteRequests);
             Assert.True(_unitOfWork.UnitOfWorkState.IsSynced); 
         }
         #endregion

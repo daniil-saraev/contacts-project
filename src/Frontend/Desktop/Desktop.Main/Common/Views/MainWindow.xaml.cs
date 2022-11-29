@@ -28,10 +28,5 @@ namespace Desktop.Main.Common.Views
                 DragMove();
             }
         }
-
-        private void Grid_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            
-        }
     }
 }

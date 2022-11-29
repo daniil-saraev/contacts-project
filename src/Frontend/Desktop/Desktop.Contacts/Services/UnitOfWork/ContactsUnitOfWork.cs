@@ -5,10 +5,16 @@ using Desktop.Contacts.Models;
 
 namespace Desktop.Contacts.Services;
 
+/// <summary>
+/// Service to track changes of user's contacts.
+/// </summary>
 internal class ContactsUnitOfWork
 {
     private UnitOfWorkState _state;
 
+    /// <summary>
+    /// Contains synced, new and changed contacts.
+    /// </summary>
     public IEnumerable<ContactData> ExistingContacts => _state.ExistingUnits.Select(unit => unit.Contact);
 
     public UnitOfWorkState UnitOfWorkState
@@ -28,14 +34,22 @@ internal class ContactsUnitOfWork
         _state = new UnitOfWorkState();
     }
 
+    /// <summary>
+    /// Syncs incoming contacts with the existing.
+    /// </summary>
+    /// <param name="contacts">Contacts from remote repository.</param>
     public void AddContacts(IEnumerable<ContactData> contacts)
     {
         foreach(var contact in contacts)
         {
+            // If the contact is already stored locally, wether synced or changed, don't override it.
             if(_state.ExistingUnits.Any(unit => unit.Id == contact.Id))
                 continue;
+            // If the contact was deleted locally, keep it as deleted.
             if(_state.PendingDeleteRequests.Any(request => request.Id == contact.Id))
                 continue;
+
+            // If the contact does not exist locally, add it as synced.
             _state.ExistingUnits.Add(new ContactUnit(contact, State.Synced));
         }
     }
@@ -85,6 +99,7 @@ internal class ContactsUnitOfWork
         var unit = _state.ExistingUnits.Find(unit => unit.Id == request.Id);
         if(unit != null)
         {
+            // If the contact was just created locally, there is no need to remove it from remote repository.
             if(unit.State == State.Synced || unit.State == State.Changed)
             {
                 _state.PendingDeleteRequests.Add(request);

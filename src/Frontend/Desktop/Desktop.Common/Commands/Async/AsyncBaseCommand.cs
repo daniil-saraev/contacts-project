@@ -4,6 +4,9 @@ using System.Runtime.CompilerServices;
 
 namespace Desktop.Common.Commands.Async
 {
+    /// <summary>
+    /// Default implementation of <see cref="IAsyncCommand"/>.
+    /// </summary>
     public abstract class AsyncBaseCommand : BaseCommand, IAsyncCommand
     {
         private bool _isRunning;

@@ -1,7 +1,7 @@
 ﻿using Contacts.Common.Data;
 using Core.Common.Entities;
 using Core.Common.Base;
-using Core.Common.Interfaces;
+using Core.Contacts.Interfaces;
 
 namespace Contacts.Common.Services
 {

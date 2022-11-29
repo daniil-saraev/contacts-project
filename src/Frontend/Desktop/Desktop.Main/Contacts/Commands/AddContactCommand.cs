@@ -27,10 +27,10 @@ namespace Desktop.Main.Contacts.Commands
         {
             _selectedContact = selectedContact;
             _returnCommand = returnCommand;
-            _selectedContact.ContactViewModel.ErrorsChanged += NewContactViewModel_ErrorsChanged;
+            _selectedContact.ContactViewModel.ErrorsChanged += ErrorsChanged;
         }
 
-        private void NewContactViewModel_ErrorsChanged(object? sender, System.ComponentModel.DataErrorsChangedEventArgs e)
+        private void ErrorsChanged(object? sender, System.ComponentModel.DataErrorsChangedEventArgs e)
         {
             OnCanExecuteChanged();
         }

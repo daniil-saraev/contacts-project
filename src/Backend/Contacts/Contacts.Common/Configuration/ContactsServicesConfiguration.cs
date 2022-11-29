@@ -1,6 +1,6 @@
 using Contacts.Common.Data;
 using Contacts.Common.Services;
-using Core.Common.Interfaces;
+using Core.Contacts.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;

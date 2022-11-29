@@ -1,4 +1,4 @@
-using Core.Common.Interfaces;
+using Core.Contacts.Interfaces;
 using Core.Contacts.Exceptions;
 using MediatR;
 

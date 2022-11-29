@@ -11,7 +11,7 @@ namespace Desktop.Contacts.Services
         {
             _fileService = fileService;
         }
-
+        
         public async Task<UnitOfWorkState?> Load()
         {
             return await Task.Run(() =>

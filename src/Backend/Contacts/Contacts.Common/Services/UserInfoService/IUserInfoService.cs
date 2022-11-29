@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Contacts.Common.Services;
 
-namespace Contacts.Common.Services;
-
+/// <summary>
+/// Service to retrieve user's id.
+/// </summary>
 public interface IUserInfoService
 {
     string UserId { get; }

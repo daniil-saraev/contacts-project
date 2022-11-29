@@ -44,6 +44,7 @@ namespace Desktop.Main.Common.ViewModels
             NavigateToUserView = new NavigateTo<LoginViewModel>();
         }
 
+        // Load data and set initial view, notify update.
         public async void OnStartup()
         {
             LoadingTask = new AsyncRelayCommand(LoadData);
@@ -59,6 +60,8 @@ namespace Desktop.Main.Common.ViewModels
             await _loadContacts.ExecuteAsync();
         }
 
+        // Initialize synchronization process once user signed-in
+        // & navigate to home page & notify update.
         private async void UserLoggedIn()
         {
             LoadingTask = new AsyncRelayCommand(_saveContacts.ExecuteAsync);
@@ -76,6 +79,7 @@ namespace Desktop.Main.Common.ViewModels
             OnPropertyChanged(nameof(NavigateToUserView));
         }
 
+        // Bind LoadingTask to viewmodel currently in view.
         private void OnCurrentViewModelChanged()
         {
             OnPropertyChanged(nameof(CurrentViewModel));

@@ -1,6 +1,6 @@
 using AutoMapper;
 using Core.Common.Entities;
-using Core.Common.Interfaces;
+using Core.Contacts.Interfaces;
 using Core.Contacts.Models;
 using MediatR;
 

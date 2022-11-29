@@ -1,5 +1,5 @@
 using AutoMapper;
-using Core.Common.Interfaces;
+using Core.Contacts.Interfaces;
 using Core.Contacts.Exceptions;
 using Core.Contacts.Models;
 using MediatR;

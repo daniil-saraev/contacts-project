@@ -1,20 +1,16 @@
-﻿using Desktop.Common.Services;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Desktop.Common.Commands.Async
 {
+    /// <summary>
+    /// Default implementation of <see cref="IAsyncCommand{T}"/>.
+    /// </summary>
+    /// <typeparam name="T">Return type.</typeparam>
     public abstract class AsyncBaseCommand<T> : BaseCommand, IAsyncCommand<T>
     {
-        private bool _isCompleted;
         private bool _isRunning;
-        protected Task<T>? _executionTask;
+        protected Func<Task<T>>? _executionTask;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -23,17 +19,7 @@ namespace Desktop.Common.Commands.Async
             get
             {
                 ArgumentNullException.ThrowIfNull(_executionTask);
-                return _executionTask;
-            }
-        }
-
-        public bool IsCompleted
-        {
-            get => _isCompleted;
-            protected set
-            {
-                _isCompleted = value;
-                OnPropertyChanged();
+                return _executionTask.Invoke();
             }
         }
 
@@ -49,7 +35,7 @@ namespace Desktop.Common.Commands.Async
 
         protected AsyncBaseCommand()
         {
-            _executionTask = ExecuteAsync();
+            _executionTask = ExecuteAsync;
         }
 
         public abstract Task<T> ExecuteAsync();
@@ -62,7 +48,6 @@ namespace Desktop.Common.Commands.Async
             }
             catch (Exception)
             {
-                throw;
             }
         }
 

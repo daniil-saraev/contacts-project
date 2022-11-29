@@ -1,8 +1,11 @@
 using Core.Contacts.Models;
-using Desktop.Common.Exceptions;
 
 namespace Desktop.Contacts.Services;
 
+/// <summary>
+/// Designed to work with authenticated user. 
+/// Extends <see cref="NotAuthenticatedContactBookService"/> providing synchronization functionality.
+/// </summary>
 internal class AuthenticatedContactBookService : NotAuthenticatedContactBookService
 {
     private readonly ISyncService _syncService;

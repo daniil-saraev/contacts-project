@@ -1,7 +1,11 @@
 using Core.Contacts.Models;
+using Desktop.Contacts.Services;
 
 namespace Desktop.Contacts.Models;
 
+/// <summary>
+/// A model to help <see cref="ContactsUnitOfWork"/> track local changes.
+/// </summary>
 internal class ContactUnit
 {
     private ContactData _contact;

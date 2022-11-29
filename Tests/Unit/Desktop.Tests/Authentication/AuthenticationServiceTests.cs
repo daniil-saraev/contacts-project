@@ -79,13 +79,13 @@ namespace Desktop.Tests.Authentication
         {
             // Arrange
             _identityService.Setup(service => service.LoginAsync(It.IsAny<LoginRequest>()))
-                                                .ThrowsAsync(new ServerErrorException());
+                                                .ThrowsAsync(new ApiException());
 
             bool userLoggedInRaised = false;
             _user.UserLoggedIn += () => userLoggedInRaised = true;
 
             // Act & Assert
-            await Assert.ThrowsAsync<ServerErrorException>(async () => 
+            await Assert.ThrowsAsync<ApiException>(async () => 
                 await _authenticationService.Login("login", "password"));
             Assert.False(userLoggedInRaised);
             Assert.False(_user.IsAuthenticated);                                     
@@ -147,13 +147,13 @@ namespace Desktop.Tests.Authentication
         {
             // Arrange
             _identityService.Setup(service => service.RegisterAsync(It.IsAny<RegisterRequest>()))
-                                                .ThrowsAsync(new ServerErrorException());
+                                                .ThrowsAsync(new ApiException());
 
             bool userLoggedInRaised = false;
             _user.UserLoggedIn += () => userLoggedInRaised = true;
 
             // Act & Assert
-            await Assert.ThrowsAsync<ServerErrorException>(async () => 
+            await Assert.ThrowsAsync<ApiException>(async () => 
                 await _authenticationService.Register("login", "email", "password"));
             Assert.False(userLoggedInRaised);
             Assert.False(_user.IsAuthenticated);                                     
@@ -215,13 +215,13 @@ namespace Desktop.Tests.Authentication
         {
             // Arrange
             _identityService.Setup(service => service.RefreshTokenAsync(It.IsAny<RefreshTokenRequest>()))
-                                                .ThrowsAsync(new ServerErrorException());
+                                                .ThrowsAsync(new ApiException());
 
             bool userLoggedInRaised = false;
             _user.UserLoggedIn += () => userLoggedInRaised = true;
 
             // Act & Assert
-            await Assert.ThrowsAsync<ServerErrorException>(async () => 
+            await Assert.ThrowsAsync<ApiException>(async () => 
                 await _authenticationService.Refresh("token", "userId"));
             Assert.False(userLoggedInRaised);
             Assert.False(_user.IsAuthenticated);                                     

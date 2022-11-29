@@ -70,6 +70,11 @@ namespace Web.Authentication
                 return null;
         }
 
+        /// <summary>
+        /// Issues access token and sets it as user's claim.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns>User's <see cref="ClaimsPrincipal"/>.</returns>
         private async Task<ClaimsPrincipal> AuthenticateAsync(ApplicationUser user)
         {
             string accessToken = CreateToken(user);

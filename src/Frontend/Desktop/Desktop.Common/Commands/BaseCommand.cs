@@ -1,10 +1,15 @@
-﻿using System;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 
 namespace Desktop.Common.Commands
 {
+    /// <summary>
+    /// Provides a default implementation of <see cref="ICommand"/> interface.
+    /// </summary>
     public abstract class BaseCommand : ICommand
     {
+        /// <summary>
+        /// Allows for dependency injection while not exposing any dependencies.
+        /// </summary>
         protected static IServiceProvider ServiceProvider { get; private set; }
         public static void SetServiceProvider(IServiceProvider serviceProvider)
         {
@@ -14,6 +19,10 @@ namespace Desktop.Common.Commands
         public event EventHandler? CanExecuteChanged;
         protected Func<bool>? _canExecuteCustom;
 
+        /// <summary>
+        /// Accepts a custom predicate that defines if the command can be executed.
+        /// Note that any logic of refreshing the CanExecute state should be implemented internally through <see cref="OnCanExecuteChanged"/>.
+        /// </summary>
         protected BaseCommand(Func<bool>? canExecuteCustom = null)
         {
             _canExecuteCustom = canExecuteCustom;

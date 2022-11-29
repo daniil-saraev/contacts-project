@@ -6,6 +6,7 @@ public interface IRepository<T> where T : Entity
 {
     /// <summary>
     /// Returns a collection of <typeparamref name="T"/>.
+    /// If predicate is specified, returns filtered collection.
     /// </summary>
     Task<IEnumerable<T>> GetAllAsync(Func<T, bool>? predicate = null, CancellationToken cancellationToken = default);
 

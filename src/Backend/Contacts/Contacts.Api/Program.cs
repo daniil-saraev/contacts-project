@@ -11,7 +11,6 @@ using Core.Contacts.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Logging.AddConsole();
 
 builder.Services.RegisterContactsServices(builder.Configuration);

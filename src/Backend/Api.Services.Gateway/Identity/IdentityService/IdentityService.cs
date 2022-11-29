@@ -6,6 +6,9 @@ using Core.Identity.Responses;
 
 namespace Api.Services.Gateway.Identity
 {
+    /// <summary>
+    /// Wrapper around Identity.Api client.
+    /// </summary>
     public class IdentityService : IIdentityService
     {
         private readonly IdentityApi _identityApi;
@@ -26,7 +29,7 @@ namespace Api.Services.Gateway.Identity
             }
             catch (Exception ex)
             {
-                throw new ServerErrorException(ex);
+                throw new ApiException(ex);
             }           
         }
 
@@ -39,7 +42,7 @@ namespace Api.Services.Gateway.Identity
             }
             catch (Exception ex)
             {
-                throw new ServerErrorException(ex);
+                throw new ApiException(ex);
             }
             
         }
@@ -53,7 +56,7 @@ namespace Api.Services.Gateway.Identity
             }
             catch (Exception ex)
             {
-                throw new ServerErrorException(ex);
+                throw new ApiException(ex);
             }         
         }
     }

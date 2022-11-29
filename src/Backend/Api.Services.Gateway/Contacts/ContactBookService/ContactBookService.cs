@@ -6,6 +6,9 @@ using Core.Contacts.Requests;
 
 namespace Api.Services.Gateway.Contacts
 {
+    /// <summary>
+    /// Wrapper around Contacts.Api client.
+    /// </summary>
     public class ContactBookService : IContactBookService
     {
         private readonly ContactsApi _contactsApi;
@@ -14,7 +17,7 @@ namespace Api.Services.Gateway.Contacts
         public ContactBookService( HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _contactsApi = new ContactsApi(BaseUrls.CONTACTS_DATABASE_API_URL, _httpClient);
+            _contactsApi = new ContactsApi(BaseUrls.CONTACTS_API_URL, _httpClient);
         }
 
         public async Task<ContactData> AddContact(AddContactRequest request)
@@ -25,7 +28,7 @@ namespace Api.Services.Gateway.Contacts
             }
             catch (Exception ex)
             {
-                throw new ServerErrorException(ex);
+                throw new ApiException(ex);
             }
         }
 
@@ -37,7 +40,7 @@ namespace Api.Services.Gateway.Contacts
             }
             catch (Exception ex)
             {
-                throw new ServerErrorException(ex);
+                throw new ApiException(ex);
             }
         }
 
@@ -49,7 +52,7 @@ namespace Api.Services.Gateway.Contacts
             }
             catch (Exception ex)
             {
-                throw new ServerErrorException(ex);
+                throw new ApiException(ex);
             }
         }
 
@@ -61,7 +64,7 @@ namespace Api.Services.Gateway.Contacts
             }
             catch (Exception ex)
             {
-                throw new ServerErrorException(ex);
+                throw new ApiException(ex);
             }
         }
 
@@ -73,7 +76,7 @@ namespace Api.Services.Gateway.Contacts
             }
             catch (Exception ex)
             {
-                throw new ServerErrorException(ex);
+                throw new ApiException(ex);
             }
         }
     }
