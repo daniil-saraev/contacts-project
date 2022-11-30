@@ -104,7 +104,8 @@ namespace Desktop.Tests.Contacts
             Assert.True(unit.State == State.Changed);
             Assert.False(_unitOfWork.UnitOfWorkState.IsSynced);   
         }  
-
+        
+        [Fact]
         public void UpdateContactIfContactIsNewTest()
         {
             // Arrange
