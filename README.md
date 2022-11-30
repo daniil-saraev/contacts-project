@@ -21,7 +21,7 @@ These are implemented use cases:
 3. ASP.NET MVC & Razor pages for the web client.
 4. WPF for the desktop client.
 5. SQL Server & Entity Framework for persistence.
-6. XUnit for unit testing.
+6. XUnit & Moq for unit testing.
 7. Git for version control.
 
 # Backend design
