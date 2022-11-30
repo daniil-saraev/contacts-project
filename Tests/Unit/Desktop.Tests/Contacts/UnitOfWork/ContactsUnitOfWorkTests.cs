@@ -131,7 +131,7 @@ namespace Desktop.Tests.Contacts
             var unit = _unitOfWork.UnitOfWorkState.ExistingUnits.Find(unit =>
                                                     unit.Id == data.Id);
             Assert.NotNull(unit);
-            Assert.True(unit.Contact.PhoneNumber == data.PhoneNumber);
+            Assert.True(unit.Contact.PhoneNumber == request.PhoneNumber);
             Assert.True(unit.State == State.New);
             Assert.False(_unitOfWork.UnitOfWorkState.IsSynced);   
         } 
